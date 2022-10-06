@@ -91,21 +91,21 @@ TTree *create_tree(std::vector<Module> &modules, const std::string tname = "EvTr
                 auto event = new GEMTreeStruct();
                 m.event = static_cast<void*>(event);
                 tree->Branch("event_number",                    &event->event_number,    "event_number/I");
-                std::string sname = "GEM";
-                tree->Branch((sname + "_nCluster").c_str(),     &event->nCluster,        (sname + "_nCluster/I").c_str());
-                tree->Branch((sname + "_planeID").c_str(),      &event->Plane[0],        (sname + "_planeID[nCluster]/I").c_str());
-                tree->Branch((sname + "_prodID").c_str(),       &event->Prod[0],         (sname + "_prodID[nCluster]/I").c_str());
-                tree->Branch((sname + "_moduleID").c_str(),     &event->Module[0],       (sname + "_moduleID[nCluster]/I").c_str());
-                tree->Branch((sname + "_axis").c_str(),         &event->Axis[0],         (sname + "_axis[nCluster]/I").c_str());
-                tree->Branch((sname + "_size").c_str(),         &event->Size[0],         (sname + "_size[nCluster]/I").c_str());
-                tree->Branch((sname + "_adc").c_str(),          &event->Adc[0],          (sname + "_adc[nCluster]/F").c_str());
-                tree->Branch((sname + "_pos").c_str(),          &event->Pos[0],          (sname + "_pos[nCluster]/F").c_str());
-                tree->Branch((sname + "_stripNo").c_str(),      &event->StripNo[0][0],   (sname + "_stripNo[nCluster][MAXCLUSTERSIZE]/I").c_str());
-                tree->Branch((sname + "_stripAdc").c_str(),     &event->StripAdc[0][0],  (sname + "_stripADC[nCluster][MAXCLUSTERSIZE]/F").c_str());
-                tree->Branch((sname + "_nAPV").c_str(),         &event->nAPV,            (sname + "_nAPV/I").c_str());
-                tree->Branch((sname + "_apv_crate_id").c_str(), &event->apv_crate_id[0], (sname + "_apv_crate_id[nAPV]/I").c_str());
-                tree->Branch((sname + "_apv_mpd_id").c_str(),   &event->apv_mpd_id[0],   (sname + "_apv_mpd_id[nAPV]/I").c_str());
-                tree->Branch((sname + "_apv_adc_ch").c_str(),   &event->apv_adc_ch[0],   (sname + "_apv_adc_ch[nAPV]/I").c_str());                
+                std::string sname = "GEM";   
+                tree->Branch((sname + "_nCluster").c_str(),     &event->nCluster,        "GEM_nCluster/I");
+                tree->Branch((sname + "_planeID").c_str(),      &event->Plane[0],        "GEM_planeID[GEM_nCluster]/I");
+                tree->Branch((sname + "_prodID").c_str(),       &event->Prod[0],         "GEM_prodID[GEM_nCluster]/I");
+                tree->Branch((sname + "_moduleID").c_str(),     &event->Module[0],       "GEM_moduleID[GEM_nCluster]/I");
+                tree->Branch((sname + "_axis").c_str(),         &event->Axis[0],         "GEM_axis[GEM_nCluster]/I");
+                tree->Branch((sname + "_size").c_str(),         &event->Size[0],         "GEM_size[GEM_nCluster]/I");
+                tree->Branch((sname + "_adc").c_str(),          &event->Adc[0],          "GEM_adc[GEM_nCluster]/F");
+                tree->Branch((sname + "_pos").c_str(),          &event->Pos[0],          "GEM_pos[GEM_nCluster]/F");
+                tree->Branch((sname + "_stripNo").c_str(),      &event->StripNo[0][0],   "GEM_stripNo[GEM_nCluster][MAXCLUSTERSIZE]/I");
+                tree->Branch((sname + "_stripAdc").c_str(),     &event->StripAdc[0][0],  "GEM_stripADC[GEM_nCluster][MAXCLUSTERSIZE]/F");
+                tree->Branch((sname + "_nAPV").c_str(),         &event->nAPV,            "GEM_nAPV/I");
+                tree->Branch((sname + "_apv_crate_id").c_str(), &event->apv_crate_id[0], "GEM_apv_crate_id[GEM_nAPV]/I");
+                tree->Branch((sname + "_apv_mpd_id").c_str(),   &event->apv_mpd_id[0],   "GEM_apv_mpd_id[GEM_nAPV]/I");
+                tree->Branch((sname + "_apv_adc_ch").c_str(),   &event->apv_adc_ch[0],   "GEM_apv_adc_ch[GEM_nAPV]/I");
             }
             break;
         case kTI:
