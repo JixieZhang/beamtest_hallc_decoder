@@ -1,0 +1,34 @@
+{
+    "modules": [
+        {
+            "crate": 1,
+            "slot": 15,
+            "bank": 18,
+            "type": "SSP"
+        },
+        {
+            "crate": 1,
+            "slot": 3,
+            "bank": 3,
+            "type": "FADC250",
+            "channels": [
+                { "id": 0, "name": "Cer13_1", "type": "MaPMT" },
+                { "id": 1, "name": "Cer13_2", "type": "MaPMT" },
+                { "id": 2, "name": "Cer13_3", "type": "MaPMT" },
+                { "id": 3, "name": "Cer13_4", "type": "MaPMT" },
+                { "id": 4, "name": "Cer13_5", "type": "MaPMT" },
+                { "id": 5, "name": "Cer12_1", "type": "MaPMT" },
+                { "id": 6, "name": "Cer12_2", "type": "MaPMT" },
+                { "id": 7, "name": "Cer12_3", "type": "MaPMT" },
+                { "id": 8, "name": "Cer12_4", "type": "MaPMT" },
+                { "id": 9, "name": "Cer12_5", "type": "MaPMT" },
+                { "id": 10, "name": "Cer11_1", "type": "MaPMT" },
+                { "id": 11, "name": "Cer11_2", "type": "MaPMT" },
+                { "id": 12, "name": "Cer11_3", "type": "MaPMT" },
+                { "id": 13, "name": "Cer11_4", "type": "MaPMT" },
+                { "id": 14, "name": "Cer11_5", "type": "MaPMT" },
+                { "id": 15, "name": "ch15", "type": "External"}
+            ]
+        }
+    ]
+}

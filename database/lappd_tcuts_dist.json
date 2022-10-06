@@ -1,0 +1,25 @@
+{
+  "LAPPD": {
+    "plots": [
+      {
+        "title": "LAPPD Peak Time Distribution",
+        "func_code": "{ch}_peak.time - ecal.time",
+        "xlabel": "Time (ns)",
+        "ylabel": "Counts",
+        "hist_range": [80, -160, 160],
+        "path": "tcuts_lappd_peak_time.png",
+        "filter_code": "{ch}_peak.height > 0"
+      },
+      {
+        "title": "LAPPD Peak Height Distribution",
+        "func_code": "{ch}_peak.height",
+        "xlabel": "ADC Value",
+        "ylabel": "Counts",
+        "hist_range": [100, 0, 100],
+        "path": "tcuts_lappd_peak_height.png",
+        "filter_code": "{ch}_peak.height > 0"
+      }
+    ]
+  }
+}
+

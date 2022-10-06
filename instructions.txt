@@ -1,0 +1,81 @@
+#!// instructions.txt
+
+To use the program, do the following steps in the top directory:
+
+First of all, you need to define HallCBeamtestDir, which is the dir you are going to 
+build and install this package.
+
+   #this is Jixie's install dir, you need to change it to yours
+   setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/decoder
+   
+   mkdir -p $HallCBeamtestDir
+
+1) Use cmake to generate the Makefiles:
+   cmake -S. -B$HallCBeamtestDir/build
+
+2) build the program:
+   cmake --build $HallCBeamtestDir/build
+
+3) install the program into $HallCBeamtestDir:
+
+   cmake --install $HallCBeamtestDir/build --prefix $HallCBeamtestDir
+   (please make sure you have --prefix option set in your command)
+   
+
+4) set enviroment (add the following into your .cshrc):
+
+   setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/beamtest_hallc_decoder
+   setenv PATH ${HallCBeamtestDir}/bin:${PATH}
+   setenv LD_LIBRARY_PATH ${HallCBeamtestDir}/lib64:${LD_LIBRARY_PATH}
+
+5) an example of how to cook data is provided in:
+   ./cook_data.sh
+   (You need to set it up properly in order to run it ...)
+   
+    iF you are not use the above python script, you can use these shell scripts:
+    bin/replayA2B.csh
+    bin/replayFiles.csh
+    bin/replayonerun.csh
+
+    Please note that ${HallCBeamtestDir}/bin/analyze  require configuration files in ./database and ./config.
+    Make sure to copy these 2 dirs into where you run these csh scripts
+    The following is what I will do:
+    cp -f ./bin/*csh ${HallCBeamtestDir}/bin/
+    cp -fr ./database and ./config ${HallCBeamtestDir}/
+
+
+
+Note 1):
+   Since FADC does not need pedestal files during the replay, but 
+   GEM does.
+
+   one can generate GEM pedestal files using the program
+   ./bin/gem_gui
+   (this program will be copied to that location after step 3)
+
+Note 2):
+   One need ./rootlogon.C 
+   to view FADC data structures in ROOT enviroment. 
+   Make sure you copy rootlogon.C to the same directory with your
+   ROOT data files, otherwise it pops out a lot warning messages
+   
+   
+TO make things simple, here is all we need to do:
+
+   setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/decoder
+   
+   mkdir -p $HallCBeamtestDir
+   cmake -S. -B$HallCBeamtestDir/build
+   cmake --build $HallCBeamtestDir/build
+   cmake --install $HallCBeamtestDir/build --prefix $HallCBeamtestDir
+   cp -f ./bin/*csh ${HallCBeamtestDir}/bin/
+   cp -fr ./database and ./config ${HallCBeamtestDir}/
+
+   setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/beamtest_hallc_decoder
+   setenv PATH ${HallCBeamtestDir}/bin:${PATH}
+   setenv LD_LIBRARY_PATH ${HallCBeamtestDir}/lib64:${LD_LIBRARY_PATH}
+
+   
+   
+   
+ 

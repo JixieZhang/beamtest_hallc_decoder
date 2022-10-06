@@ -1,0 +1,63 @@
+{
+  "Calorimeter": {
+    "plots": [
+      {
+        "title": "Calorimeter Peak Time Distribution",
+        "func_code": "unpack_time({ch}.peaks, true)",
+        "xlabel": "Time (ns)",
+        "ylabel": "Counts",
+        "hist_range": [64, 0, 256],
+        "path": "ecal_peak_time.png"
+      },
+      {
+        "title": "Calorimeter Peak Height Distribution",
+        "func_code": "unpack_height({ch}.peaks, true)",
+        "xlabel": "ADC Value",
+        "ylabel": "Counts",
+        "hist_range": [100, 0, 500],
+        "path": "ecal_peak_height.png"
+      }
+    ]
+  },
+  "Scintillator2": {
+    "plots": [
+      {
+        "title": "Scintillator2 Peak Time Distribution",
+        "func_code": "unpack_time({ch}.peaks, true)",
+        "xlabel": "Time (ns)",
+        "ylabel": "Counts",
+        "hist_range": [64, 0, 256],
+        "path": "scint2_peak_time.png"
+      },
+      {
+        "title": "Scintillator2 Peak Height Distribution",
+        "func_code": "unpack_height({ch}.peaks, true)",
+        "xlabel": "ADC Value",
+        "ylabel": "Counts",
+        "hist_range": [100, 0, 500],
+        "path": "scint2_peak_height.png"
+      }
+    ]
+  },
+  "LAPPD": {
+    "plots": [
+      {
+        "title": "LAPPD Peak Time Distribution",
+        "func_code": "unpack_time({ch}.peaks, true)",
+        "xlabel": "Time (ns)",
+        "ylabel": "Counts",
+        "hist_range": [64, 0, 256],
+        "path": "lappd_peak_time.png"
+      },
+      {
+        "title": "LAPPD Peak Height Distribution",
+        "func_code": "unpack_height({ch}.peaks, true)",
+        "xlabel": "ADC Value",
+        "ylabel": "Counts",
+        "hist_range": [100, 0, 100],
+        "path": "lappd_peak_height.png"
+      }
+    ]
+  }
+}
+

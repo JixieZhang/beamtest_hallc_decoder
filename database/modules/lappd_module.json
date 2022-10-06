@@ -1,0 +1,178 @@
+{
+    "modules": [
+        {
+            "crate": 1,
+            "slot": 3,
+            "bank": 3,
+            "type": "FADC250",
+            "channels": [
+                { "id": 0, "name": "LAPPD_B8", "type": "LAPPD" },
+                { "id": 1, "name": "LAPPD_B7", "type": "LAPPD" },
+                { "id": 2, "name": "LAPPD_B6", "type": "LAPPD" },
+                { "id": 3, "name": "LAPPD_B5", "type": "LAPPD" },
+                { "id": 4, "name": "LAPPD_B4", "type": "LAPPD" },
+                { "id": 5, "name": "LAPPD_B3", "type": "LAPPD" },
+                { "id": 6, "name": "LAPPD_B2", "type": "LAPPD" },
+                { "id": 7, "name": "LAPPD_B1", "type": "LAPPD" },
+                { "id": 8, "name": "LAPPD_A8", "type": "LAPPD" },
+                { "id": 9, "name": "LAPPD_A7", "type": "LAPPD" },
+                { "id": 10, "name": "LAPPD_A6", "type": "LAPPD" },
+                { "id": 11, "name": "LAPPD_A5", "type": "LAPPD" },
+                { "id": 12, "name": "LAPPD_A4", "type": "LAPPD" },
+                { "id": 13, "name": "LAPPD_A3", "type": "LAPPD" },
+                { "id": 14, "name": "LAPPD_A2", "type": "LAPPD" },
+                { "id": 15, "name": "LAPPD_A1", "type": "LAPPD" }
+            ]
+        },
+        {
+            "crate": 1,
+            "slot": 4,
+            "bank": 3,
+            "type": "FADC250",
+            "channels": [
+                { "id": 0, "name": "LAPPD_D8", "type": "LAPPD" },
+                { "id": 1, "name": "LAPPD_D7", "type": "LAPPD" },
+                { "id": 2, "name": "LAPPD_D6", "type": "LAPPD" },
+                { "id": 3, "name": "LAPPD_D5", "type": "LAPPD" },
+                { "id": 4, "name": "LAPPD_D4", "type": "LAPPD" },
+                { "id": 5, "name": "LAPPD_D3", "type": "LAPPD" },
+                { "id": 6, "name": "LAPPD_D2", "type": "LAPPD" },
+                { "id": 7, "name": "LAPPD_D1", "type": "LAPPD" },
+                { "id": 8, "name": "LAPPD_C8", "type": "LAPPD" },
+                { "id": 9, "name": "LAPPD_C7", "type": "LAPPD" },
+                { "id": 10, "name": "LAPPD_C6", "type": "LAPPD" },
+                { "id": 11, "name": "LAPPD_C5", "type": "LAPPD" },
+                { "id": 12, "name": "LAPPD_C4", "type": "LAPPD" },
+                { "id": 13, "name": "LAPPD_C3", "type": "LAPPD" },
+                { "id": 14, "name": "LAPPD_C2", "type": "LAPPD" },
+                { "id": 15, "name": "LAPPD_C1", "type": "LAPPD" }
+            ]
+        },
+        {
+            "crate": 1,
+            "slot": 5,
+            "bank": 3,
+            "type": "FADC250",
+            "channels": [
+                { "id": 1, "name": "LAPPD_F7", "type": "LAPPD" },
+                { "id": 2, "name": "LAPPD_F6", "type": "LAPPD" },
+                { "id": 3, "name": "LAPPD_F5", "type": "LAPPD" },
+                { "id": 4, "name": "LAPPD_F4", "type": "LAPPD" },
+                { "id": 5, "name": "LAPPD_F3", "type": "LAPPD" },
+                { "id": 6, "name": "LAPPD_F2", "type": "LAPPD" },
+                { "id": 7, "name": "LAPPD_F1", "type": "LAPPD" },
+                { "id": 8, "name": "LAPPD_E8", "type": "LAPPD" },
+                { "id": 9, "name": "LAPPD_E7", "type": "LAPPD" },
+                { "id": 10, "name": "LAPPD_E6", "type": "LAPPD" },
+                { "id": 11, "name": "LAPPD_E5", "type": "LAPPD" },
+                { "id": 12, "name": "LAPPD_E4", "type": "LAPPD" },
+                { "id": 13, "name": "LAPPD_E3", "type": "LAPPD" },
+                { "id": 14, "name": "LAPPD_E2", "type": "LAPPD" },
+                { "id": 15, "name": "LAPPD_E1", "type": "LAPPD" }
+            ]
+        },
+        {
+            "crate": 1,
+            "slot": 6,
+            "bank": 3,
+            "type": "FADC250",
+            "channels": [
+                { "id": 0, "name": "LAPPD_H8", "type": "LAPPD" },
+                { "id": 1, "name": "LAPPD_H7", "type": "LAPPD" },
+                { "id": 2, "name": "LAPPD_H6", "type": "LAPPD" },
+                { "id": 3, "name": "LAPPD_H5", "type": "LAPPD" },
+                { "id": 4, "name": "LAPPD_H4", "type": "LAPPD" },
+                { "id": 5, "name": "LAPPD_H3", "type": "LAPPD" },
+                { "id": 6, "name": "LAPPD_H2", "type": "LAPPD" },
+                { "id": 7, "name": "LAPPD_H1", "type": "LAPPD" },
+                { "id": 8, "name": "LAPPD_G8", "type": "LAPPD" },
+                { "id": 9, "name": "LAPPD_G7", "type": "LAPPD" },
+                { "id": 10, "name": "LAPPD_G6", "type": "LAPPD" },
+                { "id": 11, "name": "LAPPD_G5", "type": "LAPPD" },
+                { "id": 12, "name": "LAPPD_G4", "type": "LAPPD" },
+                { "id": 13, "name": "LAPPD_G3", "type": "LAPPD" },
+                { "id": 14, "name": "LAPPD_G1", "type": "LAPPD" },
+                { "id": 15, "name": "LAPPD_F8", "type": "LAPPD" }
+            ]
+        },
+        {
+            "crate": 1,
+            "slot": 7,
+            "bank": 3,
+            "type": "FADC250",
+            "channels": [
+                { "id": 0, "name": "C7_4", "type": "Calo" },
+                { "id": 1, "name": "C7_3", "type": "Calo" },
+                { "id": 2, "name": "C7_2", "type": "Calo" },
+                { "id": 3, "name": "C7_1", "type": "Calo" },
+                { "id": 4, "name": "C6_4", "type": "Calo" },
+                { "id": 5, "name": "C6_3", "type": "Calo" },
+                { "id": 6, "name": "C6_2", "type": "Calo" },
+                { "id": 7, "name": "C6_1", "type": "Calo" },
+                { "id": 8, "name": "C5_4", "type": "Calo" },
+                { "id": 9, "name": "C5_3", "type": "Calo" },
+                { "id": 10, "name": "C5_2", "type": "Calo" },
+                { "id": 11, "name": "C5_1", "type": "Calo" },
+                { "id": 12, "name": "C4", "type": "Calo" },
+                { "id": 13, "name": "C3", "type": "Calo" },
+                { "id": 14, "name": "C2", "type": "Calo" },
+                { "id": 15, "name": "C1", "type": "Calo" }
+            ]
+        },
+        {
+            "crate": 1,
+            "slot": 8,
+            "bank": 3,
+            "type": "FADC250",
+            "channels": [
+                { "id": 8, "name": "C9_4", "type": "Calo" },
+                { "id": 9, "name": "C9_3", "type": "Calo" },
+                { "id": 10, "name": "C9_2", "type": "Calo" },
+                { "id": 11, "name": "C9_1", "type": "Calo" },
+                { "id": 12, "name": "C8_4", "type": "Calo" },
+                { "id": 13, "name": "C8_3", "type": "Calo" },
+                { "id": 14, "name": "C8_2", "type": "Calo" },
+                { "id": 15, "name": "C8_1", "type": "Calo" }
+            ]
+        },
+        {
+            "crate": 1,
+            "slot": 9,
+            "bank": 3,
+            "type": "FADC250",
+            "channels": [
+                { "id": 0, "name": "LAPPD_G2", "type": "LAPPD" },
+                { "id": 10, "name": "S2_11", "type": "Scint" },
+                { "id": 11, "name": "S2_10", "type": "Scint" },
+                { "id": 12, "name": "S2_9", "type": "Scint" },
+                { "id": 13, "name": "S2_8", "type": "Scint" },
+                { "id": 14, "name": "S2_7", "type": "Scint" },
+                { "id": 15, "name": "S2_6", "type": "Scint" }
+            ]
+        },
+        {
+            "crate": 1,
+            "slot": 10,
+            "bank": 3,
+            "type": "FADC250",
+            "channels": [
+                { "id": 0, "name": "S2_5", "type": "Scint" },
+                { "id": 1, "name": "S2_4", "type": "Scint" },
+                { "id": 2, "name": "S2_3", "type": "Scint" },
+                { "id": 3, "name": "S2_2", "type": "Scint" },
+                { "id": 4, "name": "S2_1", "type": "Scint" },
+                { "id": 5, "name": "S1_11", "type": "Scint" },
+                { "id": 6, "name": "S1_10", "type": "Scint" },
+                { "id": 7, "name": "S1_9", "type": "Scint" },
+                { "id": 8, "name": "S1_8", "type": "Scint" },
+                { "id": 9, "name": "S1_7", "type": "Scint" },
+                { "id": 10, "name": "S1_6", "type": "Scint" },
+                { "id": 11, "name": "S1_5", "type": "Scint" },
+                { "id": 12, "name": "S1_4", "type": "Scint" },
+                { "id": 13, "name": "S1_3", "type": "Scint" },
+                { "id": 14, "name": "S1_2", "type": "Scint" },
+                { "id": 15, "name": "S1_1", "type": "Scint" }
+            ]
+        }
+    ]
+}

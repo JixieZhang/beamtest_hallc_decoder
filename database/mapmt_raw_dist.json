@@ -1,0 +1,82 @@
+{
+  "Calorimeter": {
+    "plots": [
+      {
+        "title": "Calorimeter Peak Time Distribution",
+        "func_code": "unpack_time({ch}.peaks, true)",
+        "xlabel": "Time (ns)",
+        "ylabel": "Counts",
+        "hist_range": [64, 0, 256],
+        "path": "ecal_peak_time.png"
+      },
+      {
+        "title": "Calorimeter Peak Height Distribution",
+        "func_code": "unpack_height({ch}.peaks, true)",
+        "xlabel": "ADC Value",
+        "ylabel": "Counts",
+        "hist_range": [100, 0, 500],
+        "path": "ecal_peak_height.png"
+      }
+    ]
+  },
+  "Scintillator1": {
+    "plots": [
+      {
+        "title": "Scintillator1 Peak Time Distribution",
+        "func_code": "unpack_time({ch}.peaks, true)",
+        "xlabel": "Time (ns)",
+        "ylabel": "Counts",
+        "hist_range": [64, 0, 256],
+        "path": "scint1_peak_time.png"
+      },
+      {
+        "title": "Scintillator1 Peak Height Distribution",
+        "func_code": "unpack_height({ch}.peaks, true)",
+        "xlabel": "ADC Value",
+        "ylabel": "Counts",
+        "hist_range": [100, 0, 500],
+        "path": "scint1_peak_height.png"
+      }
+    ]
+  },
+  "Scintillator2": {
+    "plots": [
+      {
+        "title": "Scintillator2 Peak Time Distribution",
+        "func_code": "unpack_time({ch}.peaks, true)",
+        "xlabel": "Time (ns)",
+        "ylabel": "Counts",
+        "hist_range": [64, 0, 256],
+        "path": "scint2_peak_time.png"
+      },
+      {
+        "title": "Scintillator2 Peak Height Distribution",
+        "func_code": "unpack_height({ch}.peaks, true)",
+        "xlabel": "ADC Value",
+        "ylabel": "Counts",
+        "hist_range": [100, 0, 500],
+        "path": "scint2_peak_height.png"
+      }
+    ]
+  },
+  "MaPMT Quads": {
+    "plots": [
+      {
+        "title": "MaPMT Quad. Peak Time Distribution",
+        "func_code": "unpack_time({ch}.peaks, true)",
+        "xlabel": "Time (ns)",
+        "ylabel": "Counts",
+        "hist_range": [64, 0, 256],
+        "path": "quad_peak_time.png"
+      },
+      {
+        "title": "MaPMT Quad. Peak Height Distribution",
+        "func_code": "unpack_height({ch}.peaks, true)",
+        "xlabel": "ADC Value",
+        "ylabel": "Counts",
+        "hist_range": [100, 0, 2000],
+        "path": "quad_peak_height.png"
+      }
+    ]
+  }
+}

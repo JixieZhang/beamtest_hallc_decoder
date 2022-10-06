@@ -1,0 +1,47 @@
+{
+  "MaPMT Sums": {
+    "plots": [
+      {
+        "title": "MaPMT Sum Peak Time Distribution",
+        "func_code": "{ch}_peak.time - ecal.time",
+        "xlabel": "Time Rel. to ECal. (ns)",
+        "ylabel": "Counts",
+        "hist_range": [80, -160, 160],
+        "path": "sum_peak_time_tcuts.png",
+        "filter_code": "{ch}_peak.height > 0"
+      },
+      {
+        "title": "MaPMT Sum Peak Height Distribution",
+        "func_code": "{ch}_peak.height",
+        "xlabel": "ADC Value",
+        "ylabel": "Counts",
+        "hist_range": [100, 0, 2000],
+        "path": "sum_peak_height_tcuts.png",
+        "filter_code": "{ch}_peak.height > 0"
+      }
+    ]
+  },
+  "MaPMT Quads": {
+    "refs": "run302_timing.json",
+    "plots": [
+      {
+        "title": "MaPMT Quad. Peak Time Distribution",
+        "func_code": "{ch}_peak.time - ecal.time",
+        "xlabel": "Time Rel. to ECal. (ns)",
+        "ylabel": "Counts",
+        "hist_range": [80, -160, 160],
+        "path": "quad_peak_time_tcuts.png",
+        "filter_code": "{ch}_peak.height > 0 && {group}_5_peak.height > 0"
+      },
+      {
+        "title": "MaPMT Quad. Peak Height Distribution",
+        "func_code": "{ch}_peak.height",
+        "xlabel": "ADC Value",
+        "ylabel": "Counts",
+        "hist_range": [100, 0, 2000],
+        "path": "quad_peak_height_tcuts.png",
+        "filter_code": "{ch}_peak.height > 0 && {group}_5_peak.height > 0"
+      }
+    ]
+  }
+}

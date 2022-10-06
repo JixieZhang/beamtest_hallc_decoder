@@ -1,0 +1,19 @@
+example usage:
+
+1. plot raw waveform events
+python scripts/draw_events.py CALORIMETER processed_data/run302.root --plot-dir=plots/run302/samples -n 10
+
+2. plot raw distributions
+python scripts/plot_dist.py processed_data/run302.root database/mapmt_raw_dist.json --plot-dir=plots/run302/raw --root-plots
+
+3. timing cuts study for triggers (snapshot to save data)
+python scripts/trigger_timing_cuts.py MAPMT database/run302_timing.json --files=processed_data/run302.root --snapshot=processed_data/run302_trg.root --plot-dir=plots/run302/tcuts -b
+
+4. timing cuts study for signals (snapshot to save data)
+python scripts/signal_timing_cuts.py MAPMT processed_data/run302_trg.root database/run302_timing.json --snapshot=processed_data/run302_tcuts.root --plot-dir=plots/run302/tcuts/ -b
+
+5. plot distributions after timing cuts
+python scripts/plot_dist.py processed_data/run302_tcuts.root database/mapmt_tcuts_dist.json --plot-dir=plots/run302/tcuts --root-plots
+
+6. plot signal sums
+
