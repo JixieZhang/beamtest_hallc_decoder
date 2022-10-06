@@ -31,6 +31,6 @@ echo "load root at $ROOTSYS"
 setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/decoder
 setenv PATH ${HallCBeamtestDir}/bin:${PATH}
 setenv LD_LIBRARY_PATH ${HallCBeamtestDir}/lib64:${LD_LIBRARY_PATH}
-echo "$HallCBeamtestDir"=${HallCBeamtestDir}
+echo '$HallCBeamtestDir'=${HallCBeamtestDir}
 
 
