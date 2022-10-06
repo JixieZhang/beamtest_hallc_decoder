@@ -16,8 +16,8 @@ set run = ($1)
 set overwrite = (0)
 if ($#argv >= 2) set overwrite = ($2)
 
-if !($?HallCBeamtestDir) set decoderdir = /work/halla/solid/jixie/ecal_beamtest_hallc/decoder
-else set decoderdir = ${HallCBeamtestDir}
+if !($?HallCBeamtestDir) setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/decoder
+set decoderdir = ${HallCBeamtestDir}
 set projdir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc
 set datadir = $projdir/raw
 #set replaydir = $projdir/replay
