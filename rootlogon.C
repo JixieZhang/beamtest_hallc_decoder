@@ -1,10 +1,10 @@
 {
-    //gSystem->SetBuildDir(".root_build_dir", true);
+    gSystem->SetBuildDir(".root_build_dir", true);
+    //install dir
+    char *HallCBeamtestDir = std::getenv("HallCBeamtestDir");
     // analyzer
-    //gInterpreter->AddIncludePath("./decoder");
-    //gSystem->Load("./build/decoder/libfdec.so");
-    gInterpreter->AddIncludePath("./include");
-    gSystem->Load("./lib64/libfdec.so");
+    gInterpreter->AddIncludePath(Form("%s/include",HallCBeamtestDir));
+    gSystem->Load(Form("%s/lib64/libfdec.so",HallCBeamtestDir));
 
 
     // online monitor

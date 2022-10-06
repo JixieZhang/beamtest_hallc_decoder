@@ -62,18 +62,18 @@ Note 2):
    
 TO make things simple, here is all we need to do:
 
-   setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/decoder
-   
-   mkdir -p $HallCBeamtestDir
-   cmake -S. -B$HallCBeamtestDir/build
-   cmake --build $HallCBeamtestDir/build
-   cmake --install $HallCBeamtestDir/build --prefix $HallCBeamtestDir
-   cp -f ./bin/*csh ${HallCBeamtestDir}/bin/
-   cp -fr ./database and ./config ${HallCBeamtestDir}/
+#setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/beamtest_hallc_decoder
+#setenv PATH ${HallCBeamtestDir}/bin:${PATH}
+#setenv LD_LIBRARY_PATH ${HallCBeamtestDir}/lib64:${LD_LIBRARY_PATH}
 
-   setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/beamtest_hallc_decoder
-   setenv PATH ${HallCBeamtestDir}/bin:${PATH}
-   setenv LD_LIBRARY_PATH ${HallCBeamtestDir}/lib64:${LD_LIBRARY_PATH}
+source setup.csh
+mkdir -p $HallCBeamtestDir
+cmake -S. -B$HallCBeamtestDir/build
+cmake --build $HallCBeamtestDir/build
+cmake --install $HallCBeamtestDir/build --prefix $HallCBeamtestDir
+cp -f ./bin/*csh ${HallCBeamtestDir}/bin/
+cp -fr ./database and ./config ${HallCBeamtestDir}/
+cp -f rootlogon.C ${HallCBeamtestDir}/
 
    
    

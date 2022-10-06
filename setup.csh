@@ -28,7 +28,7 @@ setenv CXX `which g++`
 source ${MY_APPS}/root-6.22.02/bin/thisroot.csh
 echo "load root at $ROOTSYS"
 
-setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/beamtest_hallc_decoder
+setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/decoder
 setenv PATH ${HallCBeamtestDir}/bin:${PATH}
 setenv LD_LIBRARY_PATH ${HallCBeamtestDir}/lib64:${LD_LIBRARY_PATH}
 echo "$HallCBeamtestDir"=${HallCBeamtestDir}
