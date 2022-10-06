@@ -4,7 +4,7 @@
 set DEBUG = ( echo ); 
 set DEBUG = (""); 
 
-if !($?HallCBeamtestDir) setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/decoder
+if (! $?HallCBeamtestDir) setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/decoder
 set decoderdir = ${HallCBeamtestDir}
 set projdir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc
 set datadir = $projdir/raw

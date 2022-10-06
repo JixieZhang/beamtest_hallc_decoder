@@ -33,4 +33,3 @@ setenv PATH ${HallCBeamtestDir}/bin:${PATH}
 setenv LD_LIBRARY_PATH ${HallCBeamtestDir}/lib64:${LD_LIBRARY_PATH}
 echo '$HallCBeamtestDir'=${HallCBeamtestDir}
 
-
