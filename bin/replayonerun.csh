@@ -45,19 +45,19 @@ foreach infile ($datadir/hallc_fadc_ssp_${run}.evio.*)
   set subrun = (${infile:e})
   set outfile = $replaydir/beamtest_hallc_${run}_${subrun}.root
 
-  if($overwrite == 0 && -f $outfile) then
+  if ($overwrite == 0 && -f $outfile) then
     echo "$outfile exist, skip replaying this file ......"
     continue
   endif
     
   #echo "start replaying $infile  --> $outfile"
   #remove the output file if exists
-  $DEBUG rm -f $outfile
-  $DEBUG build/src/analyze -m database/modules/mapmt_module_2FADC_beamtest.json $infile $outfile
+  if (-f $outfile) $DEBUG rm -f $outfile
+  $DEBUG bin/analyze -m database/modules/mapmt_module_2FADC_beamtest.json $infile $outfile
   
   #extract pedestal and create level1 tree
   if (-f $outfile) then
-  $DEBUG root -b -q $outfile $decoderdir/CreateLevel1Tree/run.C+
+    $DEBUG root -b -q $outfile CreateLevel1Tree/run.C+
   endif
 end
 

@@ -57,12 +57,20 @@ endif
 #"/w/halla-scshelf2102/solid/cc_pro/benchtest/coda/root/solidhgc_${run}.root"
 ###################################################################################
 
- 
-foreach infile ($argv[2-$#argv])
-    if !(-f $infile)  then
-        echo "file $infile not exist, skipped ..."
+set curdir = (`pwd`) 
+foreach infile0 ($argv[2-$#argv])
+    if !(-f $infile0)  then
+        echo "file $infile0 not exist, skipped ..."
         continue
     endif
+
+    #get the absolute path of infile
+    set filename = (`basename $infile0`)
+    set infiledir0 = (`dirname $infile0`)
+    cd $infiledir0
+    set infiledir = (`pwd`) 
+    set infile = $infiledir/$filename
+     
     #set the file to proper group
     $DEBUG chown jixie.12gev_solid $infile
     
@@ -74,12 +82,17 @@ foreach infile ($argv[2-$#argv])
     set outfile = $replaydir/beamtest_hallc_${run}_${subrun}.root
     #echo "start replaying $infile  --> $outfile"
     #remove the output file if exist
-    $DEBUG rm -f $outfile
-    $DEBUG $decoderdir/build/src/analyze $replayoption $infile $outfile
+    if (-f $outfile) $DEBUG rm -f $outfile
 
-     #extract pedestal and then create level1 tree
-     if (-f $outfile) then
-         $DEBUG root -b -q $outfile $decoderdir/CreateLevel1Tree/run.C+
-     endif
+    #due to bin/analyze require ./config and ./database to run
+    # I have to change into that dir
+    cd $decoderdir
+    $DEBUG bin/analyze $replayoption $infile $outfile
+
+    #extract pedestal and then create level1 tree
+    if (-f $outfile) then
+      $DEBUG root -b -q $outfile CreateLevel1Tree/run.C+
+    endif
+    cd $curdir
 end #end of loop
 
