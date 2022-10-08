@@ -79,7 +79,7 @@ foreach infile ($argv[2-$#argv])
 
      #extract pedestal and then create level1 tree
      if (-f $outfile) then
-         $DEBUG root -b -q $outfile $decoderdir/run.C+
+         $DEBUG root -b -q $outfile $decoderdir/CreateLevel1Tree/run.C+
      endif
 end #end of loop
 

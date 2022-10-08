@@ -57,7 +57,7 @@ foreach infile ($datadir/hallc_fadc_ssp_${run}.evio.*)
   
   #extract pedestal and create level1 tree
   if (-f $outfile) then
-  $DEBUG root -b -q $outfile $decoderdir/run.C+
+  $DEBUG root -b -q $outfile $decoderdir/CreateLevel1Tree/run.C+
   endif
 end
 
