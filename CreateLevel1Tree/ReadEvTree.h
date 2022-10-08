@@ -17,7 +17,7 @@
 #include <stdlib.h>
 
 // Header file for the classes stored in the TTree if any.
-#include "include/Fadc250Data.h"
+#include "../include/Fadc250Data.h"
 
 #define MAX_CLUSTER_SIZE 100     //maximum number of stripes in one cluster 
 #define MAX_CLUSTERS_PER_PLANE 2000

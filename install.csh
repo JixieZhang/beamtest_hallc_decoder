@@ -18,4 +18,4 @@ cmake --build $HallCBeamtestDir/build
 cmake --install $HallCBeamtestDir/build --prefix $HallCBeamtestDir
 #todo: update CMakeList.txt to include the next 2 lines into "make install"
 cp -f ./bin/*csh ${HallCBeamtestDir}/bin/
-cp -fr ./database ./config ./CreateLevel1Tree rootlogon.C ${HallCBeamtestDir}/
+cp -fr ./database ./config ./CreateLevel1Tree rootlogon.C setup.csh ${HallCBeamtestDir}/
