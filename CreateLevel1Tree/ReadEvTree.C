@@ -375,7 +375,8 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
   ////////////////////////////////////////////////////////////////////////
   // peak position for trig type 1
   const float kSlot7PeakPos[16]={18,18,18,18, 18,18,18,18, 18,18,18,18, 18,18,18,18};
-  const float kSlot8PeakPos[16]={24,23,25,23, 24,24,17.5,29, 29,30,33,33, 33.5,25,33,70};
+  const float kSlot8PeakPos[16]={24,22,26,24, 25,25,18,30, 29,33,33,33, 33,25,33,70};
+  // peak position for trig type 2 | 4 are 7 less than type 1
 
   ////////////////////////////////////////////////////////////////////////
   //loop over events to fill tree
@@ -437,7 +438,8 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
     for (int ich=0; ich<16; ich++) {
       int pos=(int)(Slot7Data[ich]->peaks[0].pos);
       //the next line is to cut out-of-time pulse, however, it will not work if there are more than 1 trigger type
-      if (fabs(pos-kSlot7PeakPos[ich]-4)>16.0) continue;
+      if (trigger_type==1 && fabs(pos-kSlot7PeakPos[ich])>4.5) continue;
+      if ((trigger_type==2 || trigger_type==4 || trigger_type==6) && fabs(pos-kSlot7PeakPos[ich]+7)>4.5) continue;
 
       //find the start and end point of the pulse whenever it reach 1% of the pulse height or adc=2, which is earlier
       float adcCut = (Slot7Data[ich]->raw[pos] - gPed7[ich])*0.01;
@@ -494,7 +496,8 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
       if (ich==13) continue;
       int pos=(int)(Slot8Data[ich]->peaks[0].pos);
       //the next line is to cut out-of-time pulse, however, it will not work if there are more than 1 trigger type
-      if (fabs(pos-kSlot8PeakPos[ich]-4)>16.0) continue;
+      if (trigger_type==1 && fabs(pos-kSlot8PeakPos[ich])>4.5) continue;
+      if ((trigger_type==2 || trigger_type==4 || trigger_type==6) && fabs(pos-kSlot8PeakPos[ich]+7)>4.5) continue;
 
       //find the start and end point of the pulse whenever it reach 1% of the pulse height or adc=2, which is earlier
       float adcCut = (Slot8Data[ich]->raw[pos] - gPed8[ich])*0.01;
