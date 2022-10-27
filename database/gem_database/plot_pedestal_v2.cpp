@@ -23,8 +23,7 @@ TH1F* plot_apv(const vector<float> &v, int crate, int mpd, int adc, const char* 
 void draw()
 {
     int nHistoPerCanvas = 8;
-    //int nCanvas = 440/20;
-    int nCanvas = 2;
+    int nCanvas = 1;
     TCanvas *c[nCanvas];
     for(int i=0;i<nCanvas;i++) {
         c[i] = new TCanvas(Form("c%d",i), Form("c%d", i), 1000, 800);
@@ -58,9 +57,9 @@ void draw()
 }
 
 // plot pedestal
-void plot_pedestal()
+void plot_pedestal_v2()
 {
-    const char* path = "gem_ped_3376.dat";
+    const char* path = "gem_ped_3036.dat";
     fstream f(path, fstream::in);
     vector<TH1F*> res;
 

@@ -90,9 +90,9 @@ foreach infile0 ($argv[2-$#argv])
     $DEBUG bin/analyze $replayoption $infile $outfile
 
     #extract pedestal and then create level1 tree
-    if (-f $outfile) then
-      $DEBUG root -b -q $outfile CreateLevel1Tree/run.C+
-    endif
     cd $curdir
+    if (-f $outfile) then
+      $DEBUG root -b -q $outfile $decoderdir/CreateLevel1Tree/run.C+
+    endif
 end #end of loop
 

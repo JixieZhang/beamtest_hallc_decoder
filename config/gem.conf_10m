@@ -17,12 +17,8 @@ GEM Map = ${DB_DIR}/gem_map_hallc.txt
 #GEM Common Mode = /home/daq/test/MPD_tedf/Hall_VTP_data/mpd_debug_header_study/CommonModeRange_220.txt
 #GEM Pedestal = ${DB_DIR}/gem_ped_417.dat
 #GEM Common Mode = ${DB_DIR}/CommonModeRange_417.txt
-#GEM Pedestal = ${DB_DIR}/gem_ped_3036.dat
-#GEM Common Mode = ${DB_DIR}/CommonModeRange_3036.txt
-#GEM Pedestal = ${DB_DIR}/gem_ped_3320.dat
-#GEM Common Mode = ${DB_DIR}/CommonModeRange_3320.txt
-GEM Pedestal = ${DB_DIR}/gem_ped_3358.dat
-GEM Common Mode = ${DB_DIR}/CommonModeRange_3358.txt
+GEM Pedestal = ${DB_DIR}/gem_ped_3036.dat
+GEM Common Mode = ${DB_DIR}/CommonModeRange_3036.txt
 
 # VTP Pedestal Subtraction Mode enabled or not (yes/no), if enabled, offset will be subtracted online
 VTP Pedestal Subtraction = no
