@@ -1,15 +1,14 @@
 #!/bin/csh -fb
-#  script to run the decoder
+#  script to run the decoder, this script will always overwrite the output files
 #
 set DEBUG = ( echo ); 
 set DEBUG = (""); 
 
 if (! $?HallCBeamtestDir) setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/decoder
 set decoderdir = ${HallCBeamtestDir}
-set projdir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc
-set datadir = $projdir/raw
-#set replaydir = $projdir/replay
-set replaydir = $decoderdir/../ROOTFILE
+set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc/raw
+#set replaydir = $decoderdir/../ROOTFILE
+set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/pass1/ROOTFILE
 
 if ($#argv < 2) then
     echo "error: you need to provide at least 2 arguments"
@@ -33,8 +32,8 @@ set jsonfile = "-m $decoderdir/database/modules/mapmt_module_2FADC_beamtest.json
 set replayoption = ("$jsonfile $1")
 echo "replayoption='$replayoption'"
 
-mkdir -p $replaydir/.check
 #check for write permission
+mkdir -p $replaydir/.check
 if !(-d $replaydir/.check) then
   echo "You have no write permission in $replaydir, I quit ..."
   exit 0
@@ -42,6 +41,11 @@ else
   rm -fr $replaydir/.check
 endif
 
+#For some reason, this error message was spit out: "module: Command not found" 
+#source $HallCBeamtestDir/setup.csh
+setenv ROOTSYS /u/home/pcrad/apps/root-6.22.02
+setenv PATH ${HallCBeamtestDir}/bin:$ROOTSYS/bin:/group/jpsi-007/local/stow/gcc_8.2.0/bin:${PATH}
+setenv LD_LIBRARY_PATH ${HallCBeamtestDir}/lib64:$ROOTSYS/lib:/group/jpsi-007/local/stow/gcc_8.2.0/lib64:${LD_LIBRARY_PATH}
 
 ###################################################################################
 #build/src/analyze -m database/modules/mapmt_module_2FADC.json  \
@@ -58,6 +62,15 @@ endif
 ###################################################################################
 
 set curdir = (`pwd`) 
+if (! $?WORKDIR) setenv WORKDIR $replaydir/../job/replay_${HOST:r:r}_$$
+mkdir -p $WORKDIR/graph
+if (! -d $WORKDIR) then
+  echo "can not create WORKDIR $WORKDIR, I quit ..."
+  exit -1
+endif
+cd $WORKDIR;set WORKDIR = (`pwd`);cd $curdir
+
+
 foreach infile0 ($argv[2-$#argv])
     if !(-f $infile0)  then
         echo "file $infile0 not exist, skipped ..."
@@ -79,20 +92,34 @@ foreach infile0 ($argv[2-$#argv])
         set run = (`echo $infile:t:r:r | awk -F'ti_' '{print $2}'`)
     endif
     set subrun = (${infile:e})
-    set outfile = $replaydir/beamtest_hallc_${run}_${subrun}.root
+    set outfilename = beamtest_hallc_${run}_${subrun}.root
+    set outfile = $replaydir/$outfilename
+    
     #echo "start replaying $infile  --> $outfile"
-    #remove the output file if exist
-    if (-f $outfile) $DEBUG rm -f $outfile
+    #remove the local output file if exists, will move it to $outfile when finish
+    if (-f $outfilename) $DEBUG rm -f $outfilename
 
     #due to bin/analyze require ./config and ./database to run
-    # I have to change into that dir
-    cd $decoderdir
-    $DEBUG bin/analyze $replayoption $infile $outfile
-
-    #extract pedestal and then create level1 tree
-    cd $curdir
-    if (-f $outfile) then
+    # I have to copy them  into $WORKDIR
+    cd $WORKDIR
+    $DEBUG cp -fr $decoderdir/config $decoderdir/database $WORKDIR
+    if ($run >= 3350) then
+      $DEBUG cp -f $WORKDIR/config/gem.conf_30m $WORKDIR/config/gem.conf
+    else if ($run >= 3320) then
+      $DEBUG cp -f $WORKDIR/config/gem.conf_20m $WORKDIR/config/gem.conf
+    else      
+      $DEBUG cp -f $WORKDIR/config/gem.conf_10m $WORKDIR/config/gem.conf
+    endif  
+    $DEBUG $decoderdir/bin/analyze $replayoption $infile $outfilename
+    
+    #extract pedestal and create level1 tree
+    if (-f $outfilename) then
+      $DEBUG mv -f $outfilename $outfile
       $DEBUG root -b -q $outfile $decoderdir/CreateLevel1Tree/run.C+
     endif
+    cd $curdir
+    
 end #end of loop
+
+rm -fr $WORKDIR
 

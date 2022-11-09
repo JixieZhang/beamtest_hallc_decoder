@@ -6,10 +6,9 @@ set DEBUG = ("");
 
 if (! $?HallCBeamtestDir) setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/decoder
 set decoderdir = ${HallCBeamtestDir}
-set projdir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc
-set datadir = $projdir/raw
-#set replaydir = $projdir/replay
-set replaydir = $decoderdir/../ROOTFILE
+set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc/raw
+#set replaydir = $decoderdir/../ROOTFILE
+set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/pass1/ROOTFILE
 
 if ($#argv < 1) then
     echo "error: you need to provide at least 1 argument"
@@ -30,8 +29,14 @@ set overwrite = (0)
 if ($#argv >= 3) set overwrite = ($3)
 
 if ($#argv >= 4) set replaydir = ($4)
-mkdir -p $replaydir/.check
+#get absolute path for $replaydir
+set curdir = (`pwd`) 
+cd $replaydir;set replaydir = (`pwd`);cd $curdir
+
+set replayoption = "-m $decoderdir/database/modules/mapmt_module_2FADC_beamtest.json "
+
 #check for write permission
+mkdir -p $replaydir/.check
 if !(-d $replaydir/.check) then
   echo "You have no write permission in $replaydir, I quit ..."
   exit 0
@@ -39,6 +44,11 @@ else
   rm -fr $replaydir/.check
 endif
 
+#For some reason, this error message was spit out: "module: Command not found" 
+#source $HallCBeamtestDir/setup.csh
+setenv ROOTSYS /u/home/pcrad/apps/root-6.22.02
+setenv PATH ${HallCBeamtestDir}/bin:$ROOTSYS/bin:/group/jpsi-007/local/stow/gcc_8.2.0/bin:${PATH}
+setenv LD_LIBRARY_PATH ${HallCBeamtestDir}/lib64:$ROOTSYS/lib:/group/jpsi-007/local/stow/gcc_8.2.0/lib64:${LD_LIBRARY_PATH}
 
 ###################################################################################
 #build/src/analyze -m database/modules/mapmt_module_2FADC.json  \
@@ -54,7 +64,14 @@ endif
 #"/w/halla-scshelf2102/solid/cc_pro/benchtest/coda/root/solidhgc_${run}.root"
 ###################################################################################
 
-cd $decoderdir
+#make workdir in the same drive as output dir to save time in moving output files
+if (! $?WORKDIR) setenv WORKDIR $replaydir/../job/replay_${HOST:r:r}_$$
+mkdir -p $WORKDIR/graph
+if (! -d $WORKDIR) then
+  echo "can not create WORKDIR $WORKDIR, I quit ..."
+  exit -1
+endif
+cd $WORKDIR;set WORKDIR = (`pwd`);cd $curdir
 
 @ run = $startrun - 1
 while ($run < $endrun)
@@ -73,7 +90,8 @@ while ($run < $endrun)
     $DEBUG chown jixie.12gev_solid $infile
   
     set subrun = (${infile:e})
-    set outfile = $replaydir/beamtest_hallc_${run}_${subrun}.root
+    set outfilename = beamtest_hallc_${run}_${subrun}.root
+    set outfile = $replaydir/$outfilename
     
     if ($overwrite == 0 && -f $outfile) then
       echo "$outfile exist, skip replaying this file ......"
@@ -81,15 +99,31 @@ while ($run < $endrun)
     endif
     
     #echo "start replaying $infile  --> $outfile"
-    #remove the output file if exists
-    if (-f $outfile) $DEBUG rm -f $outfile
-    $DEBUG bin/analyze -m database/modules/mapmt_module_2FADC_beamtest.json $infile $outfile
+    #remove the local output file if exists, will move it to $outfile when finish
+    if (-f $outfilename) $DEBUG rm -f $outfilename
+    
+    #due to bin/analyze require ./config and ./database to run
+    # I have to copy them  into $WORKDIR
+    cd -v $WORKDIR
+    $DEBUG cp -fr $decoderdir/config $decoderdir/database $WORKDIR
+    if ($run >= 3350) then
+      $DEBUG cp -f $WORKDIR/config/gem.conf_30m $WORKDIR/config/gem.conf
+    else if ($run >= 3320) then
+      $DEBUG cp -f $WORKDIR/config/gem.conf_20m $WORKDIR/config/gem.conf
+    else      
+      $DEBUG cp -f $WORKDIR/config/gem.conf_10m $WORKDIR/config/gem.conf
+    endif  
+    $DEBUG $decoderdir/bin/analyze $replayoption $infile $outfilename
     
     #extract pedestal and create level1 tree
-    if (-f $outfile) then
-      $DEBUG root -b -q $outfile CreateLevel1Tree/run.C+
+    if (-f $outfilename) then
+      $DEBUG mv -f $outfilename $outfile
+      $DEBUG root -b -q $outfile $decoderdir/CreateLevel1Tree/run.C+
     endif
+    cd $curdir
+    
   end #end of for loop
   
 end #end of while loop
 
+rm -fr $WORKDIR

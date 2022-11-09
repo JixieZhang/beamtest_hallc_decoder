@@ -55,3 +55,4 @@ HALLC:p
 ecSQ1_I_True
 ecSQ2_I_True
 ecSQ3_I_True
+hcBDSPOS
