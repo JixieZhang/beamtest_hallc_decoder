@@ -110,16 +110,18 @@ while ($run < $endrun)
     #2) When a file in /cache is updated, does the tape will update that file already in tape?
     
     #add '"' to escape the command string
-    set cmd = ('"'$HallCBeamtestDir/bin/replayFiles.csh "' -n -1 '" $datadir/$infilename'"')
+    set cmd = ($HallCBeamtestDir/bin/replayFiles.csh "'-n -1'" $datadir/$infilename)
     echo "adding one job for file $infilename"
     if (! -f $datadir/$infilename) then
       #do job from /mss
-      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
-      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd  
+      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
+      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd  
     else
-      #do job from /cache
-      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 $cmd " >> $jobfile
-      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 $cmd  
+      #do job from /cache, no need to use -condition option since it has been checked
+      #echo  "swif2 add-job $workflow -account hallc -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -condition file:$datadir/$infilename $cmd " >> $jobfile
+      #$DEBUG swif2 add-job $workflow -account hallc -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -condition file:$datadir/$infilename $cmd  
+      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd " >> $jobfile
+      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd  
     endif
     @ njob = $njob + 1
     
@@ -128,9 +130,7 @@ while ($run < $endrun)
 end #end of while loop
 
 if ($njob > 0) then
-  echo "now start running the job in batch farm ..."
   echo "swif2 run $workflow " >> $jobfile
   $DEBUG swif2 run $workflow 
+  echo "$njob added. Now start running the job in batch farm ..."
 endif
-
-

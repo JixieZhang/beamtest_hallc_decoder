@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <cassert>
+#include <sstream>
 
 #define EPICS_UNDEFINED_VALUE -9999.9
 
