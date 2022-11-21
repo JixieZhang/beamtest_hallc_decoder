@@ -455,7 +455,7 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
         if (iw<pos-4 && adc<adcCut) break;
         left=iw;
       }
-      for (iw = pos; iw < (int)Slot8Data[ich]->raw.size(); iw++) {
+      for (iw = pos; iw < (int)Slot7Data[ich]->raw.size(); iw++) {
         if (Slot7Data[ich]->raw[iw]>=4095) {adcSum=-100;break;}  //skip saturated event
         float adc = Slot7Data[ich]->raw[iw] - gPed7[ich];
         if (adc<0) adc=0;
