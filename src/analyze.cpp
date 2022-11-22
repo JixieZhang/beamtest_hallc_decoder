@@ -100,8 +100,8 @@ TTree *create_tree(std::vector<Module> &modules, const std::string tname = "EvTr
                 tree->Branch((sname + "_size").c_str(),         &event->Size[0],         "GEM_size[GEM_nCluster]/I");
                 tree->Branch((sname + "_adc").c_str(),          &event->Adc[0],          "GEM_adc[GEM_nCluster]/F");
                 tree->Branch((sname + "_pos").c_str(),          &event->Pos[0],          "GEM_pos[GEM_nCluster]/F");
-                tree->Branch((sname + "_stripNo").c_str(),      &event->StripNo[0][0],   "GEM_stripNo[GEM_nCluster][MAXCLUSTERSIZE]/I");
-                tree->Branch((sname + "_stripAdc").c_str(),     &event->StripAdc[0][0],  "GEM_stripADC[GEM_nCluster][MAXCLUSTERSIZE]/F");
+                tree->Branch((sname + "_stripNo").c_str(),      &event->StripNo[0][0],   "GEM_stripNo[GEM_nCluster][100]/I");
+                tree->Branch((sname + "_stripAdc").c_str(),     &event->StripAdc[0][0],  "GEM_stripADC[GEM_nCluster][100]/F");
                 tree->Branch((sname + "_nAPV").c_str(),         &event->nAPV,            "GEM_nAPV/I");
                 tree->Branch((sname + "_apv_crate_id").c_str(), &event->apv_crate_id[0], "GEM_apv_crate_id[GEM_nAPV]/I");
                 tree->Branch((sname + "_apv_mpd_id").c_str(),   &event->apv_mpd_id[0],   "GEM_apv_mpd_id[GEM_nAPV]/I");

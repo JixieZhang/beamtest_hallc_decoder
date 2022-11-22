@@ -8,7 +8,7 @@
 #include <vector>
 
 #define MAXCLUSTERS 1000
-#define MAXCLUSTERSIZE 50
+#define MAXCLUSTERSIZE 100
 #define MAXAPV 100
 
 using std::vector;
