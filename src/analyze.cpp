@@ -102,12 +102,12 @@ TTree *create_tree(std::vector<Module> &modules, const std::string tname = "EvTr
                 tree->Branch((sname + "_pos").c_str(),          &event->Pos[0],          "GEM_pos[GEM_nCluster]/F");
                 tree->Branch((sname + "_stripNo").c_str(),      &event->StripNo[0][0],   "GEM_stripNo[GEM_nCluster][100]/I");
                 tree->Branch((sname + "_stripAdc").c_str(),     &event->StripAdc[0][0],  "GEM_stripADC[GEM_nCluster][100]/F");
-                tree->Branch((sname + "_stripTs0").c_str(),     &event->StripTs0[0][0],  "stripTs0[nCluster][100]/F");
-                tree->Branch((sname + "_stripTs1").c_str(),     &event->StripTs1[0][0],  "stripTs1[nCluster][100]/F");
-                tree->Branch((sname + "_stripTs2").c_str(),     &event->StripTs2[0][0],  "stripTs2[nCluster][100]/F");
-                tree->Branch((sname + "_stripTs3").c_str(),     &event->StripTs3[0][0],  "stripTs3[nCluster][100]/F");
-                tree->Branch((sname + "_stripTs4").c_str(),     &event->StripTs4[0][0],  "stripTs4[nCluster][100]/F");
-                tree->Branch((sname + "_stripTs5").c_str(),     &event->StripTs5[0][0],  "stripTs5[nCluster][100]/F");
+                tree->Branch((sname + "_stripTs0").c_str(),     &event->StripTs0[0][0],  "GEM_stripTs0[GEM_nCluster][100]/F");
+                tree->Branch((sname + "_stripTs1").c_str(),     &event->StripTs1[0][0],  "GEM_stripTs1[GEM_nCluster][100]/F");
+                tree->Branch((sname + "_stripTs2").c_str(),     &event->StripTs2[0][0],  "GEM_stripTs2[GEM_nCluster][100]/F");
+                tree->Branch((sname + "_stripTs3").c_str(),     &event->StripTs3[0][0],  "GEM_stripTs3[GEM_nCluster][100]/F");
+                tree->Branch((sname + "_stripTs4").c_str(),     &event->StripTs4[0][0],  "GEM_stripTs4[GEM_nCluster][100]/F");
+                tree->Branch((sname + "_stripTs5").c_str(),     &event->StripTs5[0][0],  "GEM_stripTs5[GEM_nCluster][100]/F");
 
                 tree->Branch((sname + "_nAPV").c_str(),         &event->nAPV,            "GEM_nAPV/I");
                 tree->Branch((sname + "_apv_crate_id").c_str(), &event->apv_crate_id[0], "GEM_apv_crate_id[GEM_nAPV]/I");
