@@ -139,13 +139,15 @@ struct StripHit
     float position;
     bool cross_talk;
     APVAddress apv_addr;
+    std::vector<float> ts_adc;
 
     StripHit()
         : strip(0), charge(0.), position(0.), cross_talk(false), apv_addr(-1, -1, -1)
-    {}
+    { ts_adc.clear(); }
+
     StripHit(int s, float c, float p, bool f = false, int crate = -1, int mpd = -1, int adc = -1)
         : strip(s), charge(c), position(p), cross_talk(f), apv_addr(crate, mpd, adc)
-    {}
+    { ts_adc.clear(); }
 };
 
 

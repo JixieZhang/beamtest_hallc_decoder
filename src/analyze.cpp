@@ -102,6 +102,13 @@ TTree *create_tree(std::vector<Module> &modules, const std::string tname = "EvTr
                 tree->Branch((sname + "_pos").c_str(),          &event->Pos[0],          "GEM_pos[GEM_nCluster]/F");
                 tree->Branch((sname + "_stripNo").c_str(),      &event->StripNo[0][0],   "GEM_stripNo[GEM_nCluster][100]/I");
                 tree->Branch((sname + "_stripAdc").c_str(),     &event->StripAdc[0][0],  "GEM_stripADC[GEM_nCluster][100]/F");
+                tree->Branch((sname + "_stripTs0").c_str(),     &event->StripTs0[0][0],  "stripTs0[nCluster][100]/F");
+                tree->Branch((sname + "_stripTs1").c_str(),     &event->StripTs1[0][0],  "stripTs1[nCluster][100]/F");
+                tree->Branch((sname + "_stripTs2").c_str(),     &event->StripTs2[0][0],  "stripTs2[nCluster][100]/F");
+                tree->Branch((sname + "_stripTs3").c_str(),     &event->StripTs3[0][0],  "stripTs3[nCluster][100]/F");
+                tree->Branch((sname + "_stripTs4").c_str(),     &event->StripTs4[0][0],  "stripTs4[nCluster][100]/F");
+                tree->Branch((sname + "_stripTs5").c_str(),     &event->StripTs5[0][0],  "stripTs5[nCluster][100]/F");
+
                 tree->Branch((sname + "_nAPV").c_str(),         &event->nAPV,            "GEM_nAPV/I");
                 tree->Branch((sname + "_apv_crate_id").c_str(), &event->apv_crate_id[0], "GEM_apv_crate_id[GEM_nAPV]/I");
                 tree->Branch((sname + "_apv_mpd_id").c_str(),   &event->apv_mpd_id[0],   "GEM_apv_mpd_id[GEM_nAPV]/I");
@@ -189,6 +196,13 @@ void extract_gem_cluster(GEMSystem *gem_sys, MPDSSPRawEventDecoder *gem_decoder,
                             napvs_per_plane, gem_data.Module[icluster]);
 
                     gem_data.StripAdc[icluster][nS] = hits[nS].charge;
+
+                    gem_data.StripTs0[icluster][nS] = hits[nS].ts_adc[0];
+                    gem_data.StripTs1[icluster][nS] = hits[nS].ts_adc[1];
+                    gem_data.StripTs2[icluster][nS] = hits[nS].ts_adc[2];
+                    gem_data.StripTs3[icluster][nS] = hits[nS].ts_adc[3];
+                    gem_data.StripTs4[icluster][nS] = hits[nS].ts_adc[4];
+                    gem_data.StripTs5[icluster][nS] = hits[nS].ts_adc[5];
                 }
                 icluster++;
             }
