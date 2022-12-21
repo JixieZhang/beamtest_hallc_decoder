@@ -15,12 +15,12 @@ LINK_PUBLIC
     ${ROOT_LIBRARIES}
     evc
     fdec
-    ssp
     tidec
     EpicSys
     conf
     gem_decoder
     gem_ana
+    maroc
 )
 target_link_libraries(${exe} PRIVATE  nlohmann_json::nlohmann_json)
 

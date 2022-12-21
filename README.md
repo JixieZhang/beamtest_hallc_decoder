@@ -2,7 +2,7 @@
 
 This project is the decoder to the raw data of solid ecal beamtest in Hall C.
 
-It includes 2 parts: fadc and ssp(gem).
+It includes fadc and ssp(gem) and ssp(maroc)
 
 This code is mainly inherited from C. Peng's fadc decoder and X. Bai's GEM decoder.
 

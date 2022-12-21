@@ -9,7 +9,7 @@
 #include "EvChannel.h"
 #include "Fadc250Decoder.h"
 #include "WfAnalyzer.h"
-#include "SSPDecoder.h"
+#include "marocDecoder.h"
 #include "ConfigArgs.h"
 #include "read_modules.h"
 #include "MPDSSPRawEventDecoder.h"
@@ -86,7 +86,7 @@ TTree *create_tree(std::vector<Module> &modules, const std::string tname = "EvTr
                 }
             }
             break;
-        case kSSP:
+        case kGEM:
             {
                 auto event = new GEMTreeStruct();
                 m.event = static_cast<void*>(event);
@@ -116,6 +116,21 @@ TTree *create_tree(std::vector<Module> &modules, const std::string tname = "EvTr
                 tree->Branch((sname + "_apv_adc_ch").c_str(),   &event->apv_adc_ch[0],   "GEM_apv_adc_ch[GEM_nAPV]/I");
             }
             break;
+	case kMAROC:
+            {
+                // assign a large enough buffer
+                auto event = new maroc::marocEvent(10000);
+                m.event = static_cast<void*>(event);
+                tree->Branch("maroc_evt",        &event->tTrigNum,   "evt/I");
+                tree->Branch("maroc_trigtime",   &event->tTrigTime,  "trigtime/D");
+                tree->Branch("maroc_nedge",      &event->Nedges,     "nedge/I");
+                tree->Branch("maroc_ch",	 &event->channel[0], "channel[nedge]/I");
+                tree->Branch("maroc_pol",        &event->edge[0],    "edge[nedge]/I");
+                tree->Branch("maroc_time",       &event->time[0],    "time[nedge]/I");
+                tree->Branch("maroc_fiber",      &event->fiber[0],   "fiber[nedge]/I");
+                tree->Branch("maroc_slot",       &event->slot[0],    "slot[nedge]/I");
+	    }            
+            break;	    
         case kTI:
             {
                 std::cout<<" TI bank encountered..."<<m.type<<std::endl;
@@ -321,7 +336,7 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
 
     // decoders
     fdec::Fadc250Decoder fdecoder;
-    ssp::SSPDecoder sdecoder;
+    maroc::marocDecoder mdecoder;
     MPDSSPRawEventDecoder gem_decoder;
 
     // epics system
@@ -388,7 +403,7 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
                         }
                     }
                     break;
-                case kSSP:
+                case kGEM:
                     {
                         std::vector<int> ivec{mod.bank, mod.crate};
                         gem_decoder.Decode(dbuf, buflen, ivec);
@@ -396,6 +411,9 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
                         extract_gem_cluster(&gem_system, &gem_decoder, *event, count);
                     }
                     break;
+                case kMAROC:
+                    mdecoder.DecodeEvent(*static_cast<maroc::marocEvent*>(mod.event), dbuf, buflen);
+                    break;		    
                 default:
                     std::cout << "Unsupported module type " << mod.type << std::endl;
                     break;

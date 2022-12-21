@@ -5,19 +5,20 @@
 #include <iostream>
 #include "ConfigObject.h"
 #include "Fadc250Decoder.h"
-#include "SSPDecoder.h"
+#include "marocDecoder.h"
 #include "nlohmann/json.hpp"
 
 
 enum ModuleType
 {
     kFADC250 = 0,
-    kSSP = 1,
+    kGEM = 1,
     kTI = 2,
     kEPICS = 3,
+    kMAROC = 4,
     kMaxModuleType,
 };
-ENUM_MAP(ModuleType, 0, "FADC250|SSP|TI|EPICS");
+ENUM_MAP(ModuleType, 0, "FADC250|GEM|TI|EPICS|MAROC");
 
 
 enum ChannelType
