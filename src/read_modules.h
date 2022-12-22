@@ -12,13 +12,13 @@
 enum ModuleType
 {
     kFADC250 = 0,
-    kGEM = 1,
+    kSSP = 1,
     kTI = 2,
     kEPICS = 3,
     kMAROC = 4,
     kMaxModuleType,
 };
-ENUM_MAP(ModuleType, 0, "FADC250|GEM|TI|EPICS|MAROC");
+ENUM_MAP(ModuleType, 0, "FADC250|SSP|TI|EPICS|MAROC");
 
 
 enum ChannelType

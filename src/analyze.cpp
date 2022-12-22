@@ -64,7 +64,7 @@ int main(int argc, char*argv[])
                    args["res"].Int(),
                    args["thres"].Double(),
                    args["npeds"].Int(),
-                   args["flat"].Double());
+                   args["flat"].Double());    
     return 0;
 }
 
@@ -86,7 +86,7 @@ TTree *create_tree(std::vector<Module> &modules, const std::string tname = "EvTr
                 }
             }
             break;
-        case kGEM:
+        case kSSP:
             {
                 auto event = new GEMTreeStruct();
                 m.event = static_cast<void*>(event);
@@ -403,7 +403,7 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
                         }
                     }
                     break;
-                case kGEM:
+                case kSSP:
                     {
                         std::vector<int> ivec{mod.bank, mod.crate};
                         gem_decoder.Decode(dbuf, buflen, ivec);
