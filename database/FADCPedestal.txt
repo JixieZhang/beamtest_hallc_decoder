@@ -1,0 +1,175 @@
+# Pedestal database file for solid hallc beamtest
+# use '#' to comment, anything behind it in the same line will be ignored 
+# This file contains multiple blocks, each block starts with 'BlockStart={' and end with 'BlockEnd=}'
+# Multiple lines of Data will be appended into the memory
+# Lines without'=' will be ignored, characters after ';' will also be ignored
+
+BlockStart={ #this part is for low rate data, if ped<10.0, decoder will extract it automatically
+DetName = FADCPedestal 
+RunMin = 1000
+RunMax = 3953
+NChannel = 32
+Data =   0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0
+Data =   0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0    0.0
+BlockEnd=}
+
+#cosmic4
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 3896
+RunMax = 3905
+NChannel = 32
+Data = 104.8  101.3  100.4   95.8   94.9  100.0  104.3   93.8   96.9   93.4  101.8   93.5  100.4   95.0   94.8   95.1
+Data = 112.5   95.4  133.9   96.2  112.4  103.6  107.0   98.7   98.5   94.0  110.7  101.0   90.0   89.1  141.3   94.9
+BlockEnd=}
+
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 3906
+RunMax = 4022
+NChannel = 32
+Data = 108.1  104.7  100.6  101.8  101.5   98.6  103.1   96.2  108.4  102.7  107.6  111.3  105.2  103.0  104.4   99.9
+Data = 117.0  109.7  121.1  116.4  103.9  104.0  107.5  111.0  110.5  105.6  105.2  102.5  106.0  107.9  113.1  103.2
+BlockEnd=}
+
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4023
+RunMax = 4066
+NChannel = 32
+Data = 106.7  104.0   99.3  101.7  101.3   98.7  103.8   95.1  109.3  102.7  107.5  110.6  105.4  101.8  103.5   99.4
+Data = 115.1  110.7  122.8  118.7  105.1  105.0  108.5  107.2  107.0  102.1  104.4  100.7  104.9  107.7  113.3  103.3
+BlockEnd=}
+
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4067
+RunMax = 4101
+NChannel = 32
+Data = 107.0  105.0  100.1  102.3  101.7   99.3  103.9   96.4  110.1  103.5  108.5  110.4  105.6  102.5  104.2   99.6
+Data = 118.1  110.0  126.7  128.3  105.3  105.6  108.4  108.3  108.0  105.8  101.6  104.4  105.2  108.3  115.4  104.1
+BlockEnd=}
+
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4102
+RunMax = 4126
+NChannel = 32
+Data = 105.9  101.6   99.6  100.4   99.8   98.1  101.4   94.5  107.1  100.3  106.9  108.0  103.3  100.9  101.4   98.7
+Data = 107.4  107.9  105.1  116.7  103.0  104.0  106.8  106.7  106.2  101.8  100.0  102.5  103.3  107.1  108.3  101.9
+BlockEnd=}
+
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4127
+RunMax = 4171
+NChannel = 32
+Data = 106.5  101.1   99.5  100.7   99.9   98.2  101.3   94.9  107.2  100.4  106.6  107.4  103.6  101.3  102.2   98.1
+Data = 106.3  108.3  103.2  118.3  103.3  103.3  106.6  106.8  106.0  102.2  100.0  101.9  102.8  107.6  108.0  101.9
+BlockEnd=}
+
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4172
+RunMax = 4216
+NChannel = 32
+Data = 107.1  102.9  100.3  101.6  100.7   98.5  102.5   94.4  108.8  101.6  107.2  108.8  104.6  101.8  103.1   99.2
+Data = 112.2  109.8  114.9  118.1  104.6  104.4  107.4  107.5  107.3  103.4  101.0  103.5  104.5  108.0  114.9  102.8
+BlockEnd=}
+
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4217
+RunMax = 4285
+NChannel = 32
+Data = 107.1  102.9  100.3  101.6  100.7   98.5  102.5   94.4  108.8  101.6  107.2  108.8  104.6  101.8  103.1   99.2
+Data = 112.2  109.8  114.9  118.1  104.6  104.4  107.4  107.5  107.3  103.4  101.0  103.5  104.5  108.0  114.9  102.8
+BlockEnd=}
+
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4286
+RunMax = 4300
+NChannel = 32
+Data = 106.5  101.8   99.1  100.3   99.7   97.3  101.4   94.1  107.5  100.8  106.4  108.1  103.6  101.0  101.7   98.6
+Data = 105.0  102.0  107.4  108.0  103.9  104.5  100.6  107.2  106.2  100.7  100.4  103.0  103.6  107.0  112.1  109.5
+BlockEnd=}
+
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4301
+RunMax = 4302
+NChannel = 32
+Data = 105.9  101.7   99.2  100.6   99.8   98.0  101.8   93.8  107.5  100.5  107.0  107.7  103.5  101.1  101.7   98.6
+Data = 105.6  107.8  180.5  109.2  104.3  104.7  100.4  106.8  107.3  101.8  100.4  103.0  103.7  107.3  112.9  109.4
+BlockEnd=}
+
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4303
+RunMax = 4307
+NChannel = 32
+Data = 106.5  101.8   99.1  100.3   99.7   97.3  101.4   94.1  107.5  100.8  106.4  108.1  103.6  101.0  101.7   98.6
+Data = 105.0  102.0  107.4  108.0  103.9  104.5  100.6  107.2  106.2  100.7  100.4  103.0  103.6  107.0  112.1  109.5
+BlockEnd=}
+
+#SC_B HV will change the pedestal, SC_B=1650V
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4308
+RunMax = 4316
+NChannel = 32
+Data = 105.9  101.7   99.2  100.6   99.8   98.0  101.8   93.8  107.5  100.5  107.0  107.7  103.5  101.1  101.7   98.6
+Data = 105.6  107.8  180.5  109.2  104.3  104.7  100.4  106.8  107.3  101.8  100.4  103.0  103.7  107.3  112.9  109.4
+BlockEnd=}
+
+#SC_B HV will change the pedestal, SC_B=1600V
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4317
+RunMax = 4319
+NChannel = 32
+Data = 105.9  101.7   99.2  100.6   99.8   98.0  101.8   93.8  107.5  100.5  107.0  107.7  103.5  101.1  101.7   98.6
+Data = 107.9  107.8  180.5  108.7  104.3  104.7  100.4  106.8  107.3  101.8  100.4  103.0  103.7  107.3  112.9  109.4
+BlockEnd=}
+
+#SC_B HV will change the pedestal, SC_B=1550V
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4320
+RunMax = 4340
+NChannel = 32
+Data = 106.9  101.4  100.0  100.7   99.8   97.9  101.9   92.7  108.1  100.7  107.1  108.6  103.7  101.8  101.8   98.8
+Data = 105.6  107.8  119.5  109.2  104.3  104.7  100.4  106.8  107.3  101.8  100.4  103.0  103.7  107.3  112.9  109.4
+BlockEnd=}
+
+#SC_B HV will change the pedestal, SC_B=1600V
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4341
+RunMax = 4368
+NChannel = 32
+Data = 106.9  101.4  100.0  100.7   99.8   97.9  101.9   92.7  108.1  100.7  107.1  108.6  103.7  101.8  101.8   98.8
+Data = 105.6  107.8  180.5  109.2  104.3  104.7  100.4  106.8  107.3  101.8  100.4  103.0  103.7  107.3  112.9  109.4
+BlockEnd=}
+4370    
+
+#pedestal runs, HV off
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4369
+RunMax = 4370
+NChannel = 32
+Data = 106.4  101.4   99.2  100.1   98.9   97.6  101.8   94.0  107.3  100.6  106.2  107.9  103.4  100.8  102.0   98.0
+Data = 105.0  103.4  106.7  108.0  103.3  103.9  100.0  106.8  105.7  100.0  100.3  101.6  103.3  106.9  111.9  109.2
+BlockEnd=}
+
+#pedestal runs, HV on, SC_B=1600V
+BlockStart={
+DetName = FADCPedestal 
+RunMin = 4371
+RunMax = 14226
+NChannel = 32
+Data = 106.7  100.7   99.0  100.2   99.8   97.3  101.1   93.4  107.3  100.3  106.1  107.5  103.6  101.4  101.5   98.5
+Data = 104.4  108.9  181.5  108.2  103.7  103.7   99.3  106.7  106.5  101.8   99.9  101.9  102.6  107.6  112.1  110.0
+BlockEnd=}

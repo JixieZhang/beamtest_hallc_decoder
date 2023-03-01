@@ -334,11 +334,9 @@ void GEMPlane::ClearStripHits()
 ////////////////////////////////////////////////////////////////////////////////
 // add a plane hit
 
-void GEMPlane::AddStripHit(int strip, float charge, bool xtalk, int crate, int mpd, int adc,
-        const std::vector<float> &_ts_adc)
+void GEMPlane::AddStripHit(int strip, float charge, bool xtalk, int crate, int mpd, int adc)
 {
     strip_hits.emplace_back(strip, charge, GetStripPosition(strip), xtalk, crate, mpd, adc);
-    strip_hits.back().ts_adc = _ts_adc;
 }
 
 

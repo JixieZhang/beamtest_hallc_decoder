@@ -6,162 +6,37 @@
  */
 
 #include <vector>
-#include <iostream>
-#include <iomanip>
 
 #define MAXCLUSTERS 1000
 #define MAXCLUSTERSIZE 100
 #define MAXAPV 100
-#define DEF_VAL -99999
 
-using std::unordered_map;
 using std::vector;
 
-struct GEMTreeStruct
+struct GEMTreeStruct 
 {
     int event_number;
     int nCluster;
     vector<int> Plane, Prod, Module, Axis, Size;
     vector<float> Adc, Pos;
-
-    // reorganize 2d array into 1d array for easier TTree treatment
-    // data organization:
-    // [<....cluste_1 strips....><....cluste_2 strips....> ...... <....cluste_N strips....>]
-    vector<int> StripNo;
-    vector<float> StripAdc;
-
-    vector<float> StripTs0, StripTs1, StripTs2,
-        StripTs3, StripTs4, StripTs5;
-
-    // dynamic programming to reduce time complexity
-    unordered_map<int, int> dp_table;
-    vector<bool> position_check;
+    vector<vector<int>> StripNo;
+    vector<vector<float>> StripAdc;
 
     int nAPV;
     vector<int> apv_crate_id, apv_mpd_id, apv_adc_ch;
 
     GEMTreeStruct()
+        : event_number(0), nCluster(0), Plane(MAXCLUSTERS), Prod(MAXCLUSTERS), 
+        Module(MAXCLUSTERS), Axis(MAXCLUSTERS), Size(MAXCLUSTERS),
+        Adc(MAXCLUSTERS), Pos(MAXCLUSTERS),
+        StripNo(MAXCLUSTERS, vector<int>(MAXCLUSTERSIZE)),
+        StripAdc(MAXCLUSTERS, vector<float>(MAXCLUSTERSIZE)), nAPV(0), 
+        apv_crate_id(MAXAPV), apv_mpd_id(MAXAPV), apv_adc_ch(MAXAPV)
     {
-        Clear();
     }
 
-    void Clear()
-    {
-        event_number = -1, nCluster = 0;
+    void Clear() { event_number = 0; nCluster = 0; nAPV = 0;}
 
-        Plane.resize(MAXCLUSTERS, DEF_VAL), Prod.resize(MAXCLUSTERS, DEF_VAL),
-            Module.resize(MAXCLUSTERS, DEF_VAL), Axis.resize(MAXCLUSTERS, DEF_VAL),
-            Size.resize(MAXCLUSTERS, DEF_VAL), Adc.resize(MAXCLUSTERS, DEF_VAL),
-            Pos.resize(MAXCLUSTERS, DEF_VAL);
-
-        StripNo.clear(), StripAdc.clear(), StripTs0.clear(), StripTs1.clear(),
-            StripTs2.clear(), StripTs3.clear(), StripTs4.clear(), StripTs5.clear();
-
-        dp_table.clear(); position_check.resize(MAXCLUSTERS, false);
-
-        nAPV = 0;
-        apv_crate_id.resize(MAXAPV, DEF_VAL), apv_mpd_id.resize(MAXAPV, DEF_VAL),
-            apv_adc_ch.resize(MAXAPV, DEF_VAL);
-    }
-
-    // get strip no. array for a given cluster
-    vector<int> GetStripNoArrayForCluster(int i)
-    {
-        vector<int> res;
-        if (i > nCluster || i < 0)
-            return res;
-
-        if (i == 0)
-        {
-            dp_table[i] = 0;
-            position_check[i] = true;
-        }
-        else
-        {
-            if (position_check[i - 1])
-            {
-                dp_table[i] = dp_table[i - 1] + Size[i - 1];
-                position_check[i] = true;
-            }
-            else
-                GetStripNoArrayForCluster(i - 1);
-        }
-
-        for (int j = 0; j < Size[i]; j++)
-        {
-            res.push_back(StripNo[dp_table[i] + j]);
-        }
-
-        return res;
-    }
-
-    // get strip adc array for a given cluster
-    vector<float> GetStripAdcArrayForCluster(int i)
-    {
-        vector<float> res;
-        if (i > nCluster || i < 0)
-            return res;
-
-        if (i == 0)
-        {
-            dp_table[i] = 0;
-            position_check[i] = true;
-        }
-        else
-        {
-            if (position_check[i - 1])
-            {
-                dp_table[i] = dp_table[i - 1] + Size[i - 1];
-                position_check[i] = true;
-            }
-            else
-                GetStripNoArrayForCluster(i - 1);
-        }
-
-        for (int j = 0; j < Size[i]; j++)
-        {
-            res.push_back(StripAdc[dp_table[i] + j]);
-        }
-
-        return res;
-    }
-
-    // get strip ts_adc 2-d array for a given cluster
-    vector<vector<float>> GetStripTsArrayForCluster(int i)
-    {
-        vector<vector<float>> res;
-        if (i > nCluster || i < 0)
-            return res;
-
-        if (i == 0)
-        {
-            dp_table[i] = 0;
-            position_check[i] = true;
-        }
-        else
-        {
-            if (position_check[i - 1])
-            {
-                dp_table[i] = dp_table[i - 1] + Size[i - 1];
-                position_check[i] = true;
-            }
-            else
-                GetStripNoArrayForCluster(i - 1);
-        }
-
-        for (int j = 0; j < Size[i]; j++)
-        {
-            vector<float> temp;
-            temp.push_back(StripTs0[dp_table[i] + j]);
-            temp.push_back(StripTs1[dp_table[i] + j]);
-            temp.push_back(StripTs2[dp_table[i] + j]);
-            temp.push_back(StripTs3[dp_table[i] + j]);
-            temp.push_back(StripTs4[dp_table[i] + j]);
-            temp.push_back(StripTs5[dp_table[i] + j]);
-            res.push_back(temp);
-        }
-        return res;
-    }
 };
 
 #endif

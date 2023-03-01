@@ -19,12 +19,17 @@
 #include "gem_tree_struct.h"
 #include "epics_tree_struct.h"
 #include "APVStripMapping.h"
+#include "ReadDatabase.h"
+
 
 #define PROGRESS_COUNT 1000
 
 
 void write_raw_data(const std::string &dpath, const std::string &opath, const std::string &mpath, int nev,
-                    int res = 3, double thres = 20, int npeds = 5, double flat = 1.0);
+                    int res = 3, double thres = 20, int npeds = 5, double flat = 1.0, int usefixedped=0);
+
+int GetRunNumber(std::string str);
+
 
 // event types
 enum EvType {
@@ -49,6 +54,7 @@ int main(int argc, char*argv[])
     arg_parser.AddArg<double>("-t", "thres", "peak threshold for waveform analysis", 20.0);
     arg_parser.AddArg<int>("-p", "npeds", "sample window width for pedestal searching", 8);
     arg_parser.AddArg<double>("-f", "flat", "flatness requirement for pedestal searching", 1.0);
+    arg_parser.AddArg<int>("-x", "usefixedped", "whether or not to use fixed FADC pedestals", 0);
 
     auto args = arg_parser.ParseArgs(argc, argv);
 
@@ -64,9 +70,11 @@ int main(int argc, char*argv[])
                    args["res"].Int(),
                    args["thres"].Double(),
                    args["npeds"].Int(),
-                   args["flat"].Double());
+                   args["flat"].Double(),
+                   args["usefixedped"].Int());
     return 0;
 }
+
 
 // create an event tree according to modules
 TTree *create_tree(std::vector<Module> &modules, const std::string tname = "EvTree",
@@ -91,7 +99,7 @@ TTree *create_tree(std::vector<Module> &modules, const std::string tname = "EvTr
                 auto event = new GEMTreeStruct();
                 m.event = static_cast<void*>(event);
                 tree->Branch("event_number",                    &event->event_number,    "event_number/I");
-                std::string sname = "GEM";   
+                std::string sname = "GEM";
                 tree->Branch((sname + "_nCluster").c_str(),     &event->nCluster,        "GEM_nCluster/I");
                 tree->Branch((sname + "_planeID").c_str(),      &event->Plane[0],        "GEM_planeID[GEM_nCluster]/I");
                 tree->Branch((sname + "_prodID").c_str(),       &event->Prod[0],         "GEM_prodID[GEM_nCluster]/I");
@@ -100,16 +108,8 @@ TTree *create_tree(std::vector<Module> &modules, const std::string tname = "EvTr
                 tree->Branch((sname + "_size").c_str(),         &event->Size[0],         "GEM_size[GEM_nCluster]/I");
                 tree->Branch((sname + "_adc").c_str(),          &event->Adc[0],          "GEM_adc[GEM_nCluster]/F");
                 tree->Branch((sname + "_pos").c_str(),          &event->Pos[0],          "GEM_pos[GEM_nCluster]/F");
-
-                tree->Branch((sname + "_stripNo").c_str(),      &event->StripNo);
-                tree->Branch((sname + "_stripAdc").c_str(),     &event->StripAdc);
-                tree->Branch((sname + "_stripTs0").c_str(),     &event->StripTs0);
-                tree->Branch((sname + "_stripTs1").c_str(),     &event->StripTs1);
-                tree->Branch((sname + "_stripTs2").c_str(),     &event->StripTs2);
-                tree->Branch((sname + "_stripTs3").c_str(),     &event->StripTs3);
-                tree->Branch((sname + "_stripTs4").c_str(),     &event->StripTs4);
-                tree->Branch((sname + "_stripTs5").c_str(),     &event->StripTs5);
-
+                tree->Branch((sname + "_stripNo").c_str(),      &event->StripNo[0][0],   "GEM_stripNo[GEM_nCluster][100]/I");
+                tree->Branch((sname + "_stripAdc").c_str(),     &event->StripAdc[0][0],  "GEM_stripADC[GEM_nCluster][100]/F");
                 tree->Branch((sname + "_nAPV").c_str(),         &event->nAPV,            "GEM_nAPV/I");
                 tree->Branch((sname + "_apv_crate_id").c_str(), &event->apv_crate_id[0], "GEM_apv_crate_id[GEM_nAPV]/I");
                 tree->Branch((sname + "_apv_mpd_id").c_str(),   &event->apv_mpd_id[0],   "GEM_apv_mpd_id[GEM_nAPV]/I");
@@ -145,7 +145,7 @@ void extract_gem_cluster(GEMSystem *gem_sys, MPDSSPRawEventDecoder *gem_decoder,
     // gem system fill gem_data
     gem_data.Clear();
 
-    auto getChamberBasedStripNo = [](int strip, int type, int N_APVS_PER_PLANE, int detLayerPositionIndex) 
+    auto getChamberBasedStripNo = [](int strip, int type, int N_APVS_PER_PLANE, int detLayerPositionIndex)
         -> int
     {
         // no conversion for Y plane
@@ -193,18 +193,10 @@ void extract_gem_cluster(GEMSystem *gem_sys, MPDSSPRawEventDecoder *gem_decoder,
                     //StripNo[nCluster][nS] = hits[nS].strip;
 
                     // chamber based strip no
-                    int tmp_strip_no = getChamberBasedStripNo(hits[nS].strip, gem_data.Axis[icluster],
+                    gem_data.StripNo[icluster][nS] = getChamberBasedStripNo(hits[nS].strip, gem_data.Axis[icluster],
                             napvs_per_plane, gem_data.Module[icluster]);
-                    gem_data.StripNo.push_back(tmp_strip_no);
 
-                    gem_data.StripAdc.push_back(hits[nS].charge);
-
-                    gem_data.StripTs0.push_back(hits[nS].ts_adc[0]);
-                    gem_data.StripTs1.push_back(hits[nS].ts_adc[1]);
-                    gem_data.StripTs2.push_back(hits[nS].ts_adc[2]);
-                    gem_data.StripTs3.push_back(hits[nS].ts_adc[3]);
-                    gem_data.StripTs4.push_back(hits[nS].ts_adc[4]);
-                    gem_data.StripTs5.push_back(hits[nS].ts_adc[5]);
+                    gem_data.StripAdc[icluster][nS] = hits[nS].charge;
                 }
                 icluster++;
             }
@@ -235,7 +227,7 @@ TTree* create_epics_tree(EPICSystem *epic_sys, const std::string tname = "EpicsT
         (epic_dat->data)[i.first] = -999999.9;
     }
 
-    epics_struct::__g_epic_data = static_cast<epics_struct::EPICStruct*>(epic_dat); 
+    epics_struct::__g_epic_data = static_cast<epics_struct::EPICStruct*>(epic_dat);
 
     std::string sname = "Epics_";
     tree -> Branch((sname + "event_number").c_str(), &epics_struct::__g_epic_data->event_number, "eventNo/I");
@@ -259,7 +251,7 @@ TTree* create_epics_tree(EPICSystem *epic_sys, const std::string tname = "EpicsT
 
         tree -> Branch(branch_name.c_str(), &entry.second, Form("%s/F", branch_name.c_str()));
     }
-    return tree; 
+    return tree;
 }
 
 // analyze event and fill epics tree
@@ -287,7 +279,7 @@ void fill_epics_event(const uint32_t *buf, EPICSystem* epic_sys, const int event
 
 // read raw data in evio format, and extract information
 void write_raw_data(const std::string &dpath, const std::string &opath, const std::string &mpath, int nev,
-                    int res, double thres, int npeds, double flat)
+                    int res, double thres, int npeds, double flat, int usefixedped)
 {
     // read modules
     auto modules = read_modules(mpath);
@@ -296,6 +288,17 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
         std::cout << "Cannot find any modules in configuration file \"" << mpath << "\"" << std::endl;
         return;
     }
+
+	ReadDatabase("database/FADCPedestal.txt");
+	int run = GetRunNumber(dpath);
+
+	db::dbBlock *dbFADCPed = db::FindBlock("FADCPedestal",run);
+	if(dbFADCPed) dbFADCPed->Print();
+	if(!dbFADCPed && usefixedped) {
+		cout<<"Warning: could not find 'FADCPedestal' for run "<<run<<" in the database file database/FADCPedestal.txt"<<endl;
+		cout<<"\t The decoder will extract the pedestal event by event."<<endl;
+		usefixedped=0;
+	}
 
     // raw data
     evc::EvChannel evchan;
@@ -311,6 +314,7 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
             dbanks.push_back(m.bank);
         }
     }
+
     // waveform analyzer
     fdec::Analyzer analyzer(res, thres, npeds, flat);
 
@@ -368,6 +372,7 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
         const uint32_t *dbuf;
         size_t buflen;
         for (int ii = 0; ii < blvl; ++ii) {
+			int imod = -1;
             // parse module data
             for (auto &mod : modules) {
                 // get data buffer
@@ -383,8 +388,21 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
                     {
                         auto event = static_cast<fdec::Fadc250Event*>(mod.event);
                         fdecoder.DecodeEvent(*event, dbuf, buflen);
+						imod++;
+                        size_t idx=16*imod;
                         for (auto &ch : event->channels) {
-                            analyzer.Analyze(ch);
+							double fixedPed = 0.0;
+							if(usefixedped) {
+								if(idx >= dbFADCPed->Data.size()) {
+									std::cout<<"Error! Number of channels in FADC Pedestal file is less than that in the raw data, I quit ... \n";
+									exit(-1);
+								}
+								fixedPed = dbFADCPed->Data[idx];
+							}
+
+							//std::cout<<"event = "<<count<<",  imod = "<<imod<<",  FADCPed["<<idx<<"] = "<<fixedPed<<std::endl;
+							idx++;
+                            analyzer.Analyze(ch,fixedPed);
                         }
                     }
                     break;
@@ -413,3 +431,39 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
     hfile->Close();
 }
 
+int GetRunNumber(std::string str)
+{
+	//extract the run number
+	//std::string str = gFile->GetName();  //"../ROOTFILE/beamtest_hallc_3032.evio.xx
+
+	std::string fileN="", file="";
+	std::size_t found = str.find_last_of("/\\");
+	std::string file0 = str.substr(found+1);     //take pure file name: "beamtest_hallc_3032.evio.xx"
+
+	found = file0.find_last_of(".evio");
+	std::string file1 = file0.substr(0,found);   //remove ".evio,xx": "beamtest_hallc_3032"
+
+	//remove all characters from a to z and A to Z
+	for(size_t i = 0; i<file1.length(); i++) {
+		if (!(file1[i] >= 'a' && file1[i]<='z') && !(file1[i] >= 'A' && file1[i]<='Z')) {
+			file.append(1, file1[i]);
+		}
+	}
+
+	found = file.find_last_of("_");
+	std::string file2 = file.substr(0,found);   //remove whatever after the last underscore: "beamtest_hallc_3032"
+	fileN = file.substr(found+1);
+
+	if(fileN.length()<4 && file2.length()>=4) {
+		found = file2.find_last_of("_");
+		std::string file3 = file2.substr(0,found);   //"beamtest_hallc_3032"
+		fileN = file2.substr(found+1);    //"3032"
+	}
+
+	//std::cout<<" file0 = "<<file0<<"\n file1 = "<<file1<<"\n file = "<<file<<"\n file2 = "<<file2<<"\n fileN = "<<fileN<<std::endl;
+
+	int pRunNumber = 0;
+	if(fileN.length()>0) pRunNumber = atoi(fileN.c_str());
+	std::cout<<"file = \""<<file0<<"\"  --> RunNumber = "<<pRunNumber<<std::endl;
+	return pRunNumber;
+}

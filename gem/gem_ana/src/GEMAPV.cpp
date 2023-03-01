@@ -843,9 +843,7 @@ void GEMAPV::CollectZeroSupHits()
                 IsCrossTalkStrip(i),
                 crate_id,
                 mpd_id,
-                adc_ch,
-                GetRawTSADC(i)
-                );
+                adc_ch);
     }
 }
 
@@ -1159,7 +1157,7 @@ void GEMAPV::PrintOutCommonModeRange(std::ofstream &out)
     }
 
     // follow Ben's suggestion, set all minimal common mode value to 0
-    min = 0;
+    //min = 0;
 
     out << std::setw(12) << crate_id
         << std::setw(12) << raw_data_flags.slot_id
@@ -1258,26 +1256,6 @@ float GEMAPV::GetAveragedCharge(const uint32_t &ch)
     }
 
     return val/time_samples;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// get raw time sample adc in the specified adc channel
-
-std::vector<float> GEMAPV::GetRawTSADC(const uint32_t &ch)
-    const
-{
-    std::vector<float> res;
-
-    if(ch >= APV_STRIP_SIZE || !hit_pos[ch])
-        return res;
-
-    for(uint32_t j = 0; j < time_samples; ++j)
-    {
-        float this_val = raw_data[DATA_INDEX(ch, j)];
-        res.push_back(this_val);
-    }
-
-    return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

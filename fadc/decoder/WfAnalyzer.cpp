@@ -12,7 +12,7 @@ Analyzer::Analyzer(size_t res, double thres, size_t npeds, double ped_flat, uint
     // place holder
 }
 
-void Analyzer::Analyze(Fadc250Data &data) const
+void Analyzer::Analyze(Fadc250Data &data, double ped_ext) const
 {
     uint32_t *samples = &data.raw[0];
     size_t nsamples = data.raw.size();
@@ -25,14 +25,17 @@ void Analyzer::Analyze(Fadc250Data &data) const
     // search local maxima
     auto candidates = SearchMaxima(buffer, _thres);
 
-    // get pedestal
+    // get pedestal event by event 
     data.ped = FindPedestal(buffer, candidates);
 
+	//changed by Jixie: use fixed pedestal value to overwrite the newly extracted mean value, keep err unchanged
+	if(ped_ext>10.0) data.ped.mean = ped_ext;	
+	
     // get final results
     for (auto &peak : candidates) {
         // pedestal subtraction
         double peak_height = buffer[peak.pos] - data.ped.mean;
-        // wrong baselin in the rough candidtes finding, below threshold, or not statistically significant
+        // wrong baseline in the rough candidtes finding, below threshold, or not statistically significant
         if ((peak_height * peak.height < 0.) ||
             (std::abs(peak_height) < _thres) ||
             (std::abs(peak_height) < 3.0*data.ped.err)) {

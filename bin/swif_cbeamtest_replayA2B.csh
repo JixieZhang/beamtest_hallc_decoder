@@ -1,7 +1,6 @@
 #!/bin/csh -fb
 # csh script to submit batch farm jobs for replaying hallc beamtest files in /mss
 # one job for each file, about 15 minutes per file
-# if a file exists in /cache but not in /mss yet,  this script will not cook that file
 ########################################################################
 set DEBUG = ( echo );
 set DEBUG = ("");
@@ -68,18 +67,36 @@ while ($run < $endrun)
   @ run = $run + 1
   
   set nfile = (0)  
-  (ls -1 $datadir/hallc_fadc_ssp_${run}.evio.*| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null  
+  (ls -1 $mssdir/hallc_fadc_ssp_${run}.evio.*| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null  
   set nfile = (`cat  ~/.tmp_$$`)
   rm -fr ~/.tmp_$$  >&! /dev/null   
   if ($nfile < 1) continue
    
-  foreach infile ($datadir/hallc_fadc_ssp_${run}.evio.*)
+  foreach infile ($mssdir/hallc_fadc_ssp_${run}.evio.*)
     
     set subrun = (${infile:e})
     set infilename = (`basename $infile`)
     set outfilename = beamtest_hallc_${run}_${subrun}.root
     set outfile = $replaydir/$outfilename
  
+    #####################################################
+    #set jgetonly to +1 if only copy files not in /cache
+    #set jgetonly to  0 if cook all files /mss, will automaticaly copy files from  /mss to /cache
+    #set jgetonly to -1 if only cook files not in /cache
+    set jgetonly = (0)
+    if ( $jgetonly > 0 ) then
+      if (! -f $datadir/$infilename) then
+        $DEBUG jcache get $infile
+      else
+        echo "$datadir/$infilename exist, skip jget for this file ......"
+      endif
+      continue
+    endif
+    if ((-f $datadir/$infilename) && $jgetonly < 0) then
+      continue;
+    endif
+    #####################################################
+    
     #replayFiles.csh will always overwrite the output file in its own output dir ${HallCBeamtestDir}/../ROOTFILE
     #which is the same as the default $replaydir, therefore do not add job if the output file exists
     if ($overwrite == 0 && -f $outfile) then
@@ -95,9 +112,17 @@ while ($run < $endrun)
     #add '"' to escape the command string
     set cmd = ($HallCBeamtestDir/bin/replayFiles.csh "'-n -1'" $datadir/$infilename)
     echo "adding one job for file $infilename"
-    echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd " >> $jobfile
-    $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd  
-   
+    if (! -f $datadir/$infilename) then
+      #do job from /mss
+      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
+      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd  
+    else
+      #do job from /cache, no need to use -condition option since it has been checked
+      #echo  "swif2 add-job $workflow -account hallc -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -condition file:$datadir/$infilename $cmd " >> $jobfile
+      #$DEBUG swif2 add-job $workflow -account hallc -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -condition file:$datadir/$infilename $cmd  
+      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd " >> $jobfile
+      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd  
+    endif
     @ njob = $njob + 1
     
   end #end foreach loop

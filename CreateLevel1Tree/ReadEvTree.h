@@ -31,17 +31,22 @@ public :
   // Fixed size dimensions of array or collections stored in the TTree if any.
 
   // Declaration of leaf types
-  Int_t           event_number;
-  Int_t           GEM_nCluster;
-  Int_t           GEM_planeID[MAX_CLUSTERS_PER_PLANE];   //[nCluster]
-  Int_t           GEM_prodID[MAX_CLUSTERS_PER_PLANE];   //[nCluster]
-  Int_t           GEM_moduleID[MAX_CLUSTERS_PER_PLANE];   //[nCluster]
-  Int_t           GEM_axis[MAX_CLUSTERS_PER_PLANE];   //[nCluster]
-  Int_t           GEM_size[MAX_CLUSTERS_PER_PLANE];   //[nCluster]
-  Float_t         GEM_adc[MAX_CLUSTERS_PER_PLANE];   //[nCluster]
-  Float_t         GEM_pos[MAX_CLUSTERS_PER_PLANE];   //[nCluster]
-  Int_t           GEM_stripNo[MAX_CLUSTERS_PER_PLANE][MAX_CLUSTER_SIZE];   //[nCluster]
-  Float_t         GEM_stripAdc[MAX_CLUSTERS_PER_PLANE][MAX_CLUSTER_SIZE];   //[nCluster]
+	Int_t           event_number;
+	Int_t           GEM_nCluster;
+	Int_t           GEM_planeID[MAX_CLUSTERS_PER_PLANE];   //[GEM_nCluster]
+	Int_t           GEM_prodID[MAX_CLUSTERS_PER_PLANE];   //[GEM_nCluster]
+	Int_t           GEM_moduleID[MAX_CLUSTERS_PER_PLANE];   //[GEM_nCluster]
+	Int_t           GEM_axis[MAX_CLUSTERS_PER_PLANE];   //[GEM_nCluster]
+	Int_t           GEM_size[MAX_CLUSTERS_PER_PLANE];   //[GEM_nCluster]
+	Float_t         GEM_adc[MAX_CLUSTERS_PER_PLANE];   //[GEM_nCluster]
+	Float_t         GEM_pos[MAX_CLUSTERS_PER_PLANE];   //[GEM_nCluster]
+	Int_t           GEM_stripNo[MAX_CLUSTERS_PER_PLANE][MAX_CLUSTER_SIZE];   //[GEM_nCluster]
+	Float_t         GEM_stripAdc[MAX_CLUSTERS_PER_PLANE][MAX_CLUSTER_SIZE];   //[GEM_nCluster]
+	Int_t           GEM_nAPV;
+	Int_t           GEM_apv_crate_id[8];   //[GEM_nAPV]
+	Int_t           GEM_apv_mpd_id[8];   //[GEM_nAPV]
+	Int_t           GEM_apv_adc_ch[8];   //[GEM_nAPV]
+  
   fdec::Fadc250Data *CerA0;
   fdec::Fadc250Data *CerA1;
   fdec::Fadc250Data *CerA2;
@@ -76,18 +81,22 @@ public :
   fdec::Fadc250Data *Trig;
   Int_t           trigger_type;
 
-  // List of branches
-  TBranch        *b_event_number;   //!
-  TBranch        *b_nCluster;   //!
-  TBranch        *b_GEM_planeID;   //!
-  TBranch        *b_GEM_prodID;   //!
-  TBranch        *b_GEM_moduleID;   //!
-  TBranch        *b_GEM_axis;   //!
-  TBranch        *b_GEM_size;   //!
-  TBranch        *b_GEM_adc;   //!
-  TBranch        *b_GEM_pos;   //!
-  TBranch        *b_GEM_stripNo;   //!
-  TBranch        *b_GEM_stripAdc;   //!
+	// List of branches
+	TBranch        *b_event_number;   //!
+	TBranch        *b_GEM_nCluster;   //!
+	TBranch        *b_GEM_planeID;   //!
+	TBranch        *b_GEM_prodID;   //!
+	TBranch        *b_GEM_moduleID;   //!
+	TBranch        *b_GEM_axis;   //!
+	TBranch        *b_GEM_size;   //!
+	TBranch        *b_GEM_adc;   //!
+	TBranch        *b_GEM_pos;   //!
+	TBranch        *b_GEM_stripNo;   //!
+	TBranch        *b_GEM_stripAdc;   //!
+	TBranch        *b_GEM_nAPV;   //!
+	TBranch        *b_GEM_apv_crate_id;   //!
+	TBranch        *b_GEM_apv_mpd_id;   //!
+	TBranch        *b_GEM_apv_adc_ch;   //!
   TBranch        *b_CerA0;   //!
   TBranch        *b_CerA1;   //!
   TBranch        *b_CerA2;   //!
@@ -152,9 +161,9 @@ ReadEvTree::ReadEvTree(TTree *tree) : fChain(0)
     if(gROOT->FindObject("EvTree")) tree = (TTree*)gROOT->FindObject("EvTree");
   }
   if (tree == 0) {
-    TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("../ROOTFILE/beamtest_hallc_3032_0.root");
+    TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("../ROOTFILE/beamtest_hallc_4126_0.root");
     if (!f || !f->IsOpen()) {
-      f = new TFile("../ROOTFILE/beamtest_hallc_3032_0.root");
+      f = new TFile("../ROOTFILE/beamtest_hallc_4126_0.root");
     }
     f->GetObject("EvTree",tree);
   }
@@ -249,17 +258,21 @@ void ReadEvTree::Init(TTree *tree)
   fCurrent = -1;
   fChain->SetMakeClass(1);
 
-  fChain->SetBranchAddress("event_number", &event_number, &b_event_number);
-  fChain->SetBranchAddress("GEM_nCluster", &GEM_nCluster, &b_nCluster);
-  fChain->SetBranchAddress("GEM_planeID", GEM_planeID, &b_GEM_planeID);
-  fChain->SetBranchAddress("GEM_prodID", GEM_prodID, &b_GEM_prodID);
-  fChain->SetBranchAddress("GEM_moduleID", GEM_moduleID, &b_GEM_moduleID);
-  fChain->SetBranchAddress("GEM_axis", GEM_axis, &b_GEM_axis);
-  fChain->SetBranchAddress("GEM_size", GEM_size, &b_GEM_size);
-  fChain->SetBranchAddress("GEM_adc", GEM_adc, &b_GEM_adc);
-  fChain->SetBranchAddress("GEM_pos", GEM_pos, &b_GEM_pos);
-  fChain->SetBranchAddress("GEM_stripNo", GEM_stripNo, &b_GEM_stripNo);
-  fChain->SetBranchAddress("GEM_stripAdc", GEM_stripAdc, &b_GEM_stripAdc);
+	fChain->SetBranchAddress("event_number", &event_number, &b_event_number);
+	fChain->SetBranchAddress("GEM_nCluster", &GEM_nCluster, &b_GEM_nCluster);
+	fChain->SetBranchAddress("GEM_planeID", GEM_planeID, &b_GEM_planeID);
+	fChain->SetBranchAddress("GEM_prodID", GEM_prodID, &b_GEM_prodID);
+	fChain->SetBranchAddress("GEM_moduleID", GEM_moduleID, &b_GEM_moduleID);
+	fChain->SetBranchAddress("GEM_axis", GEM_axis, &b_GEM_axis);
+	fChain->SetBranchAddress("GEM_size", GEM_size, &b_GEM_size);
+	fChain->SetBranchAddress("GEM_adc", GEM_adc, &b_GEM_adc);
+	fChain->SetBranchAddress("GEM_pos", GEM_pos, &b_GEM_pos);
+	fChain->SetBranchAddress("GEM_stripNo", GEM_stripNo, &b_GEM_stripNo);
+	fChain->SetBranchAddress("GEM_stripAdc", GEM_stripAdc, &b_GEM_stripAdc);
+	fChain->SetBranchAddress("GEM_nAPV", &GEM_nAPV, &b_GEM_nAPV);
+	fChain->SetBranchAddress("GEM_apv_crate_id", GEM_apv_crate_id, &b_GEM_apv_crate_id);
+	fChain->SetBranchAddress("GEM_apv_mpd_id", GEM_apv_mpd_id, &b_GEM_apv_mpd_id);
+	fChain->SetBranchAddress("GEM_apv_adc_ch", GEM_apv_adc_ch, &b_GEM_apv_adc_ch);
   fChain->SetBranchAddress("CerA0", &CerA0, &b_CerA0);
   fChain->SetBranchAddress("CerA1", &CerA1, &b_CerA1);
   fChain->SetBranchAddress("CerA2", &CerA2, &b_CerA2);

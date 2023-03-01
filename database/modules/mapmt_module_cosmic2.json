@@ -1,0 +1,53 @@
+{
+    "modules": [
+        {
+            "crate": 3,
+            "slot": 7,
+            "bank": 3,
+            "type": "FADC250",
+            "channels": [
+                { "id": 0, "name": "CerA0", "type": "MaPMT" },
+                { "id": 1, "name": "CerA1", "type": "MaPMT" },
+                { "id": 2, "name": "CerA2", "type": "MaPMT" },
+                { "id": 3, "name": "CerA3", "type": "MaPMT" },
+                { "id": 4, "name": "CerB0", "type": "MaPMT" },
+                { "id": 5, "name": "CerB1", "type": "MaPMT" },
+                { "id": 6, "name": "CerB2", "type": "MaPMT" },
+                { "id": 7, "name": "CerB3", "type": "MaPMT" },
+                { "id": 8, "name": "CerC0", "type": "MaPMT" },
+                { "id": 9, "name": "CerC1", "type": "MaPMT" },
+                { "id": 10, "name":"CerC2", "type": "MaPMT" },
+                { "id": 11, "name":"CerC3", "type": "MaPMT" },
+                { "id": 12, "name":"CerD0", "type": "MaPMT" },
+                { "id": 13, "name":"CerD1", "type": "MaPMT" },
+                { "id": 14, "name":"CerD2", "type": "MaPMT" },
+                { "id": 15, "name":"CerD3", "type": "MaPMT" }
+            ]
+        },
+        {
+            "crate": 3,
+            "slot": 8,
+            "bank": 3,
+            "type": "FADC250",
+            "channels": [
+                { "id": 0, "name": "SC_bottom", "type": "Scint" },
+                { "id": 1, "name": "SC_A", "type": "Scint" },
+                { "id": 2, "name": "SC_top", "type": "Scint" },
+                { "id": 3, "name": "SC_B", "type": "Scint" },
+                { "id": 4, "name": "SC_D", "type": "Scint" },
+                { "id": 5, "name": "SC_C", "type": "Scint" },
+                { "id": 6, "name": "SC_E", "type": "Scint" },
+                { "id": 7, "name": "PreSh_t", "type": "Scint" },
+                { "id": 8, "name": "PreSh_r", "type": "Scint" },
+                { "id": 9, "name": "PreSh_l", "type": "Scint" },
+                { "id": 10, "name": "Shower_l", "type": "Calo" },
+                { "id": 11, "name": "Shower_r", "type": "Calo" },
+                { "id": 12, "name": "Shower_t", "type": "Calo" },
+                { "id": 13, "name": "PreShSum", "type": "Scint" },
+                { "id": 14, "name": "ShowerSum", "type": "Calo" },
+                { "id": 15, "name": "Trig", "type": "Scint"}
+            ]
+        }
+
+    ]
+}
