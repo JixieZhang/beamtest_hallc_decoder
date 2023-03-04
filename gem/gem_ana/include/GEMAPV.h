@@ -81,6 +81,7 @@ public:
     void ResetHitPos();
     void PrintOutPedestal(std::ofstream &out);
     void PrintOutCommonModeRange(std::ofstream &out);
+    void PrintOutCommonModeDBAnaFormat(std::ofstream &out);
     StripNb MapStripPRad(int ch);
     StripNb MapStripMPD(int ch);
     bool IsCrossTalkStrip(const uint32_t &strip) const;
@@ -104,6 +105,7 @@ public:
     std::vector<TH1I *> GetHistList() const;
     std::vector<Pedestal> GetPedestalList() const;
     float GetMaxCharge(const uint32_t &ch) const;
+    std::vector<float> GetRawTSADC(const uint32_t &ch) const;
     float GetAveragedCharge(const uint32_t &ch) const;
     float GetIntegratedCharge(const uint32_t &ch) const;
     const std::vector<int> & GetOfflineCommonMode() const {return offline_common_mode;}

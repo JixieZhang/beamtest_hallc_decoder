@@ -335,6 +335,10 @@ void GEMSystem::ReadPedestalFile(std::string path, std::string c_path)
     if(c_path.size() == 0) 
         c_path = Value<std::string>("GEM Common Mode");
 
+    std::cout<<__PRETTY_FUNCTION__
+        <<" INFO:: loading pedestal from : "<<path
+        <<" common mode from : "<<c_path<<std::endl;
+
     // noise + offset
     ReadNoiseAndOffset(path);
 
@@ -837,6 +841,8 @@ void GEMSystem::SaveCommonModeRange(const std::string &name)
     const
 {
     std::ofstream in_file(name);
+    std::string _name = name+"_db_format";
+    std::ofstream in_file_ana_format(_name);
 
     if(!in_file.is_open()) {
         std::cerr << "GEM System: Failed to save common mode range, file "
@@ -846,8 +852,10 @@ void GEMSystem::SaveCommonModeRange(const std::string &name)
 
     for(auto &mpd : mpd_slots)
     {
-        if(mpd.second)
+        if(mpd.second) {
             mpd.second->APVControl(&GEMAPV::PrintOutCommonModeRange, in_file);
+            mpd.second->APVControl(&GEMAPV::PrintOutCommonModeDBAnaFormat, in_file_ana_format);
+        }
     }
 }
 
