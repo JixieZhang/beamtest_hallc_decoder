@@ -112,7 +112,7 @@ namespace Decoder
 
     UInt_t MPDModule::LoadSlot(THaSlotData *sldat, const UInt_t *evbuffer, UInt_t pos, UInt_t len)
     {
-        // std::cout << "Calling MPDModule::LoadSlot()... (pos, len) = " << pos << ", " << len << "..."<<std::endl;
+        //std::cout << "Calling MPDModule::LoadSlot()... (pos, len) = " << pos << ", " << len << "..."<<std::endl;
         // AJRP: LoadSlot method for MPD SSP data format to be used in Hall A during the GMN run:
         const UInt_t *datawords = &(evbuffer[pos]);
 
@@ -153,7 +153,8 @@ namespace Decoder
         bool ENABLE_CM = false;
         bool BUILD_ALL_SAMPLES = true;
 
-        bool is_SSP = false; // assume VTP by default which only has the MPD data, no block header/trailer.
+        //bool is_SSP = false; // assume VTP by default which only has the MPD data, no block header/trailer.
+        bool is_SSP = true; // for hall c setup, this must be true, (hall c is using ssp)
 
         bool found_this_slot = false;
         bool found_MPD_header = false;
@@ -322,7 +323,6 @@ namespace Decoder
 
                         for (int is = 0; is < 6; is++)
                         {
-
                             // if( ADCsamples[is] > 0xFFF && !ENABLE_CM ) {
                             // 	std::cout << "negative ADC sample encountered when CM not enabled, raw data word = " << ADCsamples[is] << ", signed int representation = " << Int_t(ADCsamples[is]) << std::endl;
                             // 	std::cout << "This is not expected" << std::endl;
@@ -336,6 +336,7 @@ namespace Decoder
                             // Since we need only two bits to encode the ENABLE_CM and BUILD_ALL_SAMPLES flags, we can
 
                             status = sldat->loadData("adc", effChan, ADCsamples[is], apv_chan);
+                            //std::cout<<"xb debug: "<<ADCsamples[is]<<", apv_chan: "<<apv_chan<<std::endl;
                             if (status != SD_OK)
                                 return -1;
                         }

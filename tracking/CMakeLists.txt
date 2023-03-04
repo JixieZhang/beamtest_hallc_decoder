@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 
 PROJECT(HCTracking CXX)
 
+#set(CMAKE_BUILD_TYPE Debug)
+#set(CMAKE_BUILD_TYPE RelWithDebInfo)
+
 # required packages
 find_package(ROOT 6.0 REQUIRED CONFIG)
 include(${ROOT_USE_FILE})
@@ -18,7 +21,7 @@ set(src
     GEMModule.cpp
     MPDModule.cxx
     MPDModuleVMEv4.cxx
-    test.cpp
+#    test.cpp
     EventWrapper.cpp
     Database/Database.cxx
     Database/VarType.cxx
@@ -59,8 +62,8 @@ set(headers
 
 set(LIBNAME hctracking)
 
-#add_library(${LIBNAME} SHARED ${src})
-add_executable(${LIBNAME} ${src} ${headers})
+add_library(${LIBNAME} SHARED ${src})
+#add_executable(${LIBNAME} ${src} ${headers})
 
 target_include_directories(${LIBNAME}
 PUBLIC
@@ -90,4 +93,4 @@ install(FILES
     DESTINATION
     ${CMAKE_INSTALL_LIBDIR})
 
-add_subdirectory(third_party)
+#add_subdirectory(third_party)

@@ -8,6 +8,7 @@
 #include <fstream>
 #include "GEMModule.h"
 #include "EventWrapper.h"
+#include <TTree.h>
 
 class TClonesArray;
 class TDatime;
@@ -66,6 +67,8 @@ public:
 
     void InitEfficiencyHistos(const char *dname); // initialize efficiency histograms
     void CalcEfficiency();                        // essentially, divide "did hit/should hit" histograms
+    void PrintGeometry( const char *fname );
+    void InitTrackingResultTree(TTree *tree=nullptr);
 
     void CompleteInitialization();
     void LoadPedestals(const char *fname);
@@ -474,6 +477,9 @@ private:
 
     std::string fpedfilename;
     std::string fcmfilename;
+
+    // save all tracking result into ROOT Tree
+    TTree *tracking_res_tree;
 };
 
 #endif

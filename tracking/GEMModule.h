@@ -205,7 +205,7 @@ public:
     virtual Int_t End(int run_number=9999);
 
 public:
-    std::string fName = "GEM Module for Tracking";
+    std::string fName = "GEM_Module_for_Tracking";
     // Geometry
     TVector3 fOrigin; // Center position of detector (m)
     double fSize[3];  // Detector size in x,y,z (m) - x,y are half-widths
@@ -437,6 +437,9 @@ public:
     TH1D *fhshouldhitx;
     TH1D *fhshouldhity;
     TH2D *fhshouldhitxy;
+
+    // raw 2d hits without
+    TH2D *fhrawhitxy;
 
     Bool_t fNegSignalStudy;
     UInt_t fTrackPassedThrough; // flag to indicate track passed through module:

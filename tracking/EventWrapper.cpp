@@ -97,3 +97,9 @@ UInt_t EventWrapper::GetData(UInt_t crate, UInt_t slot, UInt_t chan, UInt_t hit)
     assert(sldata);
     return sldata->getData(chan, hit);
 }
+
+void EventWrapper::print() const
+{
+    assert(sldata);
+    sldata->print();
+}
