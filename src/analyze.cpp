@@ -54,7 +54,7 @@ int main(int argc, char*argv[])
     arg_parser.AddHelps({"-h", "--help"});
     arg_parser.AddPositional("raw_data", "raw data in evio format");
     arg_parser.AddPositional("root_file", "output data file in root format");
-    arg_parser.AddArg<int>("-n", "nev", "number of events to process (< 0 means all)", 500);
+    arg_parser.AddArg<int>("-n", "nev", "number of events to process (< 0 means all)", -1);
     arg_parser.AddArgs<std::string>({"-m", "--module"}, "module", "json file for module configuration",
                                     "database/modules/mapmt_module.json");
     arg_parser.AddArg<int>("-r", "res", "resolution for waveform analysis", 3);
