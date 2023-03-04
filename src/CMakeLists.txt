@@ -21,6 +21,7 @@ LINK_PUBLIC
     conf
     gem_decoder
     gem_ana
+    hctracking
 )
 target_link_libraries(${exe} PRIVATE  nlohmann_json::nlohmann_json)
 
