@@ -2325,7 +2325,7 @@ void HCTracking::fill_good_hit_arrays()
             fHitDeconvADC4_MaxVstrip.push_back(DeconvADC_maxVstrip[4]);
             fHitDeconvADC5_MaxVstrip.push_back(DeconvADC_maxVstrip[5]);
 
-            if (fMakeEfficiencyPlots && fNhitsOnTrack[itrack] >= 4 && itrack == 0)
+            if (fMakeEfficiencyPlots && fNhitsOnTrack[itrack] >= fMinHitsOnTrack && itrack == 0)
             {
                 // if( fMakeEfficiencyPlots && itrack == 0 ){
                 // fill "did hit" efficiency histos (numerator for efficiency determination):
