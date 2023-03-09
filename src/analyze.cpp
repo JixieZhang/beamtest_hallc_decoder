@@ -449,8 +449,10 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
     std::cout << "Processed events - " << count << std::endl;
 
     evchan.Close();
+#ifdef USE_GEM_TRACKING
     tracking -> End(9999);
     //tracking -> CalcEfficiency();
+#endif
     hfile->Write();
     hfile->Close();
 }
