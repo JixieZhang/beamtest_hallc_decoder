@@ -29,9 +29,11 @@ set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
 set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/replay/pass0
 set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/pass0
 
+set monitordir = /volatile/halla/solid/$user/ecal_beamtest_hallc/monitor
 if ("$host" == "uvasolid2")  then
 	set datadir = /home/solid/data
 	set replaydir = /home/solid/replay/ROOTFILE
+	set monitordir = /home/solid/replay/monitor
 endif
 
 
@@ -50,6 +52,7 @@ if ($#argv < 2) then
 	echo "         -t [THRES (default: 20.000000)]: peak threshold for waveform analysis"
 	echo "         -p [NPEDS (default: 8)]: sample window width for pedestal searching"
 	echo "         -f [FLAT (default: 1.000000)]: flatness requirement for pedestal searching"
+	echo "         -x [USEFIXEDPED (default: 0)]: whether or not to use fixed FADC pedestals from database"
 	$DEBUG exit 0
 endif
 
@@ -89,15 +92,20 @@ endif
 #"/w/halla-scshelf2102/solid/cc_pro/benchtest/coda/root/solidhgc_${run}.root"
 ###################################################################################
 
+####create WORKDIR, do not put it into /cache###
+if ("$replaydir" !~ *"/cache/"*) then
+    set WORKDIR = $monitordir/../job/replay_${HOST:r:r}_$$
+else
+    set WORKDIR = $replaydir/../job/replay_${HOST:r:r}_$$
+endif
 set curdir = (`pwd`)
-if (! $?WORKDIR) setenv WORKDIR $replaydir/../job/replay_${HOST:r:r}_$$
-mkdir -p $WORKDIR/graph
+mkdir -p $monitordir $WORKDIR/graph
 if (! -d $WORKDIR) then
 	echo "can not create WORKDIR $WORKDIR, I quit ..."
 	exit -1
 endif
 cd $WORKDIR;set WORKDIR = (`pwd`);cd $curdir
-
+##################################################
 
 foreach infile0 ($argv[2-$#argv])
 	if !(-f $infile0)  then
@@ -195,14 +203,15 @@ foreach infile0 ($argv[2-$#argv])
 		#$DEBUG ln -sf $decoderdir/rootlogon.C .
 		$DEBUG root -b -q $outfile $decoderdir/CreateLevel1Tree/${cscriptfile}+
 
-		$DEBUG cp -fr graph $replaydir/.
 		if ($subrun == 0) then
+			if (-f Pedastal.inc) $DEBUG cat Pedastal.inc >> $monitordir/Pedastal.inc
 			$DEBUG root -b -q $outfile $decoderdir/CreateLevel1Tree/FindTriggerPeak.C+
-			$DEBUG cat Peak.inc >> $replaydir/Peak.inc
+			if (-f Peak.inc) $DEBUG cat Peak.inc >> $monitordir/Peak.inc
 			if (-f $outlevel1file) then
 				$DEBUG root -b -q $outlevel1file $decoderdir/CreateLevel1Tree/plot_level1.C+
-				$DEBUG cp -fr gr_monitor $replaydir/.
+				$DEBUG cp -fr gr_monitor $monitordir/.
 		endif
+		$DEBUG cp -fr graph $monitordir/.
 	endif
 	cd $curdir
 

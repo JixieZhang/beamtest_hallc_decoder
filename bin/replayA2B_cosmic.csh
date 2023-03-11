@@ -48,7 +48,7 @@ if ($#argv < 1) then
 	echo "         -t [THRES (default: 20.000000)]: peak threshold for waveform analysis"
 	echo "         -p [NPEDS (default: 8)]: sample window width for pedestal searching"
 	echo "         -f [FLAT (default: 1.000000)]: flatness requirement for pedestal searching"
-	echo "         -x [USEFIXEDPED (default: 0)]: whether or not to use fixed FADC pedestals"
+	echo "         -x [USEFIXEDPED (default: 0)]: whether or not to use fixed FADC pedestals from database"
 	echo ""
 	echo "example 1: [$0 1000]  will replay for run number 1000"
 	echo "example 2: [$0 1000 1005]  will replay for run number from 1000 to 1005(included)"
@@ -124,7 +124,7 @@ while ($run < $endrun)
 		#remove the local output file if exists, will move it to $outfile when finish
 		if (-f $outfilename) $DEBUG rm -f $outfilename
 
-		$DEBUG $decoderdir/bin/replayFiles_highrate.csh "$replayoption" $infile
+		$DEBUG $decoderdir/bin/replayFiles_cosmic.csh "$replayoption" $infile
 
 	#moving files from $replaydir to $outfir
 	if ("$replaydir" != "$outdir") then

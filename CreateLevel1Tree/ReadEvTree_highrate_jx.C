@@ -96,8 +96,8 @@ TF1* FitGaus(TH1* h1, double range_in_sigma=1.0)
     char str[100];
     TText *text=0;
 
-    double xx=gStyle->GetPadLeftMargin()+0.03;
-    TPaveText *pt = new TPaveText(xx,0.20,xx+0.45,0.45,"brNDC");
+    double xx=gStyle->GetPadLeftMargin()+0.06;
+    TPaveText *pt = new TPaveText(xx,0.25,xx+0.45,0.46,"brNDC");
     pt->SetBorderSize(0);
     pt->SetFillColor(0);
     sprintf(str,"Mean = %.3G",mean);
@@ -443,7 +443,7 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
           if (fabs(pos-gSlot7PeakPos[trigbit-1][ich])<=5.0) {idx=ii;break;}
         }
         else {
-          if (fabs(pos-gSlot7PeakPos[trigbit-1][ich])<=65.0) {idx=ii;break;}
+          if (fabs(pos-gSlot7PeakPos[trigbit-1][ich])<=10.0) {idx=ii;break;}
         }
       }
       if(idx<0) continue;
@@ -536,7 +536,7 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
           if (fabs(pos-gSlot8PeakPos[trigbit-1][ich])<=5.0) {idx=ii;break;}
         }
         else {
-          if (fabs(pos-gSlot8PeakPos[trigbit-1][ich])<=65.0) {idx=ii;break;}
+          if (fabs(pos-gSlot8PeakPos[trigbit-1][ich])<=10.0) {idx=ii;break;}
         }
       }
       if(idx<0) continue;
@@ -1003,7 +1003,7 @@ void run(int istart=0, int iend=-1)
   ReadEvTree t;
   t.ExtractPedestal(0, 100000); WritePedFile(t.fRunNumber,0);
 
-  t.PlotSpectrum(0,300000);
+  t.PlotSpectrum(100000,200000);
 
   //create level 1 tree
   t.Loop(0, -1);
@@ -1012,33 +1012,51 @@ void run(int istart=0, int iend=-1)
   //for (int i=0;i<10;i++) t.PlotEvent(i);
 }
 
+//extract pedestal for given runs
+void DoPedestal()
+{
+  ReadEvTree t;
+  gStyle->SetPadRightMargin(0.01);
+  t.ExtractPedestal(0, 100000);  
+}
 
 //extract pedestal for given runs
 void DoPedestal(int run_start, int run_end)
 {
   char filename[255];
   for (int run=run_start;run<=run_end;run++) {
-    sprintf(filename,"../ROOTFILE/beamtest_hallc_%4d_0.root",run);  //4110-4126
-    //sprintf(filename,"../ROOTFILE/highrate_20230221/beamtest_hallc_%4d_0.root",run);  //4315-4328
-    //sprintf(filename,"../ROOTFILE/highrate_20230223/beamtest_hallc_%4d_0.root",run);  //4329-4340
+    int subrun = 0;
+    if(run<=3683) {
+      sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/82deg/pass1/beamtest_hallc_%4d_%d.root",run,subrun); 
+    } else if(run<=3906) {
+       sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/cosmic/pass0/beamtest_hallc_%04d_%d.root",run,subrun);
+    } else if (run<=4285) {
+      sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/7deg/pass1/beamtest_hallc_%04d_%d.root",run,subrun);
+    } else { 
+      sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/18deg/ROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
+    }
 
     if (gSystem->AccessPathName(filename)) {
-      std::cout << "DoPedestal(): file \"" << filename << "\" does not exist" << std::endl;
-      continue;
+      //std::cout << "DoLevel1Tree(): file \"" << filename << "\" does not exist" << std::endl;
+      sprintf(filename,"/home/solid/replay/ROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
+      if (gSystem->AccessPathName(filename)) {
+        //std::cout << "DoLevel1Tree(): file \"" << filename << "\" does not exist" << std::endl;
+        continue;
+      }
     }
 
     std::cout<<"loading file "<<filename<<endl;
     ReadEvTree t(filename);
 
     gStyle->SetPadRightMargin(0.01);
-    bool ret = t.ExtractPedestal(0, 300000);  //return false if less than 1k events
+    bool ret = t.ExtractPedestal(0, 100000);  //return false if less than 1k events
 
     if (ret) {
       if (run==run_start) WritePedFile(run,1);
       else WritePedFile(run,0);
 
       gStyle->SetPadRightMargin(0.15);
-      t.PlotSpectrum(0, -1);
+      t.PlotSpectrum(100000, 200000);
     }
   }
 }
@@ -1066,35 +1084,23 @@ void DoLevel1Tree(int run_start, int run_end)
     pedready = true;
     for (int subrun=0;subrun<500;subrun++) {
       //sprintf(filename,"../ROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
-      if(run<=3971) {
-        sprintf(filename,"/home/solid/_replay/ROOTFILE/highrate_check/beamtest_hallc_%4d_%d.root",run,subrun);  //3944-3971
-      } else if(run<=4009) {
-        sprintf(filename,"/home/solid/_replay/ROOTFILE/highrate_BeamOffHvOn/beamtest_hallc_%4d_%d.root",run,subrun);  //3972-4009
-      } else if(run<=4022) {
-        sprintf(filename,"/home/solid/_replay/ROOTFILE/highrate_20230116/beamtest_hallc_%4d_%d.root",run,subrun);  //4010-4022
-      } else if(run<=4040) {
-        sprintf(filename,"../ROOTFILE/highrate_BeamOffHvOn/beamtest_hallc_%4d_%d.root",run,subrun);  //4023-4036
-      } else if (run<=4066) {
-        sprintf(filename,"../ROOTFILE/highrate_20230123/beamtest_hallc_%4d_%d.root",run,subrun);  //4041-4066
-      } else if (run<=4083) {
-        sprintf(filename,"../ROOTFILE/highrate_20230124/beamtest_hallc_%4d_%d.root",run,subrun);  //4067-4083
-      } else if (run<=4101) {
-        sprintf(filename,"../ROOTFILE/highrate_20230127/beamtest_hallc_%4d_%d.root",run,subrun);  //4084-4101
-      } else if (run<=4139) {
-        sprintf(filename,"../ROOTFILE/highrate_20230203/beamtest_hallc_%4d_%d.root",run,subrun);  //4102-4139
-      } else if (run==4140) {
-        sprintf(filename,"../ROOTFILE/CerPed4140/beamtest_hallc_%4d_%d.root",run,subrun);  //4140-4140
-      } else if (run<=4172) {
-        sprintf(filename,"../ROOTFILE/highrate_20230210/beamtest_hallc_%4d_%d.root",run,subrun);  //4141-4171
-      } else if (run<=4210) {
-        sprintf(filename,"../ROOTFILE/highrate_20230215/beamtest_hallc_%4d_%d.root",run,subrun);  //4172-4210
-      } else { //run>=4211
-        sprintf(filename,"../ROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
+      if(run<=3683) {
+        sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/82deg/pass1/beamtest_hallc_%4d_%d.root",run,subrun); 
+      } else if(run<=3906) {
+         sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/cosmic/pass0/beamtest_hallc_%04d_%d.root",run,subrun);
+      } else if (run<=4285) {
+        sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/7deg/pass1/beamtest_hallc_%04d_%d.root",run,subrun);
+      } else { 
+        sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/18deg/ROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
       }
-
+      
       if (gSystem->AccessPathName(filename)) {
         //std::cout << "DoLevel1Tree(): file \"" << filename << "\" does not exist" << std::endl;
-        continue;
+        sprintf(filename,"/home/solid/replay/ROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
+        if (gSystem->AccessPathName(filename)) {
+          //std::cout << "DoLevel1Tree(): file \"" << filename << "\" does not exist" << std::endl;
+          continue;
+        }
       }
 
       std::cout<<"loading file "<<filename<<endl;

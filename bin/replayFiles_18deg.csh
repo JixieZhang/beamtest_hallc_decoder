@@ -32,7 +32,7 @@ set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/pass0
 set monitordir = /volatile/halla/solid/$user/ecal_beamtest_hallc/monitor
 if ("$host" == "uvasolid2")  then
 	set datadir = /home/solid/data
-	set replaydir = /home/solid/replay/ROOTFILE
+	set replaydir = /home/solid/replay/GEMROOTFILE
 	set monitordir = /home/solid/replay/monitor
 endif
 
@@ -107,7 +107,6 @@ endif
 cd $WORKDIR;set WORKDIR = (`pwd`);cd $curdir
 ##################################################
 
-
 foreach infile0 ($argv[2-$#argv])
 	if !(-f $infile0)  then
 		echo "file $infile0 not exist, skipped ..."
@@ -137,6 +136,7 @@ foreach infile0 ($argv[2-$#argv])
 	set subrun = (${infile:e})
 	set outfilename = beamtest_hallc_${run}_${subrun}.root
 	set outfile = $replaydir/$outfilename
+	set outlevel1file = $replaydir/beamtest_level1_${run}_${subrun}.root
 
 	#lowrate: <= 3683
 	#cosmic1: 3684 - 3860, PreSh left and right swapped, Shower has 120deg rotation
@@ -179,8 +179,8 @@ foreach infile0 ($argv[2-$#argv])
 	#due to bin/analyze require ./config and ./database to run
 	# I have to copy them  into $WORKDIR
 	cd $WORKDIR
-	$DEBUG cp -fr $decoderdir/config $decoderdir/database $WORKDIR
-	$DEBUG cp -fr $decoderdir/rootlogon.C $WORKDIR
+	$DEBUG cp -fr $decoderdir/config $decoderdir/database $WORKDIR/.
+	$DEBUG ln -sf $decoderdir/tracking $WORKDIR/.
 
 	#this will set pedestal files for GEM
 	if ($run <= 3319) then
@@ -200,7 +200,8 @@ foreach infile0 ($argv[2-$#argv])
 	#create level1 tree and plot monitoring histo
 	if (-f $outfilename) then
 		$DEBUG mv -f $outfilename $outfile
-		#$DEBUG ln -sf $decoderdir/rootlogon.C .
+		$DEBUG ln -sf $decoderdir/rootlogon.C .
+		$DEBUG root -b -q $outfile $decoderdir/CreateLevel1Tree/plotGEM.C+
 		$DEBUG root -b -q $outfile $decoderdir/CreateLevel1Tree/${cscriptfile}+
 
 		if ($subrun == 0) then

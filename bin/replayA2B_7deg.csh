@@ -45,7 +45,7 @@ if ($#argv < 1) then
 	echo "         -n [NEV (default: -1)]: number of events to process (< 0 means all)"
 	echo "         -m, --module [MODULE (default: database/modules/mapmt_module.json)]: json file for module configuration"
 	echo "         -r [RES (default: 3)]: resolution for waveform analysis"
-	echo "         -t [THRES (default: 10.000000)]: peak threshold for waveform analysis"
+	echo "         -t [THRES (default: 20.000000)]: peak threshold for waveform analysis"
 	echo "         -p [NPEDS (default: 8)]: sample window width for pedestal searching"
 	echo "         -f [FLAT (default: 1.000000)]: flatness requirement for pedestal searching"
 	echo "         -x [USEFIXEDPED (default: 0)]: whether or not to use fixed FADC pedestals from database"
@@ -124,7 +124,7 @@ while ($run < $endrun)
 		#remove the local output file if exists, will move it to $outfile when finish
 		if (-f $outfilename) $DEBUG rm -f $outfilename
 
-		$DEBUG $decoderdir/bin/replayFiles_highrate.csh "$replayoption" $infile
+		$DEBUG $decoderdir/bin/replayFiles_7deg.csh "$replayoption" $infile
 
 		#moving files from $replaydir to $outfir
 		if ("$replaydir" != "$outdir") then

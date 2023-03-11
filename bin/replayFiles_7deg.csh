@@ -21,13 +21,13 @@ set decoderdir = ${HallCBeamtestDir}
 #set replaydir = /cache/halla/solid/subsystem/ec/ecal_cosmic_hallc/replay/pass0
 #set replaydir = /volatile/halla/solid/jixie/ecal_beamtest_hallc/cosmic/pass0
 
-#set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_7deg/raw
-#set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_7deg/replay/pass0
-#set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/7deg/pass0
+set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_7deg/raw
+set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_7deg/replay/pass1
+set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/7deg/pass1
 
-set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
-set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/replay/pass0
-set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/pass0
+#set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
+#set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/replay/pass0
+#set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/pass0
 
 set monitordir = /volatile/halla/solid/$user/ecal_beamtest_hallc/monitor
 if ("$host" == "uvasolid2")  then
@@ -49,7 +49,7 @@ if ($#argv < 2) then
 	echo "         -n [NEV (default: -1)]: number of events to process (< 0 means all)"
 	echo "         -m, --module [MODULE (default: database/modules/mapmt_module.json)]: json file for module configuration"
 	echo "         -r [RES (default: 3)]: resolution for waveform analysis"
-	echo "         -t [THRES (default: 20.000000)]: peak threshold for waveform analysis"
+	echo "         -t [THRES (default: 10.000000)]: peak threshold for waveform analysis"
 	echo "         -p [NPEDS (default: 8)]: sample window width for pedestal searching"
 	echo "         -f [FLAT (default: 1.000000)]: flatness requirement for pedestal searching"
 	echo "         -x [USEFIXEDPED (default: 0)]: whether or not to use fixed FADC pedestals from database"
@@ -137,6 +137,7 @@ foreach infile0 ($argv[2-$#argv])
 	set subrun = (${infile:e})
 	set outfilename = beamtest_hallc_${run}_${subrun}.root
 	set outfile = $replaydir/$outfilename
+	set outlevel1file = $replaydir/beamtest_level1_${run}_${subrun}.root
 
 	#lowrate: <= 3683
 	#cosmic1: 3684 - 3860, PreSh left and right swapped, Shower has 120deg rotation

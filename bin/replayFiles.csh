@@ -22,7 +22,7 @@ if ($#argv < 2) then
     echo "         -n [NEV (default: -1)]: number of events to process (< 0 means all)"
     echo "         -m, --module [MODULE (default: database/modules/mapmt_module.json)]: json file for module configuration"
     echo "         -r [RES (default: 3)]: resolution for waveform analysis"
-    echo "         -t [THRES (default: 20.000000)]: peak threshold for waveform analysis"
+    echo "         -t [THRES (default: 10.000000)]: peak threshold for waveform analysis"
     echo "         -p [NPEDS (default: 8)]: sample window width for pedestal searching"
     echo "         -f [FLAT (default: 1.000000)]: flatness requirement for pedestal searching"
     $DEBUG exit 0

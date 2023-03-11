@@ -35,9 +35,9 @@ char grName[255];
 void Init()
 {
 	gStyle->SetOptStat(0);
-	gStyle->SetOptFit(0);
 	gStyle->SetPadBottomMargin(0.12);
 	gStyle->SetPadTopMargin(0.12);
+	gStyle->SetOptFit(0);
 	gStyle->SetPadRightMargin(0.05);
 	//gStyle->SetTitleSize(0.5); //0.35 default
 	gStyle->SetTitleH(0.11);
@@ -124,7 +124,7 @@ void plotPeak(int trigbit)
 		c1->cd(i+1);
 		sprintf(hname,"h7Pos_%02d",i);
 		if(gROOT->FindObject(hname)) delete gROOT->FindObject(hname);
-		T->Draw(Form("Slot7Pos[%d]>>%s(96,2,98)",i,hname),myCut);
+		T->Draw(Form("Slot7Pos[%d]>>%s(56,2,58)",i,hname),myCut);
 		TH1D* h1 = (TH1D*) gROOT->FindObject(hname);
 		double xx = h1->GetXaxis()->GetBinCenter(h1->GetMaximumBin());
 		double yy = h1->GetMaximum()*1.05;
@@ -147,7 +147,7 @@ void plotPeak(int trigbit)
 		c2->cd(i+1);
 		sprintf(hname,"h8Pos_%02d",i);
 		if(gROOT->FindObject(hname)) delete gROOT->FindObject(hname);
-		T->Draw(Form("Slot8Pos[%d]>>%s(96,2,98)",i,hname),myCut);
+		T->Draw(Form("Slot8Pos[%d]>>%s(56,2,58)",i,hname),myCut);
 		TH1D* h1 = (TH1D*) gROOT->FindObject(hname);
 		double xx = h1->GetXaxis()->GetBinCenter(h1->GetMaximumBin());
 		double yy = h1->GetMaximum()*1.05;
@@ -184,17 +184,13 @@ void plotHeight(int trigbit)
 		c3->cd(i+1);
 		sprintf(hname,"h7Height_%02d",i);
 		if(gROOT->FindObject(hname)) delete gROOT->FindObject(hname);
-		if(i>=8 && i<=11) T->Draw(Form("Slot7Height[%d]>>%s(40,5,125)",i,hname),myCut);
-		else T->Draw(Form("Slot7Height[%d]>>%s(50,5,205)",i,hname),myCut);
+		if(i==7) T->Draw(Form("Slot7Height[%d]>>%s(150,5,455)",i,hname),myCut);
+		else T->Draw(Form("Slot7Height[%d]>>%s(50,5,155)",i,hname),myCut);
 		TH1D* h1 = (TH1D*) gROOT->FindObject(hname);
 		sprintf(htitle,"%s Height;Height (ADC)",Slot7Name[i]);
 		h1->SetTitle(htitle);
 		double mean,sigma;
-		//if(i>=8 && i<=11) FitGausPeak(h1,mean,sigma,9);
-		//else  FitGausPeak(h1,mean,sigma,13);
-		if(i>=8 && i<=9) FitGausPeak(h1,10,50,mean,sigma,9);
-		else if(i>=10 && i<=11) FitGausPeak(h1,15,70,mean,sigma,9);
-		else  FitGausPeak(h1,30,150,mean,sigma,13);
+		if(i!=7) FitGausPeak(h1,mean,sigma,9);
 	}
 	c3->cd();
 	c3->Print(grName, "pdf");
@@ -205,14 +201,13 @@ void plotHeight(int trigbit)
 		c4->cd(i+1);
 		sprintf(hname,"h8Height_%02d",i);
 		if(gROOT->FindObject(hname)) delete gROOT->FindObject(hname);
-		if(i<3 || i==6)  T->Draw(Form("Slot8Height[%d]>>%s(100,10,1510)",i,hname),myCut);
-		else if(i==3)  T->Draw(Form("Slot8Height[%d]>>%s(100,10,510)",i,hname),myCut);
-		else if(i==4 || i==5)  T->Draw(Form("Slot8Height[%d]>>%s(100,10,310)",i,hname),myCut);
-		else if(i==7 || i==8 || i==9 || i==13)  T->Draw(Form("Slot8Height[%d]>>%s(100,10,310)",i,hname),myCut);
-		else if(i==10 || i==11 || i==12)  T->Draw(Form("Slot8Height[%d]>>%s(100,10,310)",i,hname),myCut);
+		if(i<4)  T->Draw(Form("Slot8Height[%d]>>%s(100,5,305)",i,hname),myCut);
+		else if(i==6)  T->Draw(Form("Slot8Height[%d]>>%s(75,5,155)",i,hname),myCut);
+		else if(i==4 || i==5)  T->Draw(Form("Slot8Height[%d]>>%s(100,5,305)",i,hname),myCut);
+		else if(i==7 || i==8 || i==9 || i==13)  T->Draw(Form("Slot8Height[%d]>>%s(100,5,305)",i,hname),myCut);
 		else {
-			if(trigbit==4)  T->Draw(Form("Slot8Height[%d]>>%s(100,10,610)",i,hname),myCut);
-			else  T->Draw(Form("Slot8Height[%d]>>%s(100,10,210)",i,hname),myCut);
+			if(trigbit==1 || trigbit==4)  T->Draw(Form("Slot8Height[%d]>>%s(150,5,455)",i,hname),myCut);
+			else  T->Draw(Form("Slot8Height[%d]>>%s(100,5,305)",i,hname),myCut);
 		}
 		TH1D* h1 = (TH1D*) gROOT->FindObject(hname);
 		sprintf(htitle,"%s Height;Height (ADC)",Slot8Name[i]);
@@ -239,18 +234,13 @@ void plotIntegral(int trigbit)
 		c5->cd(i+1);
 		sprintf(hname,"h7Integral_%02d",i);
 		if(gROOT->FindObject(hname)) delete gROOT->FindObject(hname);
-		if(i>=8 && i<=11) T->Draw(Form("Cer[%d]>>%s(80,20,420)",i,hname),myCut);
-		else T->Draw(Form("Cer[%d]>>%s(80,20,820)",i,hname),myCut);
+		if(i==7) T->Draw(Form("Cer[%d]>>%s(120,20,820)",i,hname),myCut);
+		else T->Draw(Form("Cer[%d]>>%s(50,20,320)",i,hname),myCut);
 		TH1D* h1 = (TH1D*) gROOT->FindObject(hname);
 		sprintf(htitle,"%s Integral;Integral (ADC)",Slot7Name[i]);
 		h1->SetTitle(htitle);
 		double mean,sigma;
-		//if(i>=8 && i<=11) FitGausPeak(h1,mean,sigma,9);
-		//else  FitGausPeak(h1,mean,sigma,15);
-		if(i==8) FitGausPeak(h1,35,150,mean,sigma,9);
-		else if(i==9 || i==10) FitGausPeak(h1,40,160,mean,sigma,9);
-		else if(i==11) FitGausPeak(h1,40,200,mean,sigma,9);
-		else  FitGausPeak(h1,150,450,mean,sigma,17);
+		if(i!=7) FitGausPeak(h1,mean,sigma,9);
 	}
 	c5->cd();
 	c5->Print(grName, "pdf");
@@ -261,14 +251,13 @@ void plotIntegral(int trigbit)
 		c6->cd(i+1);
 		sprintf(hname,"h8Integral_%02d",i);
 		if(gROOT->FindObject(hname)) delete gROOT->FindObject(hname);
-		if(i<3 || i==6)  T->Draw(Form("%s>>%s(100,50,15050)",Slot8Name[i],hname),myCut);
-		else if(i==3)  T->Draw(Form("%s>>%s(100,50,5050)",Slot8Name[i],hname),myCut);
-		else if(i==4 || i==5)  T->Draw(Form("%s>>%s(100,50,3050)",Slot8Name[i],hname),myCut);
+		if(i<4)  T->Draw(Form("%s>>%s(100,50,1050)",Slot8Name[i],hname),myCut);
+		else if(i==6)  T->Draw(Form("%s>>%s(50,50,550)",Slot8Name[i],hname),myCut);
+		else if(i==4 || i==5)  T->Draw(Form("%s>>%s(100,50,1050)",Slot8Name[i],hname),myCut);
 		else if(i==7 || i==8 || i==9 || i==13)  T->Draw(Form("%s>>%s(100,50,3050)",Slot8Name[i],hname),myCut);
-		else if(i==10 || i==11 || i==12)  T->Draw(Form("%s>>%s(100,50,3050)",Slot8Name[i],hname),myCut);
-		else { //i==14, showersum
-			if(trigbit==4)  T->Draw(Form("%s>>%s(250,50,5050)",Slot8Name[i],hname),myCut);
-			else  T->Draw(Form("%s>>%s(100,50,2050)",Slot8Name[i],hname),myCut);
+		else { //i==10,11,12,14,  all showers
+			if(trigbit==1 || trigbit==4)  T->Draw(Form("%s>>%s(150,50,3050)",Slot8Name[i],hname),myCut);
+			else  T->Draw(Form("%s>>%s(100,50,3050)",Slot8Name[i],hname),myCut);
 		}
 		TH1D* h1 = (TH1D*) gROOT->FindObject(hname);
 		sprintf(htitle,"%s Integral;Integral (ADC)",Slot8Name[i]);
@@ -279,7 +268,7 @@ void plotIntegral(int trigbit)
 }
 
 
-void plot_level1()
+void plot_level1_82deg()
 {
 	Init();
 
@@ -300,7 +289,7 @@ void plot_level1()
 
 
 //plot monitoring histo for given runs
-void plot_level1(int run_start, int run_end)
+void plot_level1_82deg(int run_start, int run_end)
 {
 	char filename[255];
 	for (int run=run_start;run<=run_end;run++) {
@@ -323,7 +312,7 @@ void plot_level1(int run_start, int run_end)
 		}
 
 		TFile *file = new TFile(filename);
-		plot_level1();
+		plot_level1_82deg();
 		file->Close();
 	}
 }
