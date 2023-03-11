@@ -10,6 +10,7 @@
 #include "MPDModule.h"
 #include <iostream>
 
+/*
 // event types
 enum EvType {
     CODA_PRST = 0xffd1,
@@ -19,6 +20,7 @@ enum EvType {
     CODA_PHY2 = 0xff70,
     CODA_EPICS = 0x83,
 };
+*/
 
 class EventWrapper
 {
@@ -42,6 +44,7 @@ public:
     UInt_t GetData(UInt_t crate, UInt_t slot, UInt_t chan, UInt_t hit) const;
     UInt_t GetEvNum() const { return event_num; }
     UInt_t GetEvLength() const { return fBufLen; }
+    void print() const;
 
 private:
     int event_num = 0;

@@ -6,8 +6,8 @@
  * will be removed
  */
 
-//#define SORTING_ALGORITHM
-#define DANNING_ALGORITHM
+#define SORTING_ALGORITHM
+//#define DANNING_ALGORITHM
 #define DANNING_ALGORITHM_RMS_THRESHOLD 5.0 // Ben's firmware is using 5.0
 
 //#define USE_VME

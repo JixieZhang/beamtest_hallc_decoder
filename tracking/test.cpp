@@ -7,8 +7,6 @@
 
 int main(int argc, char *argv[])
 {
-    std::cout << "hello, world!\n";
-
     EventWrapper evio_event_wrapper;
 
     HCTracking *tracking = new HCTracking();
@@ -19,16 +17,17 @@ int main(int argc, char *argv[])
     // raw data
     evc::EvChannel evchan;
     //std::string dpath = "/home/xinzhan/evio_data/genii_data/e1209016_2562.evio.0.3";
-    std::string dpath = "/home/xinzhan/test/hallc_setup_2022/analysis_frame_work/data/hallc_fadc_ssp_3340.evio.21";
+    //std::string dpath = "../test_data/hallc_fadc_ssp_4208.evio.0";
+    std::string dpath = "/volatile/halla/solid/xbai/hallc_fadc_ssp_4358.evio.3";
     if (evchan.Open(dpath) != evc::status::success)
     {
         std::cout << "Cannot open evchannel at " << dpath << std::endl;
         return 0;
     }
 
-    int nev = 10000; // event limit
+    int nev = 50000; // event limit
     int count = 1;
-    int PROGRESS_COUNT = 10000;
+    int PROGRESS_COUNT = 100;
 
     while ((evchan.Read() == evc::status::success) && (nev-- != 0))
     {
@@ -60,7 +59,6 @@ int main(int argc, char *argv[])
         const uint32_t *dbuf;
         size_t buflen;
         int blvl = 0;
-        std::cout << "event number: " << count << std::endl;
         //getchar();
         std::vector<uint32_t> banks = {10};
         evchan.ScanBanks(banks);
@@ -83,31 +81,6 @@ int main(int argc, char *argv[])
             std::cout << "XBDEBUG:: warning: " << e.what() << std::endl;
             continue;
         }
-
-        /*
-        for (int ii = 0; ii < blvl; ii++)
-        {
-            try
-            {
-                dbuf = evchan.GetEvBuffer(tmp_crate, tmp_bank, tmp_slot, ii, buflen);
-            }
-            catch (std::exception &e)
-            {
-                std::cout << "warning: " << e.what() << "\n";
-                continue;
-            }
-
-            evio_event_wrapper.LoadEvent(dbuf, buflen);
-
-            // std::vector<int> ivec{mod.bank, mod.crate};
-            // gem_decoder.Decode(dbuf, buflen, ivec);
-            // auto event = static_cast<GEMTreeStruct *>(mod.event);
-            // extract_gem_cluster(&gem_system, &gem_decoder, *event, count);
-
-            tracking->Decode(evio_event_wrapper);
-            tracking->find_tracks();
-        }
-        */
 
         auto raw_vec = evchan.GetRawBufferVec();
         evio_event_wrapper.LoadEvent(raw_vec.data(), raw_vec.size());

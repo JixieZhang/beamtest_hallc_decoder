@@ -9,7 +9,9 @@
 #include <TH2D.h>
 #include <TSystem.h>
 #include <TDatime.h>
+#include <TFile.h>
 #include <sstream>
+#include <iomanip>
 #include "Database/Database.h"
 #include "Database/Textvars.h"
 #include "Database/Helper.h"
@@ -358,12 +360,154 @@ void HCTracking::InitEfficiencyHistos(const char *dname)
     }
 }
 
+
+void HCTracking::InitTrackingResultTree(TTree *tree)
+{
+    if(tree != nullptr)
+        tracking_res_tree = tree;
+    else
+        tracking_res_tree = new TTree("tracking", "tracking result tree");
+
+    tracking_res_tree -> Branch("fNtracks_found", &fNtracks_found, "fNtracks_found/I");
+    tracking_res_tree -> Branch("fNhitsOnTrack", &fNhitsOnTrack, 32000, 0);
+
+    tracking_res_tree -> Branch("fXtrack", &fXtrack, 32000, 0);
+    tracking_res_tree -> Branch("fYtrack", &fYtrack, 32000, 0);
+    tracking_res_tree -> Branch("fXptrack", &fXptrack, 32000, 0);
+    tracking_res_tree -> Branch("fYptrack", &fYptrack, 32000, 0);
+    tracking_res_tree -> Branch("fChi2Track", &fChi2Track, 32000, 0);
+
+    tracking_res_tree -> Branch("fBestTrackIndex", &fBestTrackIndex, "fBestTrackIndex/I");
+    tracking_res_tree -> Branch("fNgoodhits", &fNgoodhits, "fNgoodhits/I");
+
+    tracking_res_tree -> Branch("fHitTrackIndex", &fHitTrackIndex, 32000, 0);
+    tracking_res_tree -> Branch("fHitModule", &fHitModule, 32000, 0);
+    tracking_res_tree -> Branch("fHitLayer", &fHitLayer, 32000, 0);
+    tracking_res_tree -> Branch("fHitNstripsU", &fHitNstripsU, 32000, 0);
+    tracking_res_tree -> Branch("fHitUstripMax", &fHitUstripMax, 32000, 0);
+    tracking_res_tree -> Branch("fHitUstripLo", &fHitUstripLo, 32000, 0);
+    tracking_res_tree -> Branch("fHitUstripHi", &fHitUstripHi, 32000, 0);
+    tracking_res_tree -> Branch("fHitNstripsV", &fHitNstripsV, 32000, 0);
+    tracking_res_tree -> Branch("fHitVstripMax", &fHitVstripMax, 32000, 0);
+    tracking_res_tree -> Branch("fHitVstripLo", &fHitVstripLo, 32000, 0);
+    tracking_res_tree -> Branch("fHitVstripHi", &fHitVstripHi, 32000, 0);
+    tracking_res_tree -> Branch("fHitUlocal", &fHitUlocal, 32000, 0);
+    tracking_res_tree -> Branch("fHitVlocal", &fHitVlocal, 32000, 0);
+    tracking_res_tree -> Branch("fHitXlocal", &fHitXlocal, 32000, 0);
+    tracking_res_tree -> Branch("fHitYlocal", &fHitYlocal, 32000, 0);
+    tracking_res_tree -> Branch("fHitXglobal", &fHitXglobal, 32000, 0);
+    tracking_res_tree -> Branch("fHitYglobal", &fHitYglobal, 32000, 0);
+    tracking_res_tree -> Branch("fHitZglobal", &fHitZglobal, 32000, 0);
+    tracking_res_tree -> Branch("fHitUmoment", &fHitUmoment, 32000, 0);
+    tracking_res_tree -> Branch("fHitVmoment", &fHitVmoment, 32000, 0);
+    tracking_res_tree -> Branch("fHitUsigma", &fHitUsigma, 32000, 0);
+    tracking_res_tree -> Branch("fHitVsigma", &fHitVsigma, 32000, 0);
+    tracking_res_tree -> Branch("fHitResidU", &fHitResidU, 32000, 0);
+    tracking_res_tree -> Branch("fHitResidV", &fHitResidV, 32000, 0);
+    tracking_res_tree -> Branch("fHitEResidU", &fHitEResidU, 32000, 0);
+    tracking_res_tree -> Branch("fHitEResidV", &fHitEResidV, 32000, 0);
+    tracking_res_tree -> Branch("fHitUADC", &fHitUADC, 32000, 0);
+    tracking_res_tree -> Branch("fHitVADC", &fHitVADC, 32000, 0);
+ 
+    tracking_res_tree -> Branch("fHitUADCclust_deconv", &fHitUADCclust_deconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitVADCclust_deconv", &fHitVADCclust_deconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitUADCclust_maxsamp_deconv", &fHitUADCclust_maxsamp_deconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitVADCclust_maxsamp_deconv", &fHitVADCclust_maxsamp_deconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitUADCclust_maxcombo_deconv", &fHitUADCclust_maxcombo_deconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitVADCclust_maxcombo_deconv", &fHitVADCclust_maxcombo_deconv, 32000, 0);
+
+    tracking_res_tree -> Branch("fHitUADCmaxstrip", &fHitUADCmaxstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitVADCmaxstrip", &fHitVADCmaxstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitUADCmaxstrip_deconv", &fHitUADCmaxstrip_deconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitVADCmaxstrip_deconv", &fHitVADCmaxstrip_deconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitUADCmaxsample", &fHitUADCmaxsample, 32000, 0);
+    tracking_res_tree -> Branch("fHitVADCmaxsample", &fHitVADCmaxsample, 32000, 0);
+    tracking_res_tree -> Branch("fHitUADCmaxsample_deconv", &fHitUADCmaxsample_deconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitVADCmaxsample_deconv", &fHitVADCmaxsample_deconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitUADCmaxcombo_deconv", &fHitUADCmaxcombo_deconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitVADCmaxcombo_deconv", &fHitVADCmaxcombo_deconv, 32000, 0);
+ 
+    tracking_res_tree -> Branch("fHitUADCmaxclustsample", &fHitUADCmaxclustsample, 32000, 0);
+    tracking_res_tree -> Branch("fHitVADCmaxclustsample", &fHitVADCmaxclustsample, 32000, 0);
+ 
+    tracking_res_tree -> Branch("fHitADCasym", &fHitADCasym, 32000, 0);
+    tracking_res_tree -> Branch("fHitADCavg", &fHitADCavg, 32000, 0);
+    tracking_res_tree -> Branch("fHitADCasym_deconv", &fHitADCasym_deconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitADCavg_deconv", &fHitADCavg_deconv, 32000, 0);
+ 
+    tracking_res_tree -> Branch("fHitUTime", &fHitUTime, 32000, 0);
+    tracking_res_tree -> Branch("fHitVTime", &fHitVTime, 32000, 0);
+    tracking_res_tree -> Branch("fHitUTimeDeconv", &fHitUTimeDeconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitVTimeDeconv", &fHitVTimeDeconv, 32000, 0);
+ 
+    tracking_res_tree -> Branch("fHitUTimeMaxStrip", &fHitUTimeMaxStrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitVTimeMaxStrip", &fHitVTimeMaxStrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitUTimeMaxStripFit", &fHitUTimeMaxStripFit, 32000, 0);
+    tracking_res_tree -> Branch("fHitVTimeMaxStripFit", &fHitVTimeMaxStripFit, 32000, 0);
+    tracking_res_tree -> Branch("fHitUTimeMaxStripDeconv", &fHitUTimeMaxStripDeconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitVTimeMaxStripDeconv", &fHitVTimeMaxStripDeconv, 32000, 0);
+ 
+    tracking_res_tree -> Branch("fHitDeltaTDeconv", &fHitDeltaTDeconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitTavgDeconv", &fHitTavgDeconv, 32000, 0);
+
+    tracking_res_tree -> Branch("fHitIsampMaxUclust", &fHitIsampMaxUclust, 32000, 0);
+    tracking_res_tree -> Branch("fHitIsampMaxVclust", &fHitIsampMaxVclust, 32000, 0);
+    tracking_res_tree -> Branch("fHitIsampMaxUstrip", &fHitIsampMaxUstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitIsampMaxVstrip", &fHitIsampMaxVstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitIsampMaxUstripDeconv", &fHitIsampMaxUstripDeconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitIsampMaxVstripDeconv", &fHitIsampMaxVstripDeconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitIcomboMaxUstripDeconv", &fHitIcomboMaxUstripDeconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitIcomboMaxVstripDeconv", &fHitIcomboMaxVstripDeconv, 32000, 0);
+ 
+    tracking_res_tree -> Branch("fHitIsampMaxUclustDeconv", &fHitIsampMaxUclustDeconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitIsampMaxVclustDeconv", &fHitIsampMaxVclustDeconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitIcomboMaxUclustDeconv", &fHitIcomboMaxUclustDeconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitIcomboMaxVclustDeconv", &fHitIcomboMaxVclustDeconv, 32000, 0);
+ 
+    tracking_res_tree -> Branch("fHitCorrCoeffClust", &fHitCorrCoeffClust, 32000, 0);
+    tracking_res_tree -> Branch("fHitCorrCoeffMaxStrip", &fHitCorrCoeffMaxStrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitCorrCoeffClustDeconv", &fHitCorrCoeffClustDeconv, 32000, 0);
+    tracking_res_tree -> Branch("fHitCorrCoeffMaxStripDeconv", &fHitCorrCoeffMaxStripDeconv, 32000, 0);
+ 
+    tracking_res_tree -> Branch("fHitADCfrac0_MaxUstrip", &fHitADCfrac0_MaxUstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitADCfrac1_MaxUstrip", &fHitADCfrac1_MaxUstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitADCfrac2_MaxUstrip", &fHitADCfrac2_MaxUstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitADCfrac3_MaxUstrip", &fHitADCfrac3_MaxUstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitADCfrac4_MaxUstrip", &fHitADCfrac4_MaxUstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitADCfrac5_MaxUstrip", &fHitADCfrac5_MaxUstrip, 32000, 0);
+
+    tracking_res_tree -> Branch("fHitADCfrac0_MaxVstrip", &fHitADCfrac0_MaxVstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitADCfrac1_MaxVstrip", &fHitADCfrac1_MaxVstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitADCfrac2_MaxVstrip", &fHitADCfrac2_MaxVstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitADCfrac3_MaxVstrip", &fHitADCfrac3_MaxVstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitADCfrac4_MaxVstrip", &fHitADCfrac4_MaxVstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitADCfrac5_MaxVstrip", &fHitADCfrac5_MaxVstrip, 32000, 0);
+
+    tracking_res_tree -> Branch("fHitDeconvADC0_MaxUstrip", &fHitDeconvADC0_MaxUstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitDeconvADC1_MaxUstrip", &fHitDeconvADC1_MaxUstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitDeconvADC2_MaxUstrip", &fHitDeconvADC2_MaxUstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitDeconvADC3_MaxUstrip", &fHitDeconvADC3_MaxUstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitDeconvADC4_MaxUstrip", &fHitDeconvADC4_MaxUstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitDeconvADC5_MaxUstrip", &fHitDeconvADC5_MaxUstrip, 32000, 0);
+
+    tracking_res_tree -> Branch("fHitDeconvADC0_MaxVstrip", &fHitDeconvADC0_MaxVstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitDeconvADC1_MaxVstrip", &fHitDeconvADC1_MaxVstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitDeconvADC2_MaxVstrip", &fHitDeconvADC2_MaxVstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitDeconvADC3_MaxVstrip", &fHitDeconvADC3_MaxVstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitDeconvADC4_MaxVstrip", &fHitDeconvADC4_MaxVstrip, 32000, 0);
+    tracking_res_tree -> Branch("fHitDeconvADC5_MaxVstrip", &fHitDeconvADC5_MaxVstrip, 32000, 0);
+}
+
+
 void HCTracking::CalcEfficiency()
 {
-    if (!fMakeEfficiencyPlots)
+    if (!fMakeEfficiencyPlots) {
+        std::cout<<"Info:: Skipping efficiency plots, not turned on in config file."<<std::endl;
         return;
+    }
 
-    TString histname;
+    //TString histname;
+    std::cout<<"calculating efficiency."<<std::endl;
 
     for (int i = 0; i < fNlayers; i++)
     {
@@ -646,7 +790,6 @@ void HCTracking::Clear()
     fConstraintWidth_Front_IsInitialized = false;
     fConstraintWidth_Back_IsInitialized = false;
     fConstraintInitialized = false;
-
     fNtracks_found = 0;
     fNhitsOnTrack.clear();
     fModListTrack.clear();
@@ -823,7 +966,7 @@ double HCTracking::InitHitList()
             n2Dhits_tot += fModules[module]->fN2Dhits;
         }
 
-        // std::cout << "layer, n2Dhits_tot = " << layer << ", " << n2Dhits_tot << std::endl;
+        //std::cout << "layer, n2Dhits_tot = " << layer << ", " << n2Dhits_tot << std::endl;
 
         modindexhit2D[layer].resize(n2Dhits_tot);
         clustindexhit2D[layer].resize(n2Dhits_tot);
@@ -1115,13 +1258,41 @@ void HCTracking::hit_reconstruction()
         if (fN2Dhit_layer[layerindex] > 0)
             fNlayers_hitUV++;
     }
+
+    //std::cout<<"xinzhan tracking debug: checking 2d hits for each layer."<<std::endl;
+    //for(int layerindex=0; layerindex<fNlayers; layerindex++)
+    //{
+        //std::cout<<"layer: "<<layerindex<<", 1d U strips: "<<fNstripsU_layer[layerindex]<<std::endl;
+        //std::cout<<"layer: "<<layerindex<<", 1d V strips: "<<fNstripsV_layer[layerindex]<<std::endl;
+
+        //auto mod_list_by_layer = fModuleListByLayer[layerindex];
+        //for(auto &i: mod_list_by_layer) {
+            //GEMModule *mod = fModules[i];
+            //std::cout<<"---- module: "<<i<<", U fired strips (Keep): "<<mod -> fNstrips_keepU<<std::endl;
+            //std::cout<<"---- module: "<<i<<", V fired strips (Keep): "<<mod -> fNstrips_keepV<<std::endl;
+            //std::cout<<"---- module: "<<i<<", U fired strips (hit): "<<mod -> fNstrips_hitU<<std::endl;
+            //std::cout<<"---- module: "<<i<<", V fired strips (hit): "<<mod -> fNstrips_hitV<<std::endl;
+        //}
+    //}
+    //std::cout<<std::endl;
+    //for(int layerindex=0; layerindex<fNlayers; layerindex++)
+    //{
+        //std::cout<<"layer: "<<layerindex<<", 1d U clusters: "<<fNclustU_layer[layerindex]<<std::endl;
+        //std::cout<<"layer: "<<layerindex<<", 1d V clusters: "<<fNclustV_layer[layerindex]<<std::endl;
+    //}
+    //std::cout<<std::endl;
+    //for(int layerindex=0; layerindex<fNlayers; layerindex++)
+    //{
+    //    std::cout<<"layer: "<<layerindex<<", 2d hits: "<<fN2Dhit_layer[layerindex]<<std::endl;
+    //}
+    //getchar();
 }
 
 // Standard "fast" track-finding algorithm (based on SBSGEM_standalone code by Andrew Puckett):
 void HCTracking::find_tracks()
 {
-    // std::cout << "xb debug::" << __func__ << " entered here..." << std::endl;
-    // std::cout << "clustering done? " << fclustering_done << std::endl;
+    //std::cout << "xb debug::" << __func__ << " entered here..." << std::endl;
+    //std::cout << "clustering done? " << fclustering_done << std::endl;
     // should this method invoke clear()? Yes: Clear() just clears out all the track arrays. It is assumed that this method will only be called once per event.
     // Although that is probably not correct; it might be called as many as two times or perhaps once per cluster (to be developed later). Anyway, for now, let's use it, might need to revisit later:
     Clear();
@@ -1143,13 +1314,15 @@ void HCTracking::find_tracks()
     // Initialize the (unchanging) hit list that will be used by the rest of the tracking procedure:
     // double Ncombos_allhits_all_layers =
     InitHitList();
+    //std::cout<<"start tracking? layers with 2d hits: "<<layers_with_2Dhits.size()<<", min hits on track required: "<<fMinHitsOnTrack<<std::endl;
+    //getchar();
 
     if ((int)layers_with_2Dhits.size() >= fMinHitsOnTrack)
     { // Then we have enough layers to do tracking:
         // bool foundtrack = true; rendered unnecessary by the removal of the outermost, redundant while loop:
 
         int nhitsrequired = layers_with_2Dhits.size(); // initially we favor tracks with the largest possible number of hits; if we fail to find a track at this hit requirement, we decrement the number of required hits as long as it exceeds the minimum
-        // std::cout << "[HCTracking::find_tracks]: nhitsrequired = " << nhitsrequired << endl;
+        //std::cout << "[HCTracking::find_tracks]: nhitsrequired = " << nhitsrequired << std::endl;
 
         bool foundtrack = false;
 
@@ -1177,9 +1350,9 @@ void HCTracking::find_tracks()
                 break;
             }
 
-            // std::cout << "[HCTracking::find_tracks]: initialized 'free hit list', nhitsrequired = " << nhitsrequired
-            // 		<< ", number of layers with unused hits, ntracks = "
-            // 		<< layerswithfreehits.size() << ", " << fNtracks_found << ", free hit combinations = " << Ncombos_free << std::endl;
+            //std::cout << "[HCTracking::find_tracks]: initialized 'free hit list', nhitsrequired = " << nhitsrequired
+            //          << ", number of layers with unused hits, ntracks = "
+            //          << layerswithfreehits.size() << ", " << fNtracks_found << ", free hit combinations = " << Ncombos_free << std::endl;
 
             if ((int)layerswithfreehits.size() >= nhitsrequired)
             {
@@ -1212,9 +1385,13 @@ void HCTracking::find_tracks()
 
                 for (unsigned int icombo = 0; icombo < fLayerCombinations[nhitsrequired].size(); icombo++)
                 {
-
-                    // std::cout << "layer combo index, list of layers = "
-                    // 	    << icombo << ", ";
+                    //std::cout << "layer combo index, list of layers = "
+                    //	      << icombo << ", " << fLayerCombinations[nhitsrequired].size() << std::endl;
+                    //for(auto &iii: fLayerCombinations[nhitsrequired]) {
+                    //    for(auto &jjj: iii)
+                    //        std::cout<<jjj<<", ";
+                    //    std::cout<<std::endl;
+                    //}
 
                     int minlayer = fNlayers + 1;
                     int maxlayer = -1;
@@ -1297,6 +1474,8 @@ void HCTracking::find_tracks()
 
                             double xpavg = (xj - xi) / (zjavg - ziavg);
                             double ypavg = (yj - yi) / (zjavg - ziavg);
+                            //std::cout<<"first layer bin coord: ("<<xi<<", "<<yi<<", "<<ziavg<<") => last layer bin coord: ("<<xj<<", "<<yj<<", "<<zjavg<<")"<<std::endl;
+                            //std::cout<<" x slope: "<<xpavg<<", y slope: "<<ypavg<<std::endl;
 
                             // projected coordinate (x, y) at z=0 plane
                             double xavg = 0.5 * (xi - ziavg * xpavg + xj - zjavg * xpavg);
@@ -1379,12 +1558,20 @@ void HCTracking::find_tracks()
                                 {
                                     // The track search region constraint should have already been enforced at the 2D hit reconstruction stage, so additional checks here are probably unnecessary.
 
-                                    // std::cout << "looping over combinations of hits from minlayer,maxlayer, ihit, jhit = " << ihit << ", " << jhit << std::endl;
+                                    //std::cout << "looping over combinations of hits from minlayer,maxlayer, ihit, jhit = "<<minlayer<<", "<<maxlayer<<", " << ihit << ", " << jhit << std::endl;
                                     // int hitmin = freehitlist_layer[minlayer][ihit];
                                     // int hitmax = freehitlist_layer[maxlayer][jhit];
 
                                     int hitmin = freehitlist_binxy_layer[minlayer][ibin][ihit];
                                     int hitmax = freehitlist_binxy_layer[maxlayer][jbin][jhit];
+                                    //std::cout<<"free hits index, min_layer: "<<std::endl;
+                                    //for(auto &iii:  freehitlist_binxy_layer[minlayer][ibin])
+                                    //    std::cout<<iii<<", ";
+                                    //std::cout<<std::endl;
+                                    //std::cout<<"free hits index, max_layer: "<<std::endl;
+                                    //for(auto &iii:  freehitlist_binxy_layer[maxlayer][jbin])
+                                    //    std::cout<<iii<<", ";
+                                    //std::cout<<std::endl;
 
                                     int modmin = modindexhit2D[minlayer][hitmin];
                                     int modmax = modindexhit2D[maxlayer][hitmax];
@@ -1586,7 +1773,6 @@ void HCTracking::find_tracks()
                                         // }
 
                                         freehitcounter[layer] = 0;
-
                                     } // end loop on layers other than minlayer and maxlayer
 
                                     // std::cout << "[HCTracking::find_tracks]: finished loop on layers other than minlayer and maxlayer, minlayer, maxlayer, ihit, jhit, ncombos (intermediate layers) = "
@@ -1612,7 +1798,7 @@ void HCTracking::find_tracks()
                                             ncombos *= freehitlist_goodxy[*ilay].size();
                                         }
 
-                                        // std::cout << "Number of hit combinations to test = " << ncombos << endl;
+                                        //std::cout << "Number of hit combinations to test = " << ncombos << std::endl;
 
                                         if (ncombos <= fMaxHitCombinations_InnerLayers)
                                         {
@@ -1620,7 +1806,8 @@ void HCTracking::find_tracks()
                                             {
                                                 // I think that the assignment of the result of GetNextCombo() to nextcomboexists in the while loop condition renders an extra check of the value of
                                                 // nextcomboexists unnecessary
-                                                // Then we form the track from minhit, maxhit, and hitcombo, and check if this hit combination has better chi2 than any previous one (and later we will possibly add enhanced criteria other than chi2):
+                                                // Then we form the track from minhit, maxhit, and hitcombo, and check if this hit combination has better chi2 than any previous one 
+                                                // (and later we will possibly add enhanced criteria other than chi2):
 
                                                 // First, add the hits from minlayer and maxlayer to the combo:
                                                 hitcombo[minlayer] = hitmin;
@@ -1660,14 +1847,12 @@ void HCTracking::find_tracks()
                                                 // NOTE: the FitTrack method computes the line of best fit and chi2 and gives us the hit residuals:
                                                 FitTrack(hitcombo, xtrtemp, ytrtemp, xptrtemp, yptrtemp, chi2ndftemp, uresidtemp, vresidtemp);
 
-                                                // std::cout << "combo, chi2ndf = " << ncombostested << ", " << chi2ndftemp << std::endl;
+                                                //std::cout << "combo, chi2ndf = " << ncombostested << ", " << chi2ndftemp << std::endl;
 
                                                 if (firstgoodcombo || chi2ndftemp < minchi2)
                                                 {
-
                                                     if (!fUseConstraint || CheckConstraint(xtrtemp, ytrtemp, xptrtemp, yptrtemp))
                                                     {
-
                                                         firstgoodcombo = false;
                                                         minchi2 = chi2ndftemp;
 
@@ -1758,7 +1943,6 @@ void HCTracking::find_tracks()
                                             ncombostested++;
 
                                             hitcombo.clear();
-
                                         } // end if( ncombos <= fMaxHitCombinations_InnerLayers )
                                     }     // end if( nextcomboexists )
 
@@ -1768,6 +1952,7 @@ void HCTracking::find_tracks()
                     }             // end loop over grid bins with free hits in minlayer
                 }                 // end loop over layer combinations at current minimum hit requirement
 
+                //std::cout<<"first good combo, chi2 : "<<firstgoodcombo<<", "<<minchi2<<", chi2 cut: "<<fTrackChi2Cut<<std::endl;
                 // We treat all layer combinations at the same minimum hit requirement on an equal footing as far as track-finding is concerned:
                 if (!firstgoodcombo && minchi2 < fTrackChi2Cut)
                 { // then we found at least one "good" candidate track:
@@ -1852,6 +2037,9 @@ void HCTracking::find_tracks()
         } // end while(nhitsrequired >= minhits )
     }     // end check of sufficient layers with hits to do tracking
 
+    //std::cout<<"xinzhan debug number of tracks found: "<<fNtracks_found<<std::endl;
+    //getchar();
+
     fill_good_hit_arrays();
 }
 
@@ -1869,6 +2057,7 @@ void HCTracking::fill_good_hit_arrays()
 
     fBestTrackIndex = 0; // for now
     fNgoodhits = 0;      // number of hits on good tracks:
+
     for (int itrack = 0; itrack < fNtracks_found; itrack++)
     { // loop over tracks
 
@@ -2136,7 +2325,7 @@ void HCTracking::fill_good_hit_arrays()
             fHitDeconvADC4_MaxVstrip.push_back(DeconvADC_maxVstrip[4]);
             fHitDeconvADC5_MaxVstrip.push_back(DeconvADC_maxVstrip[5]);
 
-            if (fMakeEfficiencyPlots && fNhitsOnTrack[itrack] >= 4 && itrack == 0)
+            if (fMakeEfficiencyPlots && fNhitsOnTrack[itrack] >= fMinHitsOnTrack && itrack == 0)
             {
                 // if( fMakeEfficiencyPlots && itrack == 0 ){
                 // fill "did hit" efficiency histos (numerator for efficiency determination):
@@ -2480,6 +2669,10 @@ void HCTracking::fill_good_hit_arrays()
         }         // end loop over all layers
 
     } // end loop over tracks
+
+    // save tracking result to tree - for standalone test
+    //if(tracking_res_tree != nullptr)
+    //    tracking_res_tree -> Fill();
 }
 
 void HCTracking::AddNewTrack(const std::map<int, int> &hitcombo, const std::vector<double> &BestTrack, double chi2ndf, const std::vector<double> &uresidbest, const std::vector<double> &vresidbest)
@@ -2638,7 +2831,9 @@ void HCTracking::CompleteInitialization()
             fModules[imod]->SetMakeCommonModePlots(fCommonModePlotsFlag);
         }
 
-        std::cout << "XB: " << __func__ << " debug: total U APVs: " << fModules[imod]->fNAPVs_U << std::endl;
+        std::cout << "XB: " << __func__ << " debug:  moduel id = " << fModules[imod] -> fModule
+            <<" layer id = "<<fModules[imod] -> fLayer 
+            << " total U APVs: "<< fModules[imod]->fNAPVs_U << std::endl;
 
         for (int iAPV = 0; iAPV < fModules[imod]->fNAPVs_U; iAPV++)
             if (fModules[imod]->fCommonModeMeanU[iAPV] > 1.0)
@@ -2745,6 +2940,8 @@ void HCTracking::CompleteInitialization()
         if (!cm_already_loaded)
             LoadCM(fcmfilename.c_str());
     }
+
+    InitTrackingResultTree();
 }
 
 void HCTracking::LoadPedestals(const char *fname)
@@ -2995,11 +3192,12 @@ void HCTracking::LoadConfig(const TDatime &date)
 {
     std::cout << "[Reading SBSGEMSpectrometerTracker config]" << std::endl;
 
-    FILE *file = Podd::OpenDBFile("../tracking_config/db_bb.gem.dat", date, "HCTracking::OpenDBFile()",
-                                  "r", 0);
+    //FILE *file = Podd::OpenDBFile("../tracking_config/db_bb.gem.dat", date, "HCTracking::OpenDBFile()", "r", 0);
+    FILE *file = Podd::OpenDBFile("./tracking/tracking_config/db_bb.gem.dat", date, "HCTracking::OpenDBFile()", "r", 0);
+ 
     if (!file)
     {
-        std::cout << "Cannot open file: ../tracking_config/db_bb.gem.dat" << std::endl;
+        std::cout << "Cannot open file: ./tracking/tracking_config/db_bb.gem.dat" << std::endl;
     }
 
     std::string modconfig;
@@ -3217,6 +3415,84 @@ void HCTracking::LoadConfig(const TDatime &date)
     //  }
 }
 
+void HCTracking::PrintGeometry( const char *fname )
+{
+    std::ofstream outfile( fname );
+
+    std::vector<double> mod_x0(fNmodules), mod_y0(fNmodules), mod_z0(fNmodules);
+    std::vector<double> mod_ax(fNmodules), mod_ay(fNmodules), mod_az(fNmodules);
+    for( int imodule=0; imodule<fNmodules; imodule++ ){
+        TVector3 pos   = fModules[imodule]->GetOrigin();
+        TVector3 xaxis = fModules[imodule]->GetXax();
+        TVector3 yaxis = fModules[imodule]->GetYax();
+        TVector3 zaxis = fModules[imodule]->GetZax();
+
+        mod_x0[imodule] = pos.X();
+        mod_y0[imodule] = pos.Y();
+        mod_z0[imodule] = pos.Z();
+        //Get (rough) x,y,z rotation angles:
+        // TVector3 xax0(1,0,0);
+        // TVector3 yax0(0,1,0);
+        // TVector3 zax0(0,0,1);
+
+        //How to reverse-engineer the rotation angles from the detector axes:
+        //Rx = | 1        0        0        |
+        //     | 0        cos(ax) -sin(ax)  |
+        //     | 0        sin(ax)  cos(ax)  |
+        //Ry = | cos(ay)  0        sin(ay)  |
+        //     | 0        1        0        |
+        //     | -sin(ay) 0        cos(ay)  |
+        //Rz = | cos(az)  -sin(az) 0        |
+        //     | sin(az)   cos(az) 0        |
+        //     | 0         0       1        |
+
+        //These are approximate, first-order expressions that should be
+        //fairly accurate in the case that the angles represent small misalignments from some
+        //"ideal" orientation
+
+        mod_ax[imodule] = asin( yaxis.Z() );
+        mod_ay[imodule] = asin( zaxis.X() );
+        mod_az[imodule] = asin( xaxis.Y() );
+    }
+
+    outfile << "mod_x0 ";
+    for( int imodule=0; imodule<fNmodules; imodule++ ){
+        outfile << std::setw(15) << std::setprecision(6) << mod_x0[imodule];
+    }
+    outfile << std::endl;
+
+    outfile << "mod_y0 ";
+    for( int imodule=0; imodule<fNmodules; imodule++ ){
+        outfile << std::setw(15) << std::setprecision(6) << mod_y0[imodule];
+    }
+    outfile << std::endl;
+
+    outfile << "mod_z0 ";
+    for( int imodule=0; imodule<fNmodules; imodule++ ){
+        outfile << std::setw(15) << std::setprecision(6) << mod_z0[imodule];
+    }
+    outfile << std::endl;
+
+
+    outfile << "mod_ax ";
+    for( int imodule=0; imodule<fNmodules; imodule++ ){
+        outfile << std::setw(15) << std::setprecision(6) << mod_ax[imodule];
+    }
+    outfile << std::endl;
+    outfile << "mod_ay ";
+    for( int imodule=0; imodule<fNmodules; imodule++ ){
+        outfile << std::setw(15) << std::setprecision(6) << mod_ay[imodule];
+    }
+    outfile << std::endl;
+    outfile << "mod_az ";
+    for( int imodule=0; imodule<fNmodules; imodule++ ){
+        outfile << std::setw(15) << std::setprecision(6) << mod_az[imodule];
+    }
+    outfile << std::endl;
+
+    outfile.close();
+}
+
 void HCTracking::Begin(int run_number)
 {
     for (auto &i : fModules)
@@ -3227,4 +3503,89 @@ void HCTracking::End(int run_number)
 {
     for (auto &i : fModules)
         i->End(run_number);
+
+    TFile *f = new TFile("tracking_results.root", "recreate");
+
+    if( fMakeEfficiencyPlots ){
+
+        hdidhit_x_layer->Compress();
+        hdidhit_y_layer->Compress();
+        hdidhit_xy_layer->Compress();
+
+        hshouldhit_x_layer->Compress();
+        hshouldhit_y_layer->Compress();
+        hshouldhit_xy_layer->Compress();
+
+        hefficiency_x_layer->Compress();
+        hefficiency_y_layer->Compress();
+        hefficiency_xy_layer->Compress();
+
+        hdidnothit_x_layer->Compress();
+        hdidnothit_y_layer->Compress();
+
+        hdidhit_fullreadout_x_layer->Compress();
+        hdidhit_fullreadout_y_layer->Compress();
+
+        hneghit_x_layer->Compress();
+        hneghit_y_layer->Compress();
+
+        hneghit1D_x_layer->Compress();
+        hneghit1D_y_layer->Compress();
+
+        hneghit_good_x_layer->Compress();
+        hneghit_good_y_layer->Compress();
+
+        hneghit_good1D_x_layer->Compress();
+        hneghit_good1D_y_layer->Compress();
+
+        CalcEfficiency();
+
+        hdidhit_x_layer->Write(0,TObject::kOverwrite);
+        hdidhit_y_layer->Write(0,TObject::kOverwrite);
+        hdidhit_xy_layer->Write(0,TObject::kOverwrite);
+
+        hshouldhit_x_layer->Write(0,TObject::kOverwrite);
+        hshouldhit_y_layer->Write(0,TObject::kOverwrite);
+        hshouldhit_xy_layer->Write(0,TObject::kOverwrite);
+
+        hefficiency_x_layer->Write(0,TObject::kOverwrite);
+        hefficiency_y_layer->Write(0,TObject::kOverwrite);
+        hefficiency_xy_layer->Write(0,TObject::kOverwrite);
+
+        hdidnothit_x_layer->Write(0,TObject::kOverwrite);
+        hdidnothit_y_layer->Write(0,TObject::kOverwrite);
+
+        hdidhit_fullreadout_x_layer->Write(0,TObject::kOverwrite);
+        hdidhit_fullreadout_y_layer->Write(0,TObject::kOverwrite);
+
+        hneghit_x_layer->Write(0,TObject::kOverwrite);
+        hneghit_y_layer->Write(0,TObject::kOverwrite);
+
+        hneghit1D_x_layer->Write(0,TObject::kOverwrite);
+        hneghit1D_y_layer->Write(0,TObject::kOverwrite);
+
+        hneghit_good_x_layer->Write(0,TObject::kOverwrite);
+        hneghit_good_y_layer->Write(0,TObject::kOverwrite);
+
+        hneghit_good1D_x_layer->Write(0,TObject::kOverwrite);
+        hneghit_good1D_y_layer->Write(0,TObject::kOverwrite);
+    }
+
+    if( fDumpGeometryInfo )
+    {
+        //Print out geometry info for alignment:
+        //Maybe this should go to $OUT_DIR:
+        TString fnametemp;
+        int runnum = 0;
+        fnametemp.Form( "GEM_alignment_info_run%d.txt", runnum );
+
+        PrintGeometry( fnametemp.Data() );
+    }
+
+
+    // for standalone test
+    //if(tracking_res_tree != nullptr)
+    //    tracking_res_tree -> Write();
+
+    f -> Close();
 }

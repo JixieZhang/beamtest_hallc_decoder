@@ -843,7 +843,9 @@ void GEMAPV::CollectZeroSupHits()
                 IsCrossTalkStrip(i),
                 crate_id,
                 mpd_id,
-                adc_ch);
+                adc_ch,
+                GetRawTSADC(i)
+                );
     }
 }
 
@@ -1157,7 +1159,7 @@ void GEMAPV::PrintOutCommonModeRange(std::ofstream &out)
     }
 
     // follow Ben's suggestion, set all minimal common mode value to 0
-    //min = 0;
+    min = 0;
 
     out << std::setw(12) << crate_id
         << std::setw(12) << raw_data_flags.slot_id
@@ -1165,6 +1167,34 @@ void GEMAPV::PrintOutCommonModeRange(std::ofstream &out)
         << std::setw(12) << adc_ch
         << std::setw(12) << static_cast<int>(min)
         << std::setw(12) << static_cast<int>(max)
+        << std::endl;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// print out the common mode using analysis format: average, sigma
+//
+// format:
+//  slot_id, fiber_id, apv_id, cModAvg, cModrms
+// crate_id,   mpd_id, adc_ch, cModAvg, cModrms
+
+void GEMAPV::PrintOutCommonModeDBAnaFormat(std::ofstream &out)
+{
+    float avg = 0, rms = 0;
+
+    if(commonModeDist.size() > 0) {
+        TH1F h_temp("h_temp", "h_temp", 1500, 0, 1500);
+        for(auto &i: commonModeDist)
+            h_temp.Fill(i);
+        avg = h_temp.GetMean();
+        rms = h_temp.GetRMS();
+    }
+
+    out << std::setw(12) << crate_id
+        << std::setw(12) << raw_data_flags.slot_id
+        << std::setw(12) << mpd_id
+        << std::setw(12) << adc_ch
+        << std::setw(12) << avg
+        << std::setw(12) << rms
         << std::endl;
 }
 
@@ -1256,6 +1286,26 @@ float GEMAPV::GetAveragedCharge(const uint32_t &ch)
     }
 
     return val/time_samples;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// get raw time sample adc in the specified adc channel
+
+std::vector<float> GEMAPV::GetRawTSADC(const uint32_t &ch)
+    const
+{
+    std::vector<float> res;
+
+    if(ch >= APV_STRIP_SIZE || !hit_pos[ch])
+        return res;
+
+    for(uint32_t j = 0; j < time_samples; ++j)
+    {
+        float this_val = raw_data[DATA_INDEX(ch, j)];
+        res.push_back(this_val);
+    }
+
+    return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
