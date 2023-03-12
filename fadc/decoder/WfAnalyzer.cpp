@@ -12,7 +12,7 @@ Analyzer::Analyzer(size_t res, double thres, size_t npeds, double ped_flat, uint
     // place holder
 }
 
-void Analyzer::Analyze(Fadc250Data &data, double ped_ext) const
+void Analyzer::Analyze(Fadc250Data &data, double ped_ext, double err_ext) const
 {
     uint32_t *samples = &data.raw[0];
     size_t nsamples = data.raw.size();
@@ -29,8 +29,9 @@ void Analyzer::Analyze(Fadc250Data &data, double ped_ext) const
     data.ped = FindPedestal(buffer, candidates);
 
 	//changed by Jixie: use fixed pedestal value to overwrite the newly extracted mean value, keep err unchanged
-	if(ped_ext>10.0) data.ped.mean = ped_ext;	
-	
+	if(ped_ext>10.0) data.ped.mean = ped_ext;
+	if(err_ext>0.01) data.ped.err = err_ext;
+
     // get final results
     for (auto &peak : candidates) {
         // pedestal subtraction

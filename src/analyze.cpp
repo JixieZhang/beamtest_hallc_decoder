@@ -15,6 +15,7 @@
 #include "TiDecoder.h"
 #include "EPICSystem.h"
 #include "epics_tree_struct.h"
+#include "ReadDatabase.h"
 
 #define PROGRESS_COUNT 100
 
@@ -36,7 +37,10 @@
 #endif
 
 void write_raw_data(const std::string &dpath, const std::string &opath, const std::string &mpath, int nev,
-                    int res = 3, double thres = 20, int npeds = 5, double flat = 1.0);
+                    int res = 3, double thres = 10, int npeds = 5, double flat = 1.0, int usefixedped=0);
+
+int GetRunNumber(std::string str);
+
 
 // event types
 enum EvType {
@@ -58,9 +62,10 @@ int main(int argc, char*argv[])
     arg_parser.AddArgs<std::string>({"-m", "--module"}, "module", "json file for module configuration",
                                     "database/modules/mapmt_module.json");
     arg_parser.AddArg<int>("-r", "res", "resolution for waveform analysis", 3);
-    arg_parser.AddArg<double>("-t", "thres", "peak threshold for waveform analysis", 20.0);
+    arg_parser.AddArg<double>("-t", "thres", "peak threshold for waveform analysis", 10.0);
     arg_parser.AddArg<int>("-p", "npeds", "sample window width for pedestal searching", 8);
     arg_parser.AddArg<double>("-f", "flat", "flatness requirement for pedestal searching", 1.0);
+    arg_parser.AddArg<int>("-x", "usefixedped", "whether or not to use fixed FADC pedestals", 0);
 
     auto args = arg_parser.ParseArgs(argc, argv);
 
@@ -304,7 +309,7 @@ void fill_epics_event(const uint32_t *buf, EPICSystem* epic_sys, const int event
 
 // read raw data in evio format, and extract information
 void write_raw_data(const std::string &dpath, const std::string &opath, const std::string &mpath, int nev,
-                    int res, double thres, int npeds, double flat)
+                    int res, double thres, int npeds, double flat, int usefixedped)
 {
     // read modules
     auto modules = read_modules(mpath);
@@ -313,6 +318,17 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
         std::cout << "Cannot find any modules in configuration file \"" << mpath << "\"" << std::endl;
         return;
     }
+
+	ReadDatabase("database/FADCPedestal.txt");
+	int run = GetRunNumber(dpath);
+
+	db::dbBlock *dbFADCPed = db::FindBlock("FADCPedestal",run);
+	if(dbFADCPed) dbFADCPed->Print();
+	if(!dbFADCPed && usefixedped) {
+		cout<<"Warning: could not find 'FADCPedestal' for run "<<run<<" in the database file database/FADCPedestal.txt"<<endl;
+		cout<<"\t The decoder will extract the pedestal event by event."<<endl;
+		usefixedped=0;
+	}
 
     // raw data
     evc::EvChannel evchan;
@@ -401,6 +417,7 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
         const uint32_t *dbuf;
         size_t buflen;
         for (int ii = 0; ii < blvl; ++ii) {
+			int imod = -1;
             // parse module data
             for (auto &mod : modules) {
                 // get data buffer
@@ -416,8 +433,22 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
                     {
                         auto event = static_cast<fdec::Fadc250Event*>(mod.event);
                         fdecoder.DecodeEvent(*event, dbuf, buflen);
+						imod++;
+                        size_t idx=16*imod;
                         for (auto &ch : event->channels) {
-                            analyzer.Analyze(ch);
+							double fixedPed = 0.0, fixedPedErr = 0.0;
+							if(usefixedped) {
+								if(idx >= dbFADCPed->Data.size()) {
+									std::cout<<"Error! Number of channels in FADC Pedestal file is less than that in the raw data, I quit ... \n";
+									exit(-1);
+								}
+								fixedPed = dbFADCPed->Data[idx];
+                                fixedPedErr=1.5; //dbFADCPed->Data[idx+32];
+							}
+
+							//std::cout<<"event = "<<count<<",  imod = "<<imod<<",  FADCPed["<<idx<<"] = "<<fixedPed<<std::endl;
+							idx++;
+                            analyzer.Analyze(ch,fixedPed,fixedPedErr);
                         }
                     }
                     break;
@@ -457,3 +488,39 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
     hfile->Close();
 }
 
+int GetRunNumber(std::string str)
+{
+	//extract the run number
+	//std::string str = gFile->GetName();  //"../ROOTFILE/beamtest_hallc_3032.evio.xx
+
+	std::string fileN="", file="";
+	std::size_t found = str.find_last_of("/\\");
+	std::string file0 = str.substr(found+1);     //take pure file name: "beamtest_hallc_3032.evio.xx"
+
+	found = file0.find_last_of(".evio");
+	std::string file1 = file0.substr(0,found);   //remove ".evio,xx": "beamtest_hallc_3032"
+
+	//remove all characters from a to z and A to Z
+	for(size_t i = 0; i<file1.length(); i++) {
+		if (!(file1[i] >= 'a' && file1[i]<='z') && !(file1[i] >= 'A' && file1[i]<='Z')) {
+			file.append(1, file1[i]);
+		}
+	}
+
+	found = file.find_last_of("_");
+	std::string file2 = file.substr(0,found);   //remove whatever after the last underscore: "beamtest_hallc_3032"
+	fileN = file.substr(found+1);
+
+	if(fileN.length()<4 && file2.length()>=4) {
+		found = file2.find_last_of("_");
+		std::string file3 = file2.substr(0,found);   //"beamtest_hallc_3032"
+		fileN = file2.substr(found+1);    //"3032"
+	}
+
+	//std::cout<<" file0 = "<<file0<<"\n file1 = "<<file1<<"\n file = "<<file<<"\n file2 = "<<file2<<"\n fileN = "<<fileN<<std::endl;
+
+	int pRunNumber = 0;
+	if(fileN.length()>0) pRunNumber = atoi(fileN.c_str());
+	std::cout<<"file = \""<<file0<<"\"  --> RunNumber = "<<pRunNumber<<std::endl;
+	return pRunNumber;
+}

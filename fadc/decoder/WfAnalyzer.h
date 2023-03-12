@@ -83,7 +83,7 @@ public:
     virtual ~Analyzer() {}
 
     // analyze waveform samples
-    void Analyze(Fadc250Data &data, double ped_ext=0) const;
+    void Analyze(Fadc250Data &data, double ped_ext=0, double err_ext=0) const;
     Fadc250Data Analyze(const uint32_t *samples, size_t nsamples) const;
 
     // find pedestal, it assumes the pedestal is a constant (for simple FADC250 spectrum)
