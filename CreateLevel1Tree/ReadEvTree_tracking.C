@@ -7,7 +7,7 @@
 
 #define ReadEvTree_cxx
 
-#include "ReadEvTree_highrate.h"
+#include "ReadEvTree_tracking.h"
 #include "GEM_Cluster_Matching.C"
 #include "GravityWeight.h"
 
@@ -203,6 +203,7 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
     }
   }
 
+    
 
   TFile* fout = new TFile((strDir+strFile).Data(), "RECREATE");
   TTree* T = new TTree("T", "solid hallc beamtest level1 tree");
@@ -210,6 +211,118 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
   if (oldEpicsTree) {
     newEpicsTree = oldEpicsTree->CloneTree(0);  //clone of old tree header
   }
+
+  T->Branch("fNtracks_found", &fNtracks_found);
+  T->Branch("fNhitsOnTrack", &fNhitsOnTrack);
+  T->Branch("fXtrack", &fXtrack);
+  T->Branch("fYtrack", &fYtrack);
+  T->Branch("fXptrack", &fXptrack);
+  T->Branch("fYptrack", &fYptrack);
+  T->Branch("fChi2Track", &fChi2Track);
+  T->Branch("fBestTrackIndex", &fBestTrackIndex);
+  T->Branch("fNgoodhits", &fNgoodhits);
+  T->Branch("fHitTrackIndex", &fHitTrackIndex);
+  T->Branch("fHitModule", &fHitModule);
+  T->Branch("fHitLayer", &fHitLayer);
+  T->Branch("fHitNstripsU", &fHitNstripsU);
+  T->Branch("fHitUstripMax", &fHitUstripMax);
+  T->Branch("fHitUstripLo", &fHitUstripLo);
+  T->Branch("fHitUstripHi", &fHitUstripHi);
+  T->Branch("fHitNstripsV", &fHitNstripsV);
+  T->Branch("fHitVstripMax", &fHitVstripMax);
+  T->Branch("fHitVstripLo", &fHitVstripLo);
+  T->Branch("fHitVstripHi", &fHitVstripHi);
+  T->Branch("fHitUlocal", &fHitUlocal);
+  T->Branch("fHitVlocal", &fHitVlocal);
+  T->Branch("fHitXlocal", &fHitXlocal);
+  T->Branch("fHitYlocal", &fHitYlocal);
+  T->Branch("fHitXglobal", &fHitXglobal);
+  T->Branch("fHitYglobal", &fHitYglobal);
+  T->Branch("fHitZglobal", &fHitZglobal);
+  T->Branch("fHitUmoment", &fHitUmoment);
+  T->Branch("fHitVmoment", &fHitVmoment);
+  T->Branch("fHitUsigma", &fHitUsigma);
+  T->Branch("fHitVsigma", &fHitVsigma);
+  T->Branch("fHitResidU", &fHitResidU);
+  T->Branch("fHitResidV", &fHitResidV);
+  T->Branch("fHitEResidU", &fHitEResidU);
+  T->Branch("fHitEResidV", &fHitEResidV);
+  T->Branch("fHitUADC", &fHitUADC);
+  T->Branch("fHitVADC", &fHitVADC);
+  T->Branch("fHitUADCclust_deconv", &fHitUADCclust_deconv);
+  T->Branch("fHitVADCclust_deconv", &fHitVADCclust_deconv);
+  T->Branch("fHitUADCclust_maxsamp_deconv", &fHitUADCclust_maxsamp_deconv);
+  T->Branch("fHitVADCclust_maxsamp_deconv", &fHitVADCclust_maxsamp_deconv);
+  T->Branch("fHitUADCclust_maxcombo_deconv", &fHitUADCclust_maxcombo_deconv);
+  T->Branch("fHitVADCclust_maxcombo_deconv", &fHitVADCclust_maxcombo_deconv);
+  T->Branch("fHitUADCmaxstrip", &fHitUADCmaxstrip);
+  T->Branch("fHitVADCmaxstrip", &fHitVADCmaxstrip);
+  T->Branch("fHitUADCmaxstrip_deconv", &fHitUADCmaxstrip_deconv);
+  T->Branch("fHitVADCmaxstrip_deconv", &fHitVADCmaxstrip_deconv);
+  T->Branch("fHitUADCmaxsample", &fHitUADCmaxsample);
+  T->Branch("fHitVADCmaxsample", &fHitVADCmaxsample);
+  T->Branch("fHitUADCmaxsample_deconv", &fHitUADCmaxsample_deconv);
+  T->Branch("fHitVADCmaxsample_deconv", &fHitVADCmaxsample_deconv);
+  T->Branch("fHitUADCmaxcombo_deconv", &fHitUADCmaxcombo_deconv);
+  T->Branch("fHitVADCmaxcombo_deconv", &fHitVADCmaxcombo_deconv);
+  T->Branch("fHitUADCmaxclustsample", &fHitUADCmaxclustsample);
+  T->Branch("fHitVADCmaxclustsample", &fHitVADCmaxclustsample);
+  T->Branch("fHitADCasym", &fHitADCasym);
+  T->Branch("fHitADCavg", &fHitADCavg);
+  T->Branch("fHitADCasym_deconv", &fHitADCasym_deconv);
+  T->Branch("fHitADCavg_deconv", &fHitADCavg_deconv);
+  T->Branch("fHitUTime", &fHitUTime);
+  T->Branch("fHitVTime", &fHitVTime);
+  T->Branch("fHitUTimeDeconv", &fHitUTimeDeconv);
+  T->Branch("fHitVTimeDeconv", &fHitVTimeDeconv);
+  T->Branch("fHitUTimeMaxStrip", &fHitUTimeMaxStrip);
+  T->Branch("fHitVTimeMaxStrip", &fHitVTimeMaxStrip);
+  T->Branch("fHitUTimeMaxStripFit", &fHitUTimeMaxStripFit);
+  T->Branch("fHitVTimeMaxStripFit", &fHitVTimeMaxStripFit);
+  T->Branch("fHitUTimeMaxStripDeconv", &fHitUTimeMaxStripDeconv);
+  T->Branch("fHitVTimeMaxStripDeconv", &fHitVTimeMaxStripDeconv);
+  T->Branch("fHitDeltaTDeconv", &fHitDeltaTDeconv);
+  T->Branch("fHitTavgDeconv", &fHitTavgDeconv);
+  T->Branch("fHitIsampMaxUclust", &fHitIsampMaxUclust);
+  T->Branch("fHitIsampMaxVclust", &fHitIsampMaxVclust);
+  T->Branch("fHitIsampMaxUstrip", &fHitIsampMaxUstrip);
+  T->Branch("fHitIsampMaxVstrip", &fHitIsampMaxVstrip);
+  T->Branch("fHitIsampMaxUstripDeconv", &fHitIsampMaxUstripDeconv);
+  T->Branch("fHitIsampMaxVstripDeconv", &fHitIsampMaxVstripDeconv);
+  T->Branch("fHitIcomboMaxUstripDeconv", &fHitIcomboMaxUstripDeconv);
+  T->Branch("fHitIcomboMaxVstripDeconv", &fHitIcomboMaxVstripDeconv);
+  T->Branch("fHitIsampMaxUclustDeconv", &fHitIsampMaxUclustDeconv);
+  T->Branch("fHitIsampMaxVclustDeconv", &fHitIsampMaxVclustDeconv);
+  T->Branch("fHitIcomboMaxUclustDeconv", &fHitIcomboMaxUclustDeconv);
+  T->Branch("fHitIcomboMaxVclustDeconv", &fHitIcomboMaxVclustDeconv);
+  T->Branch("fHitCorrCoeffClust", &fHitCorrCoeffClust);
+  T->Branch("fHitCorrCoeffMaxStrip", &fHitCorrCoeffMaxStrip);
+  T->Branch("fHitCorrCoeffClustDeconv", &fHitCorrCoeffClustDeconv);
+  T->Branch("fHitCorrCoeffMaxStripDeconv", &fHitCorrCoeffMaxStripDeconv);
+  T->Branch("fHitADCfrac0_MaxUstrip", &fHitADCfrac0_MaxUstrip);
+  T->Branch("fHitADCfrac1_MaxUstrip", &fHitADCfrac1_MaxUstrip);
+  T->Branch("fHitADCfrac2_MaxUstrip", &fHitADCfrac2_MaxUstrip);
+  T->Branch("fHitADCfrac3_MaxUstrip", &fHitADCfrac3_MaxUstrip);
+  T->Branch("fHitADCfrac4_MaxUstrip", &fHitADCfrac4_MaxUstrip);
+  T->Branch("fHitADCfrac5_MaxUstrip", &fHitADCfrac5_MaxUstrip);
+  T->Branch("fHitADCfrac0_MaxVstrip", &fHitADCfrac0_MaxVstrip);
+  T->Branch("fHitADCfrac1_MaxVstrip", &fHitADCfrac1_MaxVstrip);
+  T->Branch("fHitADCfrac2_MaxVstrip", &fHitADCfrac2_MaxVstrip);
+  T->Branch("fHitADCfrac3_MaxVstrip", &fHitADCfrac3_MaxVstrip);
+  T->Branch("fHitADCfrac4_MaxVstrip", &fHitADCfrac4_MaxVstrip);
+  T->Branch("fHitADCfrac5_MaxVstrip", &fHitADCfrac5_MaxVstrip);
+  T->Branch("fHitDeconvADC0_MaxUstrip", &fHitDeconvADC0_MaxUstrip);
+  T->Branch("fHitDeconvADC1_MaxUstrip", &fHitDeconvADC1_MaxUstrip);
+  T->Branch("fHitDeconvADC2_MaxUstrip", &fHitDeconvADC2_MaxUstrip);
+  T->Branch("fHitDeconvADC3_MaxUstrip", &fHitDeconvADC3_MaxUstrip);
+  T->Branch("fHitDeconvADC4_MaxUstrip", &fHitDeconvADC4_MaxUstrip);
+  T->Branch("fHitDeconvADC5_MaxUstrip", &fHitDeconvADC5_MaxUstrip);
+  T->Branch("fHitDeconvADC0_MaxVstrip", &fHitDeconvADC0_MaxVstrip);
+  T->Branch("fHitDeconvADC1_MaxVstrip", &fHitDeconvADC1_MaxVstrip);
+  T->Branch("fHitDeconvADC2_MaxVstrip", &fHitDeconvADC2_MaxVstrip);
+  T->Branch("fHitDeconvADC3_MaxVstrip", &fHitDeconvADC3_MaxVstrip);
+  T->Branch("fHitDeconvADC4_MaxVstrip", &fHitDeconvADC4_MaxVstrip);
+  T->Branch("fHitDeconvADC5_MaxVstrip", &fHitDeconvADC5_MaxVstrip);
 
   int EntryNum=0,Cer_NCh=0;
   int Slot7Raw[16][100],Slot8Raw[16][100];
@@ -1126,12 +1239,7 @@ void DoLevel1Tree_highrate(int run_start, int run_end)
   DoLevel1Tree(run_start, run_end);
 }
 
-void run_highrate()
-{
-  run();
-}
-
-void run_highrate_jx()
+void run_tracking()
 {
   run();
 }

@@ -971,11 +971,6 @@ void run(int istart=0, int iend=-1)
   //for (int i=0;i<10;i++) t.PlotEvent(i);
 }
 
-void run_cosmic2(int istart=0, int iend=-1)
-{
-  run(istart,iend);
-}
-
 //extract pedestal for given runs
 void DoPedestal(int run_start, int run_end)
 {

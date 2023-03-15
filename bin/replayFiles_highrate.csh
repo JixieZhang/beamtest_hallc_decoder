@@ -180,7 +180,9 @@ foreach infile0 ($argv[2-$#argv])
 	# I have to copy them  into $WORKDIR
 	cd $WORKDIR
 	$DEBUG cp -fr $decoderdir/config $decoderdir/database $WORKDIR
-	$DEBUG cp -fr $decoderdir/rootlogon.C $WORKDIR
+	$DEBUG cp -f $decoderdir/rootlogon.C $WORKDIR
+	$DEBUG ln -sf $decoderdir/tracking $WORKDIR/.
+
 
 	#this will set pedestal files for GEM
 	if ($run <= 3319) then

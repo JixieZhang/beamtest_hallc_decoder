@@ -162,11 +162,11 @@ foreach infile0 ($argv[2-$#argv])
 	else if ($run >= 3906 && $run <= 4125) then
 		set jsonfile = "mapmt_module_highrate_ssp.json"   #//with GEM
 		if ($useSSP < 1) set jsonfile = "mapmt_module_highrate.json"   #//without GEM
-		set cscriptfile = "run_highrate_jx.C"
+		set cscriptfile = "run_tracking.C"
 	else #if ($run >= 4126) then
 		set jsonfile = "mapmt_module_highrate_ssp.json"   #//with GEM
 		if ($useSSP < 1) set jsonfile = "mapmt_module_highrate.json"   #//without GEM
-		set cscriptfile = "run_highrate_jx.C"
+		set cscriptfile = "run_tracking.C"
 	endif
 
 	set replayoption = ("-m $decoderdir/database/modules/$jsonfile $1")
@@ -195,7 +195,7 @@ foreach infile0 ($argv[2-$#argv])
 		$DEBUG cp -f $WORKDIR/config/gem.conf_highrate $WORKDIR/config/gem.conf
 	endif
 
-	$DEBUG $decoderdir/bin/analyze $replayoption $infile $outfilename
+	$DEBUG $decoderdir/bin/analyze_tracking $replayoption $infile $outfilename
 
 	#create level1 tree and plot monitoring histo
 	if (-f $outfilename) then

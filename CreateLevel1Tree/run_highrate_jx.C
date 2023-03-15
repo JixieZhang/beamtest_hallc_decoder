@@ -3,8 +3,3 @@
 
 //#define LEVEL1_Tree_DEBUG 0
 #include "ReadEvTree_highrate_jx.C"
-
-void run_highrate_jx()
-{
-  run();
-}

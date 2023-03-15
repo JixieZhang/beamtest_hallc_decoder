@@ -23,7 +23,7 @@ void plotGEM()
 	TH1F *h1;
 	double nEntry = (double)EvTree->GetEntries();
 	
-	int plotCluster = 1;
+	int plotCluster = 0;
 	char target[2][100], title[2][100];
 	if(plotCluster) {
 		sprintf(target[0],"fHitIsampMaxUclust");

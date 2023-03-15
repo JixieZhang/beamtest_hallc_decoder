@@ -17,11 +17,12 @@
 #include "epics_tree_struct.h"
 #include "ReadDatabase.h"
 
-//#define USE_GEM_TRACKING
-
+#ifndef USE_GEM_TRACKING
+#define USE_GEM_TRACKING
+#endif
 // if you don't want to use tracking, use this line to comment out tracking,
 // and the old GEM tree will be enabled instead
-#undef USE_GEM_TRACKING
+//#undef USE_GEM_TRACKING
 
 #ifdef USE_GEM_TRACKING
 #include "GEMModule.h"
