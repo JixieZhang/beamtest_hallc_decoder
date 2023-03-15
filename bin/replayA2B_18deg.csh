@@ -7,7 +7,7 @@ set DEBUG = ("");
 set host = (`hostname -s`)
 if (! $?HallCBeamtestDir) then
 	if ("$host" != "uvasolid2") then
-		setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/decoder
+		setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/decoder_tracking
 	else
 		setenv HallCBeamtestDir /home/solid/apps/cbeamtest_decoder
 	endif
@@ -27,7 +27,7 @@ set decoderdir = ${HallCBeamtestDir}
 
 set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
 set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/replay/pass0
-set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/pass0
+set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/GEMROOTFILE
 
 if ("$host" == "uvasolid2")  then
 	set datadir = /home/solid/data

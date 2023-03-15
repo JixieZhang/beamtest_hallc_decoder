@@ -24,7 +24,7 @@ set decoderdir = ${HallCBeamtestDir}
 set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
 #set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/replay/pass0
 set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/ROOTFILE
-set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/thre3
+#set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/thre3
 
 if ($#argv < 1) then
     echo "Submit jobs to replaying hallc beamtest files in mss" 
@@ -65,7 +65,7 @@ mkdir -pv $jobfiledir;
 #create the $jobfile
 set jobfile = ($jobfiledir/swif_${startrun}_to_${endrun})
 
-set workflow = replay_tracking
+set workflow = replay_18deg
 #echo "create workflow $workflow"
 echo "swif2 create -workflow $workflow" >&! $jobfile
 $DEBUG swif2 create -workflow $workflow
@@ -116,19 +116,19 @@ while ($run < $endrun)
     #2) When a file in /cache is updated, does the tape will update that file already in tape?
     
     #add '"' to escape the command string
-    set cmd = ($HallCBeamtestDir/bin/replayFiles_highrate.csh "'-x 1 -t 3'" $datadir/$infilename)
+    set cmd = ($HallCBeamtestDir/bin/replayFiles_highrate.csh "'-x 1 -t 6'" $datadir/$infilename)
     echo "adding one job for file $infilename"
     if (! -f $datadir/$infilename) then
       #do job from /mss
-      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
-      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd  
+      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
+      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd  
       #copy the file from /mss to /cache
       echo "jcache get $infile"
       $DEBUG jcache get $infile
     else
       #do job from /cache, 
-      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd " >> $jobfile
-      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd  
+      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 $cmd " >> $jobfile
+      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 $cmd  
     endif
     @ njob = $njob + 1
     

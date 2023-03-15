@@ -23,7 +23,7 @@ set decoderdir = ${HallCBeamtestDir}
 
 set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
 #set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/replay/pass0
-set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/pass0
+set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/GEMROOTFILE
 
 if ($#argv < 1) then
     echo "Submit jobs to replaying hallc beamtest files in mss" 
@@ -64,7 +64,7 @@ mkdir -pv $jobfiledir;
 #create the $jobfile
 set jobfile = ($jobfiledir/swif_${startrun}_to_${endrun})
 
-set workflow = replay_18deg
+set workflow = replay_tracking
 #echo "create workflow $workflow"
 echo "swif2 create -workflow $workflow" >&! $jobfile
 $DEBUG swif2 create -workflow $workflow
@@ -103,11 +103,11 @@ while ($run < $endrun)
     endif
     
     #add '"' to escape the command string
-    set cmd = ($HallCBeamtestDir/bin/replayFiles_highrate.csh "'-x 1 -t 10'" $datadir/$infilename)
+    set cmd = ($HallCBeamtestDir/bin/replayFiles_18deg.csh "'-x 1 -t 6'" $datadir/$infilename)
     echo "adding one job for file $infilename"
    
-    echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd " >> $jobfile
-    $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd  
+    echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 $cmd " >> $jobfile
+    $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 $cmd  
    
     @ njob = $njob + 1
     
