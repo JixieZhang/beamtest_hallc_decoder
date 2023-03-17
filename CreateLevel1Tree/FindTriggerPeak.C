@@ -257,9 +257,9 @@ void FindPeakForBit(int trigbit)
     c1->cd(i+1);
     sprintf(hname,"h7_%02d",i);
     if(gROOT->FindObject(hname)) delete gROOT->FindObject(hname);
-    EvTree->Draw(Form("%s.peaks.pos>>%s(100,0,100)",Slot7Name[i],hname),myCut);
+    EvTree->Draw(Form("%s.peaks.pos>>%s(90,5,95)",Slot7Name[i],hname),myCut);
     TH1D* h1 = (TH1D*) gROOT->FindObject(hname);
-    double xx = h1->GetMaximumBin()-0.5*h1->GetBinWidth(1);
+    double xx = h1->GetBinCenter(h1->GetMaximumBin());
     double yy = h1->GetMaximum()*1.05;
     TLine *vl = new TLine(xx,0.0,xx,yy);
     vl->SetLineColor(6);
@@ -278,9 +278,10 @@ void FindPeakForBit(int trigbit)
     c2->cd(i+1);
     sprintf(hname,"h8_%02d",i);
     if(gROOT->FindObject(hname)) delete gROOT->FindObject(hname);
-    EvTree->Draw(Form("%s.peaks.pos>>%s(100,0,100)",Slot8Name[i],hname),myCut);
+    if(i<15) EvTree->Draw(Form("%s.peaks.pos>>%s(90,5,95)",Slot8Name[i],hname),myCut);
+    else EvTree->Draw(Form("%s.peaks.pos>>%s(100,0,100)",Slot8Name[i],hname),myCut);
     TH1D* h1 = (TH1D*) gROOT->FindObject(hname);
-    double xx = h1->GetMaximumBin()-0.5*h1->GetBinWidth(1);
+    double xx = h1->GetBinCenter(h1->GetMaximumBin());
     double yy = h1->GetMaximum()*1.05;
     TLine *vl = new TLine(xx,0.0,xx,yy);
     vl->SetLineColor(6);

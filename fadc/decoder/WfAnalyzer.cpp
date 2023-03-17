@@ -28,9 +28,9 @@ void Analyzer::Analyze(Fadc250Data &data, double ped_ext, double err_ext) const
     // get pedestal event by event 
     data.ped = FindPedestal(buffer, candidates);
 
-	//changed by Jixie: use fixed pedestal value to overwrite the newly extracted mean value, keep err unchanged
-	if(ped_ext>10.0) data.ped.mean = ped_ext;
-	if(err_ext>0.01) data.ped.err = err_ext;
+    //changed by Jixie: use fixed pedestal and its sigma value to overwrite the newly extracted mean & err
+    if(ped_ext>10.0) data.ped.mean = ped_ext;
+    if(err_ext>0.01) data.ped.err = err_ext;
 
     // get final results
     for (auto &peak : candidates) {

@@ -81,7 +81,8 @@ int main(int argc, char*argv[])
                    args["res"].Int(),
                    args["thres"].Double(),
                    args["npeds"].Int(),
-                   args["flat"].Double());
+                   args["flat"].Double(),
+                   args["usefixedped"].Int());
     return 0;
 }
 
@@ -446,7 +447,7 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
                                 fixedPedErr=1.5; //dbFADCPed->Data[idx+32];
                             }
 
-                            //std::cout<<"event = "<<count<<",  imod = "<<imod<<",  FADCPed["<<idx<<"] = "<<fixedPed<<std::endl;
+                            //std::cout<<"event = "<<count<<",  imod = "<<imod<<",  FADCPed["<<idx<<"] = "<<fixedPed<<", fixedPedErr="<<fixedPedErr<<std::endl;
                             idx++;
                             analyzer.Analyze(ch,fixedPed,fixedPedErr);
                         }

@@ -82,7 +82,8 @@ int main(int argc, char*argv[])
                    args["res"].Int(),
                    args["thres"].Double(),
                    args["npeds"].Int(),
-                   args["flat"].Double());
+                   args["flat"].Double(),
+                   args["usefixedped"].Int());
     return 0;
 }
 
