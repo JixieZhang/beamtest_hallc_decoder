@@ -17,13 +17,13 @@ set decoderdir = ${HallCBeamtestDir}
 #set replaydir = /cache/halla/solid/subsystem/ec/ecal_cosmic_hallc/replay/pass0
 #set replaydir = /volatile/halla/solid/jixie/ecal_beamtest_hallc/cosmic/pass0
 
-#set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_7deg/raw
+set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_7deg/raw
 #set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_7deg/replay/pass1
-#set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/7deg/pass1
+set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/7deg/pass1
 
-set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
+#set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
 #set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/replay/pass0
-set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/pass0
+#set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/pass0
 
 if ($#argv < 1) then
     echo "Submit jobs to replaying hallc beamtest files in mss" 
@@ -119,15 +119,15 @@ while ($run < $endrun)
     echo "adding one job for file $infilename"
     if (! -f $datadir/$infilename) then
       #do job from /mss
-      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
-      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd  
+      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
+      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd  
       #copy the file from /mss to /cache
       echo "jcache get $infile"
       $DEBUG jcache get $infile
     else
       #do job from /cache, 
-      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd " >> $jobfile
-      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd  
+      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 $cmd " >> $jobfile
+      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 $cmd  
     endif
     @ njob = $njob + 1
     

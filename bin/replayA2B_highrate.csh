@@ -21,13 +21,13 @@ set decoderdir = ${HallCBeamtestDir}
 #set replaydir = /cache/halla/solid/subsystem/ec/ecal_cosmic_hallc/replay/pass0
 #set replaydir = /volatile/halla/solid/jixie/ecal_beamtest_hallc/cosmic/pass0
 
-set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_7deg/raw
-set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_7deg/replay/pass1
-set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/7deg/pass1
+#set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_7deg/raw
+#set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_7deg/replay/pass1
+#set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/7deg/pass1
 
-#set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
+set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
 #set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/replay/pass0
-#set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/pass0
+set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/ROOTFILE
 
 if ("$host" == "uvasolid2")  then
 	set datadir = /home/solid/data
@@ -43,6 +43,7 @@ if ($#argv < 1) then
 	echo "    build/src/analyze [-n NEV] [-m, --module MODULE] [-r RES] [-t THRES] [-p NPEDS] [-f FLAT] RAW_DATA ROOT_FILE"
 	echo "         -h, --help: print help message"
 	echo "         -n [NEV (default: -1)]: number of events to process (< 0 means all)"
+	echo "         -k [NSKIP (default: 0)]: number of events to skip"
 	echo "         -m, --module [MODULE (default: database/modules/mapmt_module.json)]: json file for module configuration"
 	echo "         -r [RES (default: 3)]: resolution for waveform analysis"
 	echo "         -t [THRES (default: 10.000000)]: peak threshold for waveform analysis"

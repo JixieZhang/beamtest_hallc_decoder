@@ -20,6 +20,7 @@
 #ifndef USE_GEM_TRACKING
 #define USE_GEM_TRACKING
 #endif
+
 // if you don't want to use tracking, use this line to comment out tracking,
 // and the old GEM tree will be enabled instead
 //#undef USE_GEM_TRACKING
@@ -38,7 +39,7 @@
 #endif
 
 void write_raw_data(const std::string &dpath, const std::string &opath, const std::string &mpath, int nev,
-                    int res = 3, double thres = 10, int npeds = 5, double flat = 1.0, int usefixedped=0);
+                    int nskip=0, int res=3, double thres=10, int npeds=5, double flat=1.0, int usefixedped=0);
 
 int GetRunNumber(std::string str);
 
@@ -60,6 +61,7 @@ int main(int argc, char*argv[])
     arg_parser.AddPositional("raw_data", "raw data in evio format");
     arg_parser.AddPositional("root_file", "output data file in root format");
     arg_parser.AddArg<int>("-n", "nev", "number of events to process (< 0 means all)", -1);
+    arg_parser.AddArg<int>("-k", "nskip", "number of events to skip", 0);
     arg_parser.AddArgs<std::string>({"-m", "--module"}, "module", "json file for module configuration",
                                     "database/modules/mapmt_module.json");
     arg_parser.AddArg<int>("-r", "res", "resolution for waveform analysis", 3);
@@ -79,6 +81,7 @@ int main(int argc, char*argv[])
                    args["root_file"].String(),
                    args["module"].String(),
                    args["nev"].Int(),
+                   args["nskip"].Int(),
                    args["res"].Int(),
                    args["thres"].Double(),
                    args["npeds"].Int(),
@@ -311,7 +314,7 @@ void fill_epics_event(const uint32_t *buf, EPICSystem* epic_sys, const int event
 
 // read raw data in evio format, and extract information
 void write_raw_data(const std::string &dpath, const std::string &opath, const std::string &mpath, int nev,
-                    int res, double thres, int npeds, double flat, int usefixedped)
+                    int nskip, int res, double thres, int npeds, double flat, int usefixedped)
 {
     // read modules
     auto modules = read_modules(mpath);
@@ -387,8 +390,13 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
     auto epics_tree = create_epics_tree(&epic_sys);
 
     int count = 0;
+    if(nskip>0) nev += nskip;
     auto &ref = modules.front();
     while ((evchan.Read() == evc::status::success) && (nev-- != 0)) {
+        if(count>0 && count<nskip)  {count++;continue;} //keep the first prestart event for absolute trigger time
+        if(nskip>0 && count==nskip) {
+            std::cout << "First " << nskip <<" events were skipped." << std::endl;
+        }
         if((count % PROGRESS_COUNT) == 0) {
             std::cout << "Processed events - " << count << "\r" << std::flush;
         }
@@ -448,7 +456,7 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
                                 fixedPedErr=1.5; //dbFADCPed->Data[idx+32];
                             }
 
-                            //std::cout<<"event = "<<count<<",  imod = "<<imod<<",  FADCPed["<<idx<<"] = "<<fixedPed<<std::endl;
+                            //std::cout<<"event = "<<count<<",  imod = "<<imod<<",  FADCPed["<<idx<<"] = "<<fixedPed<<", fixedPedErr="<<fixedPedErr<<std::endl;
                             idx++;
                             analyzer.Analyze(ch,fixedPed,fixedPedErr);
                         }

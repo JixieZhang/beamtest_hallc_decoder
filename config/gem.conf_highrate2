@@ -21,8 +21,11 @@ GEM Map = ${DB_DIR}/gem_map_hallc.txt
 #GEM Common Mode = ${DB_DIR}/CommonModeRange_3036.txt
 #GEM Pedestal = ${DB_DIR}/gem_ped_4132.dat
 #GEM Common Mode = ${DB_DIR}/CommonModeRange_4132.txt
-GEM Pedestal = ${DB_DIR}/gem_ped_4199.dat
-GEM Common Mode = ${DB_DIR}/CommonModeRange_4199.txt
+#GEM Pedestal = ${DB_DIR}/gem_ped_4199.dat
+#GEM Common Mode = ${DB_DIR}/CommonModeRange_4199.txt
+GEM Pedestal = ${DB_DIR}/gem_ped_4687.dat
+GEM Common Mode = ${DB_DIR}/CommonModeRange_4687.txt
+
 
 
 # VTP Pedestal Subtraction Mode enabled or not (yes/no), if enabled, offset will be subtracted online

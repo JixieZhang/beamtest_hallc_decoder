@@ -43,6 +43,7 @@ if ($#argv < 1) then
 	echo "    build/src/analyze [-n NEV] [-m, --module MODULE] [-r RES] [-t THRES] [-p NPEDS] [-f FLAT] RAW_DATA ROOT_FILE"
 	echo "         -h, --help: print help message"
 	echo "         -n [NEV (default: -1)]: number of events to process (< 0 means all)"
+	echo "         -k [NSKIP (default: 0)]: number of events to skip"
 	echo "         -m, --module [MODULE (default: database/modules/mapmt_module.json)]: json file for module configuration"
 	echo "         -r [RES (default: 3)]: resolution for waveform analysis"
 	echo "         -t [THRES (default: 20.000000)]: peak threshold for waveform analysis"
