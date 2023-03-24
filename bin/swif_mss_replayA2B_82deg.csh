@@ -90,7 +90,7 @@ while ($run < $endrun)
     
     set infilename = (`basename $infile`)
     
-    #check if this file exist in /cache, if yes, skip it to avoid repeat cooking
+    #check if this file exist in /cache, if yes, skip it to avoid repeating cooking
     set parentdir = (`dirname $infile`)
     if ( "$parentdir" =~ */mss/* ) then
       if ( -f $datadir/infilename )  continue;

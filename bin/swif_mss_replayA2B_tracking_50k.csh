@@ -82,7 +82,7 @@ while ($run < $endrun)
   @ run = $run + 1
   
   set nfile = (0)  
-  (ls -1 $mssdir/hallc_fadc_ssp_${run}.evio.* $datadir/hallc_fadc_ssp_${run}.evio.0| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null  
+  (ls -1 $mssdir/hallc_fadc_ssp_${run}.evio.0 $datadir/hallc_fadc_ssp_${run}.evio.0| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null  
   set nfile = (`cat  ~/.tmp_$$`)
   rm -fr ~/.tmp_$$  >&! /dev/null   
   if ($nfile < 1) continue  
@@ -91,7 +91,7 @@ while ($run < $endrun)
     
     set infilename = (`basename $infile`)
     
-    #check if this file exist in /cache, if yes, skip it to avoid repeat cooking
+    #check if this file exist in /cache, if yes, skip it to avoid repeating cooking
     set parentdir = (`dirname $infile`)
     if ( "$parentdir" =~ */mss/* ) then
       if ( -f $datadir/infilename )  continue;
