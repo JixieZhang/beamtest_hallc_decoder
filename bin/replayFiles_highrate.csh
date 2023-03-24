@@ -26,10 +26,10 @@ set decoderdir = ${HallCBeamtestDir}
 #set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/7deg/pass0
 
 set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
-set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/replay/pass0
-set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/pass0
+#set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/replay/pass0
+set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/ROOTFILE
 
-set monitordir = /volatile/halla/solid/$user/ecal_beamtest_hallc/monitor
+set monitordir = /volatile/halla/solid/$user/ecal_beamtest_hallc/monitor_18deg
 if ("$host" == "uvasolid2")  then
 	set datadir = /home/solid/data
 	set replaydir = /home/solid/replay/ROOTFILE
@@ -94,10 +94,12 @@ endif
 ###################################################################################
 
 ####create WORKDIR, do not put it into /cache###
-if ("$replaydir" !~ *"/cache/"*) then
-    set WORKDIR = $monitordir/../job/replay_${HOST:r:r}_$$
+if ( $?SLURM_JOBID ) then
+	set WORKDIR = /scratch/slurm/$SLURM_JOBID
+else if ("$replaydir" =~ "*/cache/*") then
+	set WORKDIR = $monitordir/../job/replay_${HOST:r:r}_$$
 else
-    set WORKDIR = $replaydir/../job/replay_${HOST:r:r}_$$
+	set WORKDIR = $replaydir/../job/replay_${HOST:r:r}_$$
 endif
 set curdir = (`pwd`)
 mkdir -p $monitordir $WORKDIR/graph

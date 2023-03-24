@@ -86,7 +86,7 @@ while ($run < $endrun)
   rm -fr ~/.tmp_$$  >&! /dev/null   
   if ($nfile < 1) continue  
    
-  foreach infile ($mssdir/hallc_fadc_ssp_${run}.evio.* $datadir/hallc_fadc*_${run}.evio.*)
+  foreach infile ($mssdir/hallc_fadc*_${run}.evio.* $datadir/hallc_fadc*_${run}.evio.*)
     
     set infilename = (`basename $infile`)
     

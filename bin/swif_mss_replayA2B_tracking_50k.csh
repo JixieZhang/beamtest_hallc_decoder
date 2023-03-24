@@ -9,9 +9,9 @@ set DEBUG = ("");
 if (! $?HallCBeamtestDir) setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/decoder
 set decoderdir = ${HallCBeamtestDir}
 
-set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc/raw
+#set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc/raw
 #set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc/replay/pass1
-set replaydir = /volatile/halla/solid/jixie/ecal_beamtest_hallc/82deg/pass1
+#set replaydir = /volatile/halla/solid/jixie/ecal_beamtest_hallc/82deg/pass1
 
 #set datadir = /cache/halla/solid/subsystem/ec/ecal_cosmic_hallc/raw
 #set replaydir = /cache/halla/solid/subsystem/ec/ecal_cosmic_hallc/replay/pass0
@@ -21,9 +21,10 @@ set replaydir = /volatile/halla/solid/jixie/ecal_beamtest_hallc/82deg/pass1
 #set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_7deg/replay/pass1
 #set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/7deg/pass1
 
-#set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
+set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
 #set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/replay/pass0
-#set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/pass0
+set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/GEM50k
+#set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/thre3
 
 if ($#argv < 1) then
     echo "Submit jobs to replaying hallc beamtest files in mss" 
@@ -64,7 +65,7 @@ mkdir -pv $jobfiledir;
 #create the $jobfile
 set jobfile = ($jobfiledir/swif_${startrun}_to_${endrun})
 
-set workflow = replay_82deg
+set workflow = replay_tracking
 #echo "create workflow $workflow"
 echo "swif2 create -workflow $workflow" >&! $jobfile
 $DEBUG swif2 create -workflow $workflow
@@ -81,12 +82,12 @@ while ($run < $endrun)
   @ run = $run + 1
   
   set nfile = (0)  
-  (ls -1 $mssdir/hallc_fadc*_${run}.evio.* $datadir/hallc_fadc*_${run}.evio.*| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null  
+  (ls -1 $mssdir/hallc_fadc_ssp_${run}.evio.* $datadir/hallc_fadc_ssp_${run}.evio.0| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null  
   set nfile = (`cat  ~/.tmp_$$`)
   rm -fr ~/.tmp_$$  >&! /dev/null   
   if ($nfile < 1) continue  
    
-  foreach infile ($mssdir/hallc_fadc*_${run}.evio.* $datadir/hallc_fadc*_${run}.evio.*)
+  foreach infile ($mssdir/hallc_fadc_ssp_${run}.evio.0 $datadir/hallc_fadc_ssp_${run}.evio.0)
     
     set infilename = (`basename $infile`)
     
@@ -115,7 +116,7 @@ while ($run < $endrun)
     #2) When a file in /cache is updated, does the tape will update that file already in tape?
     
     #add '"' to escape the command string
-    set cmd = ($HallCBeamtestDir/bin/replayFiles_82deg.csh "'-x 0 -t 6'" $datadir/$infilename)
+    set cmd = ($HallCBeamtestDir/bin/replayFiles_18deg.csh "'-x 1 -t 6 -k 100000 -n 50000'" $datadir/$infilename)
     echo "adding one job for file $infilename"
     if (! -f $datadir/$infilename) then
       #do job from /mss

@@ -87,7 +87,7 @@ while ($run < $endrun)
   rm -fr ~/.tmp_$$  >&! /dev/null   
   if ($nfile < 1) continue  
    
-  foreach infile ($mssdir/hallc_fadc_ssp_${run}.evio.* $datadir/hallc_fadc*_${run}.evio.*)
+  foreach infile ($mssdir/hallc_fadc*_${run}.evio.* $datadir/hallc_fadc*_${run}.evio.*)
     
     set infilename = (`basename $infile`)
     
@@ -116,7 +116,7 @@ while ($run < $endrun)
     #2) When a file in /cache is updated, does the tape will update that file already in tape?
     
     #add '"' to escape the command string
-    set cmd = ($HallCBeamtestDir/bin/replayFiles_18deg.csh "'-x 1 -t 3'" $datadir/$infilename)
+    set cmd = ($HallCBeamtestDir/bin/replayFiles_18deg.csh "'-x 1 -t 6'" $datadir/$infilename)
     echo "adding one job for file $infilename"
     if (! -f $datadir/$infilename) then
       #do job from /mss
