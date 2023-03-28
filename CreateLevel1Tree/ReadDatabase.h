@@ -3,13 +3,13 @@
 //The database file looks like this
 /*
 # Pedestal database for solid hallc beamtest
-# use '#' to comment, anything behind it in the same line will be ignored 
+# use '#' to comment, anything behind it in the same line will be ignored
 # This file contains multiple blocks, each block starts with 'BlockStart={' and end with 'BlockEnd=}'
-# Multiple lines of Data will be appended into the memory 
+# Multiple lines of Data will be appended into the memory
 # Lines without'=' will be ignored, characters after ';' will also be ignored
 
 BlockStart={
-DetName = FADCPedestal 
+DetName = FADCPedestal
 RunMin = 1000
 RunMax = 1000
 NChannel = 32
@@ -39,81 +39,81 @@ using namespace std;
 // data structures
 namespace db
 {
-//verbose level	
+//verbose level
 static int verbose = 0;
 static int IsInitialized = 0;
 
 class dbBlock {
 public:
-    string DetName;
-    int RunMin, RunMax, NChannel;
-    vector<double> Data;
+	string DetName;
+	int RunMin, RunMax, NChannel;
+	vector<double> Data;
 
-    dbBlock(){;};
-    
-    dbBlock(string name, int nch, double *data, int min, int max)
-        : DetName(name), NChannel(nch), RunMin(min), RunMax(max)
-    {
-        for(int i=0;i<nch;i++) Data.push_back(data[i]); 
-    }
-    
-    dbBlock(string name, vector<double> data, int min, int max)
-        : DetName(name), RunMin(min), RunMax(max)
-    {
+	dbBlock(){;};
+
+	dbBlock(string name, int nch, double *data, int min, int max)
+		: DetName(name), NChannel(nch), RunMin(min), RunMax(max)
+	{
+		for(int i=0;i<nch;i++) Data.push_back(data[i]);
+	}
+
+	dbBlock(string name, vector<double> data, int min, int max)
+		: DetName(name), RunMin(min), RunMax(max)
+	{
 		NChannel = int(data.size());
-        for(int i=0;i<NChannel;i++) Data.push_back(data[i]); 
-    }
-    
-    ~dbBlock() {Data.clear();}
-    
-    dbBlock& Clone(dbBlock &b)
-    {
+		for(int i=0;i<NChannel;i++) Data.push_back(data[i]);
+	}
+
+	~dbBlock() {Data.clear();}
+
+	dbBlock& Clone(dbBlock &b)
+	{
 		DetName = b.DetName;
 		RunMin = b.RunMin;
 		RunMax = b.RunMax;
 		NChannel = b.NChannel;
 		Data.clear();
-        for(int i=0;i<NChannel;i++) Data.push_back(b.Data[i]); 
-        return *this;
-    }    
-    
-    void SetData(vector<double> &data)
-    {
+		for(int i=0;i<NChannel;i++) Data.push_back(b.Data[i]);
+		return *this;
+	}
+
+	void SetData(vector<double> &data)
+	{
 		NChannel = int(data.size());
 		Data.clear();
-        for(int i=0;i<NChannel;i++) Data.push_back(data[i]); 
-    }
-    
-    void SetData(int nch, double *data)
-    {
+		for(int i=0;i<NChannel;i++) Data.push_back(data[i]);
+	}
+
+	void SetData(int nch, double *data)
+	{
 		NChannel = nch;
 		Data.clear();
-        for(int i=0;i<NChannel;i++) Data.push_back(data[i]); 
-    }
+		for(int i=0;i<NChannel;i++) Data.push_back(data[i]);
+	}
 
-    void Clear() {RunMin=RunMax=NChannel=0;Data.clear();}
+	void Clear() {RunMin=RunMax=NChannel=0;Data.clear();}
 
-    dbBlock& operator=(const dbBlock& b)
-    {
-		if (this == &b) return *this;		
+	dbBlock& operator=(const dbBlock& b)
+	{
+		if (this == &b) return *this;
 		DetName = b.DetName;
 		RunMin = b.RunMin;
 		RunMax = b.RunMax;
 		NChannel = b.NChannel;
 		Data.clear();
-        for(int i=0;i<NChannel;i++) Data.push_back(b.Data[i]); 
-        return *this;
-    }
-    
+		for(int i=0;i<NChannel;i++) Data.push_back(b.Data[i]);
+		return *this;
+	}
+
 	void Print()
 	{
 		cout<<"\nBlockStart={\n";
-		cout<<"  DetName = "<<DetName<<"\n  RunMin = "<<RunMin<<"\n  RunMax = "<<RunMax<<"\n  Nchannel = "<<NChannel<<endl;				
-		std::cout.setf(std::ios::fixed, std::ios::floatfield); // floatfield set to fixed	
+		cout<<"  DetName = "<<DetName<<"\n  RunMin = "<<RunMin<<"\n  RunMax = "<<RunMax<<"\n  Nchannel = "<<NChannel<<endl;
+		std::cout.setf(std::ios::fixed, std::ios::floatfield); // floatfield set to fixed
 		streamsize oldprecision = std::cout.precision(1);
 		for(int i=0;i<NChannel;i++) {
 			if ( (i+1)%16 == 1 ) cout<<"  Data = ";
-			cout<<setw(6)<<Data[i]<<" "; 
+			cout<<setw(6)<<Data[i]<<" ";
 			if ( (i+1)%16 == 0 ) cout<<"\n";
 		}
 		std::cout.precision(oldprecision);
@@ -131,7 +131,7 @@ void PrintMap()
 	cout<<"db::PrintMap(): this is the whole detector map:\n";
 	map<string,vector<dbBlock>>::iterator it;
 	for (it = DetMap.begin(); it != DetMap.end(); it++)
-	{ 
+	{
 		for (auto & dbB : it->second) {
 			dbB.Print();
 		}
@@ -144,10 +144,10 @@ void FillBlock(dbBlock &b)
 	string name = b.DetName;
 	dbBlock dbB = b;
 	if(verbose>=5) dbB.Print();
-	
+
 	if(DetMap.find(name) != DetMap.end()) {
 		//find the detector, check if the run range is already inside
-		//if yes, update the data, otherwise add this block 
+		//if yes, update the data, otherwise add this block
 		bool found = false;
 		vector<dbBlock> *ptr = &DetMap[name];
 		vector<dbBlock>::iterator it;
@@ -175,14 +175,14 @@ void FillBlock(dbBlock &b)
 					it->RunMin = b.RunMax + 1;
 					if(verbose>=3) cout<<"\tChanged the 1st splited block RunMin to "<< it->RunMin<<endl;
 					dbB2.RunMax = b.RunMin - 1;
-					if(verbose>=3) cout<<"\tChanged the 2nd splited block RunMax to "<< dbB2.RunMax <<endl;					
-					
+					if(verbose>=3) cout<<"\tChanged the 2nd splited block RunMax to "<< dbB2.RunMax <<endl;
+
 					//There are 2 dbBlocks need to be inserted, the iterator 'it' will be invalid after calling insert()
 					//ptr->insert(it,dbB);ptr->insert(it,dbB2); will not work
 					//therefore a vector is created here, the whole vector will be inserted at one call
 					vector<dbBlock> aVec;
 					aVec.push_back(dbB2);
-					aVec.push_back(dbB);					
+					aVec.push_back(dbB);
 					if(verbose>=3) cout<<"\tInsert the 2nd splited block and the new block into a NEW vector"<<endl;
 					ptr->insert(it,aVec.begin(),aVec.end());
 					if(verbose>=3) cout<<"\tInsert the newly built vector into the main vector"<<endl;
@@ -191,23 +191,23 @@ void FillBlock(dbBlock &b)
 				break;
 			}
 		}
-		//this reange is not found, insert this block	
-		if(!found) {	
+		//this reange is not found, insert this block
+		if(!found) {
 			DetMap[name].push_back(dbB);
 		}
 	} else {
 		//this detector is not found, add it into the map
 		vector<dbBlock> pVec;
 		pVec.push_back(dbB);
-		DetMap[name] = pVec;		
+		DetMap[name] = pVec;
 	}
 }
 
-dbBlock* FindBlock(string name, int run) 
-{	
+dbBlock* FindBlock(string name, int run)
+{
 	if(DetMap.find(name) != DetMap.end()) {
 		//find the detector, check if the run range is already inside
-		//if yes, take the data, otherwise get the last entry	
+		//if yes, take the data, otherwise get the last entry
 		/*
 		for(auto it=DetMap[name].rbegin();it!=DetMap[name].rend();it++) {  //in decreasing order
 			if(it->RunMin <= run && it->RunMax >= run) {
@@ -215,7 +215,7 @@ dbBlock* FindBlock(string name, int run)
 			}
 		}
 		*/
-		
+
 		for(auto & it : DetMap[name]) {  //in increasing order
 			if(it.RunMin <= run && it.RunMax >= run) {
 				return &it;
@@ -227,7 +227,7 @@ dbBlock* FindBlock(string name, int run)
 		//not found
 		cout<<"No detector '"<<name<<"' found in the database...\n";
 		return NULL;
-	}	
+	}
 }
 
 
@@ -249,12 +249,12 @@ void  Trim(std::string &astr)
 }
 
 //Input: filename c string
-//Output: return false if file can not open succesfully, otherwise return true 
-//        all parameters written in the given file will be stored and 
+//Output: return false if file can not open succesfully, otherwise return true
+//        all parameters written in the given file will be stored and
 //        achieved by calling bool GetParameter<typename>(char *name, T &value);
 //        Please NOTE that the typename could be size_t,int,float,double,bool,char*,string only
-//feature: 
-//1)The parameter files must in a format as "parameter=value", allow space ' ' beside '='. 
+//feature:
+//1)The parameter files must in a format as "parameter=value", allow space ' ' beside '='.
 //2)The value is ended by comma ',', semi-comma ';' or space ' ', care should be taken for string parameters
 //2)Use '#' to comment out lines or part of lines. Everything after # will be ignored.
 //3)A line without '=' will not be understood. All non-understood lines will be printed out and ignored.
@@ -288,14 +288,14 @@ bool ReadFile(const char *filename)
 		strLine=line;
 		found=strLine.find('#');
 		if(found!=string::npos)	strLine=strLine.substr(0,found);
-	
+
 		//trim the string
 		Trim(strLine);
 		if(strLine.length()==0) continue; //this is a comment line whose first char is '#'
 
-		//try to find '=', if not find, ignore this line		
+		//try to find '=', if not find, ignore this line
 		found=strLine.find('=');
-		if (found==string::npos || strLine.length()<3) 
+		if (found==string::npos || strLine.length()<3)
 		{
 			cout<<"Warning! line "<<nline<<" is not recognized: \""<<line<<"\" \n";
 			continue;
@@ -303,24 +303,24 @@ bool ReadFile(const char *filename)
 		strName=strLine.substr(0,found);
 		Trim(strName);
 		strValue=strLine.substr(found+1);
-		
+
 		found=strValue.find(';');
 		if (found!=string::npos) strValue=strValue.substr(0,found);
 		Trim(strValue);
-		
+
 		if(verbose>=3) cout<<setw(15)<<strName<<" = "<<strValue<<endl;
-		
+
 		//store the value into the block
-		if(strName.compare("DetName")== 0)  dbB.DetName = strValue;		
+		if(strName.compare("DetName")== 0)  dbB.DetName = strValue;
 		else if(strName.compare("RunMin")== 0)  dbB.RunMin = atoi(strValue.c_str());
 		else if(strName.compare("RunMax")== 0)  dbB.RunMax = atoi(strValue.c_str());
 		else if(strName.compare("NChannel")== 0)  dbB.NChannel = atoi(strValue.c_str());
 		else if(strName.compare("Data")== 0)  {
 			stringstream s(strValue);
-			double val=0.0;		
+			double val=0.0;
 			while (s >> val)  dbB.Data.push_back(val);
 		}
-		else if(strName.compare("BlockStart")== 0)  dbB.Clear(); 
+		else if(strName.compare("BlockStart")== 0)  dbB.Clear();
 		else if(strName.compare("BlockEnd")== 0) {
 			FillBlock(dbB);
 			dbB.Clear(); //reset it for next block
