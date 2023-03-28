@@ -38,10 +38,10 @@ endif
 
 
 if ($#argv < 2) then
-	echo "error: you need to provide at least 2 arguments"
-	echo "usage: $0 <'replay_option'> <File_List>"
-	echo "example 1: $0:t '-n -1' hallc_fadc_ssp_3049.evio.?"
-	echo "example 2: $0:t '-m $decoderdir/database/modules/mapmt_module_highrate.json -n 50000' hallc_fadc_ssp_3049.evio.2 hallc_fadc_ssp_3049.evio.3"
+	echo "error: you need to provide at least 3 arguments"
+	echo "usage: $0 <'replay_option'> <partN> <File_List>"
+	echo "example 1: $0:t '-n -1' 0 hallc_fadc_ssp_3049.evio.?"
+	echo "example 2: $0:t '-m $decoderdir/database/modules/mapmt_module_highrate.json -n 50000' 1 hallc_fadc_ssp_3049.evio.2 hallc_fadc_ssp_3049.evio.3"
 	echo "replayoption must be single-quoted, here is a list of them:"
 	echo "usage of build/src/analyze:"
 	echo "build/src/analyze [-n NEV] [-m, --module MODULE] [-r RES] [-t THRES] [-p NPEDS] [-f FLAT] RAW_DATA ROOT_FILE"
@@ -112,7 +112,7 @@ endif
 cd $WORKDIR;set WORKDIR = (`pwd`);cd $curdir
 ##################################################
 
-foreach infile0 ($argv[2-$#argv])
+foreach infile0 ($argv[3-$#argv])
 	if !(-f $infile0)  then
 		echo "file $infile0 not exist, skipped ..."
 		continue
@@ -139,9 +139,9 @@ foreach infile0 ($argv[2-$#argv])
 		continue
 	endif
 	set subrun = (${infile:e})
-	set outfilename = beamtest_hallc_${run}_${subrun}.root
+	set outfilename = beamtest_hallc_${run}_${subrun}.root_part$2
 	set outfile = $replaydir/$outfilename
-	set outlevel1file = $replaydir/beamtest_level1_${run}_${subrun}.root
+	set outlevel1file = $replaydir/beamtest_level1_${run}_${subrun}.root_part$2
 
 	#lowrate: <= 3683
 	#cosmic1: 3684 - 3860, PreSh left and right swapped, Shower has 120deg rotation

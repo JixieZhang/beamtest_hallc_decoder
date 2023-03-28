@@ -34,6 +34,11 @@ set jsonfile = "-m $decoderdir/database/modules/mapmt_module_2FADC_beamtest.json
 set replayoption = ("$jsonfile $1")
 echo "replayoption='$replayoption'"
 
+
+#get absolute path for replaydir
+set curdir = (`pwd`);
+cd $replaydir;set replaydir = (`pwd`);cd $curdir
+
 #check for write permission
 mkdir -p $replaydir/.check
 if !(-d $replaydir/.check) then

@@ -81,35 +81,39 @@ while ($run < $endrun)
 	@ run = $run + 1
 
 	set nfile = (0)
-	(ls -1 $datadir/hallc_fadc*_${run}.evio.*| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null
+	(ls -1 $datadir/hallc_fadc_ssp_${run}.evio.0| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null
 	set nfile = (`cat  ~/.tmp_$$`)
 	rm -fr ~/.tmp_$$  >&! /dev/null
 	if ($nfile < 1) continue
 
-	foreach infile ($datadir/hallc_fadc*_${run}.evio.*)
+	foreach infile ($datadir/hallc_fadc_ssp_${run}.evio.0)
 
-	set infilename = (`basename $infile`)
-	set subrun = (${infile:e})
-	set outfilename = beamtest_hallc_${run}_${subrun}.root
-	set outfile = $replaydir/$outfilename
+		set infilename = (`basename $infile`)
+		set subrun = (${infile:e})
+		set outfilename = beamtest_hallc_${run}_${subrun}.root
+		set outfile = $replaydir/$outfilename
 
-	#####################################################
+		#####################################################
 
-	#replayFiles.csh will always overwrite the output file in its own output dir ${HallCBeamtestDir}/../ROOTFILE
-	#which is the same as the default $replaydir, therefore do not add job if the output file exists
-	if ($overwrite == 0 && -f $outfile) then
-		echo "$outfile exist, skip replaying this file ......"
-		continue
-	endif
+		#replayFiles.csh will always overwrite the output file in its own output dir ${HallCBeamtestDir}/../ROOTFILE
+		#which is the same as the default $replaydir, therefore do not add job if the output file exists
+		if ($overwrite == 0 && -f $outfile) then
+			echo "$outfile exist, skip replaying this file ......"
+			continue
+		endif
 
-	#add '"' to escape the command string
-	set cmd = ($HallCBeamtestDir/bin/replayFiles_18deg.csh "'-x 1 -t 6'" $datadir/$infilename)
-	echo "adding one job for file $infilename"
-
-	echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 $cmd " >> $jobfile
-	$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 $cmd
-
-	@ njob = $njob + 1
+		echo "adding one job for file $infilename"
+		#add '"' to escape the command string
+		set skip = (0)
+		set part = (0)
+		while ($skip < 383000)
+			set cmd = ($HallCBeamtestDir/bin/replayFiles_18deg_50k.csh "'-x 1 -t 6 -k " $skip " -n 50000'" $part $datadir/$infilename)
+			echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 6g -phase 1 $cmd " >> $jobfile
+			$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 6g -phase 1 $cmd
+			@ skip = $skip + 50000
+			@ part = $part + 1
+			@ njob = $njob + 1
+		end
 
 	end #end foreach loop
 

@@ -57,6 +57,9 @@ if ($#argv < 2) then
 	$DEBUG exit 0
 endif
 
+#get absolute path for replaydir
+set curdir = (`pwd`);
+cd $replaydir;set replaydir = (`pwd`);cd $curdir
 
 #check for write permission
 mkdir -p $replaydir/.check
@@ -101,7 +104,6 @@ else if ("$replaydir" =~ "*/cache/*") then
 else
 	set WORKDIR = $replaydir/../job/replay_${HOST:r:r}_$$
 endif
-set curdir = (`pwd`)
 mkdir -p $monitordir $WORKDIR/graph
 if (! -d $WORKDIR) then
 	echo "can not create WORKDIR $WORKDIR, I quit ..."
@@ -194,8 +196,10 @@ foreach infile0 ($argv[2-$#argv])
 		$DEBUG cp -f $WORKDIR/config/gem.conf_30m $WORKDIR/config/gem.conf
 	else if ($run >= 3684 && $run <= 3905) then
 		$DEBUG cp -f $WORKDIR/config/gem.conf_10m $WORKDIR/config/gem.conf
-	else if ($run >= 3906) then
+	else if ($run >= 3906 && $run <= 4296) then
 		$DEBUG cp -f $WORKDIR/config/gem.conf_highrate $WORKDIR/config/gem.conf
+	else if ($run >= 4297) then
+		$DEBUG cp -f $WORKDIR/config/gem.conf_highrate2 $WORKDIR/config/gem.conf
 	endif
 
 	$DEBUG $decoderdir/bin/analyze $replayoption $infile $outfilename
