@@ -138,10 +138,13 @@ foreach infile0 ($argv[3-$#argv])
 		echo "could not extract run number from file name $filename, skip ..."
 		continue
 	endif
+	set partN = part$2
+	if ($2 < 10) set partN = part0$2
+	
 	set subrun = (${infile:e})
-	set outfilename = beamtest_hallc_${run}_${subrun}.root_part$2
+	set outfilename = beamtest_hallc_${run}_${subrun}.root_$partN
 	set outfile = $replaydir/$outfilename
-	set outlevel1file = $replaydir/beamtest_level1_${run}_${subrun}.root_part$2
+	set outlevel1file = $replaydir/beamtest_level1_${run}_${subrun}.root_$partN
 
 	#lowrate: <= 3683
 	#cosmic1: 3684 - 3860, PreSh left and right swapped, Shower has 120deg rotation

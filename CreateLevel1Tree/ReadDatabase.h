@@ -267,6 +267,7 @@ bool ReadFile(const char *filename)
 	if(!dbfile.good())
 	{
 		cout<<"\n***Error: Can not open database file \""<<filename<<"\"!"<<endl;
+		exit(-1);  //quit if database file is missing
 		return false;
 	}
 	else  cout<<"\nReading database file \""<<filename<<"\""<<endl;
