@@ -99,7 +99,7 @@ endif
 
 ####create WORKDIR, do not put it into /cache###
 if ( $?SLURM_JOBID ) then
-	set WORKDIR = /scratch/slurm/$SLURM_JOBID
+	set WORKDIR = /scratch/slurm/$SLURM_JOBID/replay_${HOST:r:r}_$$
 else if ("$replaydir" =~ "*/cache/*") then
 	set WORKDIR = $monitordir/../job/replay_${HOST:r:r}_$$
 else

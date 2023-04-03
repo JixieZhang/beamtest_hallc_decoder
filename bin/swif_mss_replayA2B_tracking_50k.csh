@@ -27,12 +27,12 @@ set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/GEM50k
 #set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/thre3
 
 if ($#argv < 1) then
-    echo "Submit jobs to replaying hallc beamtest files in mss" 
-    echo "Usage: $0:t <startrun> [endrun=0] [overwrite=0] [outputdir=$replaydir]"
-    echo "example 1: '$0 1000'  will replay for run number 1000"
-    echo "example 2: '$0 1000 1005'  will replay for run number from 1000 to 1005(included)"
-    echo "example 3: '$0 1000 1005 ./outdir'  will replay for run number from 1000 to 1005(included) and output file is at ./outdir"
-    $DEBUG exit 0
+		echo "Submit jobs to replaying hallc beamtest files in mss"
+		echo "Usage: $0:t <startrun> [endrun=0] [overwrite=0] [outputdir=$replaydir]"
+		echo "example 1: '$0 1000'  will replay for run number 1000"
+		echo "example 2: '$0 1000 1005'  will replay for run number from 1000 to 1005(included)"
+		echo "example 3: '$0 1000 1005 ./outdir'  will replay for run number from 1000 to 1005(included) and output file is at ./outdir"
+		$DEBUG exit 0
 endif
 
 ########################################################################
@@ -50,10 +50,10 @@ if ($#argv >= 4) set replaydir = ($4)
 #check for write permission
 mkdir -p $replaydir/.check
 if !(-d $replaydir/.check) then
-  echo "You have no write permission in $replaydir, I quit ..."
-  exit 0
+	echo "You have no write permission in $replaydir, I quit ..."
+	exit 0
 else
-  rm -fr $replaydir/.check
+	rm -fr $replaydir/.check
 endif
 
 #the template loate at ./job_hallc_beamtest_T
@@ -79,65 +79,82 @@ set  mssdir = `echo $datadir| sed -e "s/cache/mss/"`
 @ run = $startrun - 1
 while ($run < $endrun)
 
-  @ run = $run + 1
-  
-  set nfile = (0)  
-  (ls -1 $mssdir/hallc_fadc_ssp_${run}.evio.0 $datadir/hallc_fadc_ssp_${run}.evio.0| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null  
-  set nfile = (`cat  ~/.tmp_$$`)
-  rm -fr ~/.tmp_$$  >&! /dev/null   
-  if ($nfile < 1) continue  
-   
-  foreach infile ($mssdir/hallc_fadc_ssp_${run}.evio.0 $datadir/hallc_fadc_ssp_${run}.evio.0)
-    
-    set infilename = (`basename $infile`)
-    
-    #check if this file exist in /cache, if yes, skip it to avoid repeating cooking
-    set parentdir = (`dirname $infile`)
-    if ( "$parentdir" =~ */mss/* ) then
-      if ( -f $datadir/infilename )  continue;
-    endif
-    
-    set subrun = (${infile:e})
-    set outfilename = beamtest_hallc_${run}_${subrun}.root
-    set outfile = $replaydir/$outfilename
- 
-    #####################################################
-    
-    #replayFiles.csh will always overwrite the output file in its own output dir ${HallCBeamtestDir}/../ROOTFILE
-    #which is the same as the default $replaydir, therefore do not add job if the output file exists
-    if ($overwrite == 0 && -f $outfile) then
-      echo "$outfile exist, skip replaying this file ......"
-      continue
-    endif
-    
-    #TODO: 
-    #1) when "-input localfile remotefile" option is used, what if the localfile exists, does the process still 
-    #   copy the remotefile to overwrite the localfile?
-    #2) When a file in /cache is updated, does the tape will update that file already in tape?
-    
-    #add '"' to escape the command string
-    set cmd = ($HallCBeamtestDir/bin/replayFiles_18deg.csh "'-x 1 -t 6 -k 100000 -n 50000'" $datadir/$infilename)
-    echo "adding one job for file $infilename"
-    if (! -f $datadir/$infilename) then
-      #do job from /mss
-      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
-      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd  
-      #copy the file from /mss to /cache
-      echo "jcache get $infile"
-      $DEBUG jcache get $infile
-    else
-      #do job from /cache, 
-      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 $cmd " >> $jobfile
-      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 $cmd  
-    endif
-    @ njob = $njob + 1
-    
-  end #end foreach loop
+	@ run = $run + 1
+
+	set nfile = (0)
+	(ls -1 $mssdir/hallc_fadc_ssp_${run}.evio.0 $datadir/hallc_fadc_ssp_${run}.evio.0| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null
+	set nfile = (`cat  ~/.tmp_$$`)
+	rm -fr ~/.tmp_$$  >&! /dev/null
+	if ($nfile < 1) continue
+
+	foreach infile ($mssdir/hallc_fadc_ssp_${run}.evio.0 $datadir/hallc_fadc_ssp_${run}.evio.0)
+
+		set infilename = (`basename $infile`)
+
+		#check if this file exist in /cache, if yes, skip it to avoid repeating cooking
+		set parentdir = (`dirname $infile`)
+		if ( "$parentdir" =~ */mss/* ) then
+			if ( -f $datadir/infilename )  continue;
+		endif
+
+		set subrun = (${infile:e})
+		set outfilename = beamtest_hallc_${run}_${subrun}.root
+		set outfile = $replaydir/$outfilename
+
+		#####################################################
+
+		#replayFiles.csh will always overwrite the output file in its own output dir ${HallCBeamtestDir}/../ROOTFILE
+		#which is the same as the default $replaydir, therefore do not add job if the output file exists
+		if ($overwrite == 0 && -f $outfile) then
+			echo "$outfile exist, skip replaying this file ......"
+			continue
+		endif
+
+		echo "adding one job for file $infilename"
+		#add '"' to escape the command string
+		set skip = (0)
+		set part = (0)
+		#get the file size in byte for 50k events,  1k event is about 33Mb, 33*50=1650Mb
+		set NeventsPerJob = (50000)
+		@ size50k = 33 * $NeventsPerJob
+		set FileSize = (`du -s $infile | awk '{print $1}'`)
+		#get NJobs according to the file size,  50k events per job
+		set NJobsThisFile = (`du -s $infile | awk -v s="$size50k" 'function ceil(v) { return (v == int(v)) ? v : int(v)+1; } { print ceil($1/s)}'`)
+
+		while ($part < $NJobsThisFile)
+			set partN = part$part
+			if ($part < 10) set partN = part0$part
+			set outfilename = beamtest_hallc_${run}_${subrun}.root_$partN
+			set outfile = $replaydir/$outfilename
+			if ($overwrite == 0 && -f $outfile) then
+				echo "$outfile exist, skip replaying this part ......"
+				continue
+			endif
+
+			set cmd = ($HallCBeamtestDir/bin/replayFiles_18deg_50k.csh "'-x 1 -t 6 -k " $skip " -n " $NeventsPerJob " '" $part $datadir/$infilename)
+			 if (! -f $datadir/$infilename) then
+				#do job from /mss
+				echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition osg -ram 6g -phase 1 -time 96h -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
+				$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition osg -ram 6g -phase 1 -time 96h -input $datadir/$infilename mss:$mssdir/$infilename $cmd
+				#copy the file from /mss to /cache
+				#echo "jcache get $infile"
+				#$DEBUG jcache get $infile
+			else
+				#do job from /cache,
+				echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition osg -ram 6g -phase 1 -time 96h $cmd " >> $jobfile
+				$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition osg -ram 6g -phase 1 -time 96h $cmd
+			endif
+			@ skip = $skip + $NeventsPerJob
+			@ part = $part + 1
+			@ njob = $njob + 1
+		end
+
+	end #end foreach loop
 
 end #end of while loop
 
 if ($njob > 0) then
-  echo "swif2 run $workflow " >> $jobfile
-  $DEBUG swif2 run $workflow 
-  echo "$njob added. Now start running the job in batch farm ..."
+	echo "swif2 run $workflow " >> $jobfile
+	$DEBUG swif2 run $workflow
+	echo "$njob added. Now start running the job in batch farm ..."
 endif

@@ -81,12 +81,12 @@ while ($run < $endrun)
 	@ run = $run + 1
 
 	set nfile = (0)
-	(ls -1 $datadir/hallc_fadc_ssp_${run}.evio.*| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null
+	(ls -1 $datadir/hallc_fadc_ssp_${run}.evio.0| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null
 	set nfile = (`cat  ~/.tmp_$$`)
 	rm -fr ~/.tmp_$$  >&! /dev/null
 	if ($nfile < 1) continue
 
-	foreach infile ($datadir/hallc_fadc_ssp_${run}.evio.*)
+	foreach infile ($datadir/hallc_fadc_ssp_${run}.evio.0)
 
 		set infilename = (`basename $infile`)
 		set subrun = (${infile:e})
@@ -119,7 +119,7 @@ while ($run < $endrun)
 			set outfilename = beamtest_hallc_${run}_${subrun}.root_$partN
 			set outfile = $replaydir/$outfilename
 			if ($overwrite == 0 && -f $outfile) then
-				echo "$outfile exist, skip replaying this part ......"
+				echo "$outfile exist, skip replaying this file ......"
 				continue
 			endif
 			

@@ -70,7 +70,7 @@ setenv LD_LIBRARY_PATH ${HallCBeamtestDir}/lib64:$ROOTSYS/lib:/group/jpsi-007/lo
 
 set curdir = (`pwd`) 
 if ( $?SLURM_JOBID ) then
-	set WORKDIR = /scratch/slurm/$SLURM_JOBID
+	set WORKDIR = /scratch/slurm/$SLURM_JOBID/replay_${HOST:r:r}_$$
 else if ("$replaydir" =~ "*/cache/*") then
 	set WORKDIR = $monitordir/../job/replay_${HOST:r:r}_$$
 else
