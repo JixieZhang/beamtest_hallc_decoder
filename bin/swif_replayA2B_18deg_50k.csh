@@ -105,7 +105,7 @@ while ($run < $endrun)
 		echo "adding one job for file $infilename"
 		#add '"' to escape the command string
 		set skip = (0)
-		set part = (0)
+		set part = (-1)
 		#get the file size in byte for 50k events,  1k event is about 33Mb, 33*50=1650Mb
 		set NeventsPerJob = (50000)
 		@ size50k = 33 * $NeventsPerJob
@@ -114,6 +114,7 @@ while ($run < $endrun)
 		set NJobsThisFile = (`du -s $infile | awk -v s="$size50k" 'function ceil(v) { return (v == int(v)) ? v : int(v)+1; } { print ceil($1/s)}'`)
 
 		while ($part < $NJobsThisFile)
+			@ part = $part + 1
 			set partN = part$part
 			if ($part < 10) set partN = part0$part
 			set outfilename = beamtest_hallc_${run}_${subrun}.root_$partN
@@ -127,7 +128,6 @@ while ($run < $endrun)
 			echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition osg -ram 6g -phase 1 -time 96h $cmd " >> $jobfile
 			$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition osg -ram 6g -phase 1 -time 96h $cmd
 			@ skip = $skip + $NeventsPerJob
-			@ part = $part + 1
 			@ njob = $njob + 1
 		end
 
