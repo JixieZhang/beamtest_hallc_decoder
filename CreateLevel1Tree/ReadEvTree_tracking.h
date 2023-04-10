@@ -32,6 +32,25 @@ public :
 
 	// Declaration of leaf types
 	Int_t           event_number;
+	Int_t           fNtracks_found;
+	Int_t           fNhitsOnTrack;
+	Float_t         fXtrack;
+	Float_t         fYtrack;
+	Float_t         fXptrack;
+	Float_t         fYptrack;
+	Float_t         fChi2Track;
+	vector<int>     *fHitLayer;
+	vector<float>   *fHitXlocal;
+	vector<float>   *fHitYlocal;
+	vector<float>   *fHitXprojected;
+	vector<float>   *fHitYprojected;
+	vector<float>   *fHitResidU;
+	vector<float>   *fHitResidV;
+	vector<float>   *fHitUADC;
+	vector<float>   *fHitVADC;
+	vector<float>   *fHitIsampMaxUstrip;
+	vector<float>   *fHitIsampMaxVstrip;
+   
 	Int_t           GEM_nCluster;
 	Int_t           GEM_planeID[MAX_CLUSTERS_PER_PLANE];   //[GEM_nCluster]
 	Int_t           GEM_prodID[MAX_CLUSTERS_PER_PLANE];    //[GEM_nCluster]
@@ -40,135 +59,18 @@ public :
 	Int_t           GEM_size[MAX_CLUSTERS_PER_PLANE];   //[GEM_nCluster]
 	Float_t         GEM_adc[MAX_CLUSTERS_PER_PLANE];    //[GEM_nCluster]
 	Float_t         GEM_pos[MAX_CLUSTERS_PER_PLANE];    //[GEM_nCluster]
-	Int_t           GEM_stripNo[MAX_CLUSTERS_PER_PLANE][MAX_CLUSTER_SIZE];   //[GEM_nCluster]
-	Float_t         GEM_stripAdc[MAX_CLUSTERS_PER_PLANE][MAX_CLUSTER_SIZE];  //[GEM_nCluster]
-	/*
-	//vector<int>     *GEM_stripNo;
-	//vector<float>   *GEM_stripAdc;
+	vector<int>     *GEM_stripNo;
+	vector<float>   *GEM_stripAdc;
 	vector<float>   *GEM_stripTs0;
 	vector<float>   *GEM_stripTs1;
 	vector<float>   *GEM_stripTs2;
 	vector<float>   *GEM_stripTs3;
 	vector<float>   *GEM_stripTs4;
 	vector<float>   *GEM_stripTs5;
-	*/
 	Int_t           GEM_nAPV;
 	Int_t           GEM_apv_crate_id[16]; //[GEM_nAPV]
 	Int_t           GEM_apv_mpd_id[16];   //[GEM_nAPV]
-	Int_t           GEM_apv_adc_ch[16];   //[GEM_nAPV]
-	
-	
-	Int_t           fNtracks_found;
-	vector<int>     *fNhitsOnTrack;
-	vector<double>  *fXtrack;
-	vector<double>  *fYtrack;
-	vector<double>  *fXptrack;
-	vector<double>  *fYptrack;
-	vector<double>  *fChi2Track;
-	Int_t           fBestTrackIndex;
-	Int_t           fNgoodhits;
-	vector<int>     *fHitTrackIndex;
-	vector<int>     *fHitModule;
-	vector<int>     *fHitLayer;
-	vector<int>     *fHitNstripsU;
-	vector<int>     *fHitUstripMax;
-	vector<int>     *fHitUstripLo;
-	vector<int>     *fHitUstripHi;
-	vector<int>     *fHitNstripsV;
-	vector<int>     *fHitVstripMax;
-	vector<int>     *fHitVstripLo;
-	vector<int>     *fHitVstripHi;
-	vector<double>  *fHitUlocal;
-	vector<double>  *fHitVlocal;
-	vector<double>  *fHitXlocal;
-	vector<double>  *fHitYlocal;
-	vector<double>  *fHitXglobal;
-	vector<double>  *fHitYglobal;
-	vector<double>  *fHitZglobal;
-	vector<double>  *fHitUmoment;
-	vector<double>  *fHitVmoment;
-	vector<double>  *fHitUsigma;
-	vector<double>  *fHitVsigma;
-	vector<double>  *fHitResidU;
-	vector<double>  *fHitResidV;
-	vector<double>  *fHitEResidU;
-	vector<double>  *fHitEResidV;
-	vector<double>  *fHitUADC;
-	vector<double>  *fHitVADC;
-	vector<double>  *fHitUADCclust_deconv;
-	vector<double>  *fHitVADCclust_deconv;
-	vector<double>  *fHitUADCclust_maxsamp_deconv;
-	vector<double>  *fHitVADCclust_maxsamp_deconv;
-	vector<double>  *fHitUADCclust_maxcombo_deconv;
-	vector<double>  *fHitVADCclust_maxcombo_deconv;
-	vector<double>  *fHitUADCmaxstrip;
-	vector<double>  *fHitVADCmaxstrip;
-	vector<double>  *fHitUADCmaxstrip_deconv;
-	vector<double>  *fHitVADCmaxstrip_deconv;
-	vector<double>  *fHitUADCmaxsample;
-	vector<double>  *fHitVADCmaxsample;
-	vector<double>  *fHitUADCmaxsample_deconv;
-	vector<double>  *fHitVADCmaxsample_deconv;
-	vector<double>  *fHitUADCmaxcombo_deconv;
-	vector<double>  *fHitVADCmaxcombo_deconv;
-	vector<double>  *fHitUADCmaxclustsample;
-	vector<double>  *fHitVADCmaxclustsample;
-	vector<double>  *fHitADCasym;
-	vector<double>  *fHitADCavg;
-	vector<double>  *fHitADCasym_deconv;
-	vector<double>  *fHitADCavg_deconv;
-	vector<double>  *fHitUTime;
-	vector<double>  *fHitVTime;
-	vector<double>  *fHitUTimeDeconv;
-	vector<double>  *fHitVTimeDeconv;
-	vector<double>  *fHitUTimeMaxStrip;
-	vector<double>  *fHitVTimeMaxStrip;
-	vector<double>  *fHitUTimeMaxStripFit;
-	vector<double>  *fHitVTimeMaxStripFit;
-	vector<double>  *fHitUTimeMaxStripDeconv;
-	vector<double>  *fHitVTimeMaxStripDeconv;
-	vector<double>  *fHitDeltaTDeconv;
-	vector<double>  *fHitTavgDeconv;
-	vector<double>  *fHitIsampMaxUclust;
-	vector<double>  *fHitIsampMaxVclust;
-	vector<double>  *fHitIsampMaxUstrip;
-	vector<double>  *fHitIsampMaxVstrip;
-	vector<double>  *fHitIsampMaxUstripDeconv;
-	vector<double>  *fHitIsampMaxVstripDeconv;
-	vector<double>  *fHitIcomboMaxUstripDeconv;
-	vector<double>  *fHitIcomboMaxVstripDeconv;
-	vector<double>  *fHitIsampMaxUclustDeconv;
-	vector<double>  *fHitIsampMaxVclustDeconv;
-	vector<double>  *fHitIcomboMaxUclustDeconv;
-	vector<double>  *fHitIcomboMaxVclustDeconv;
-	vector<double>  *fHitCorrCoeffClust;
-	vector<double>  *fHitCorrCoeffMaxStrip;
-	vector<double>  *fHitCorrCoeffClustDeconv;
-	vector<double>  *fHitCorrCoeffMaxStripDeconv;
-	vector<double>  *fHitADCfrac0_MaxUstrip;
-	vector<double>  *fHitADCfrac1_MaxUstrip;
-	vector<double>  *fHitADCfrac2_MaxUstrip;
-	vector<double>  *fHitADCfrac3_MaxUstrip;
-	vector<double>  *fHitADCfrac4_MaxUstrip;
-	vector<double>  *fHitADCfrac5_MaxUstrip;
-	vector<double>  *fHitADCfrac0_MaxVstrip;
-	vector<double>  *fHitADCfrac1_MaxVstrip;
-	vector<double>  *fHitADCfrac2_MaxVstrip;
-	vector<double>  *fHitADCfrac3_MaxVstrip;
-	vector<double>  *fHitADCfrac4_MaxVstrip;
-	vector<double>  *fHitADCfrac5_MaxVstrip;
-	vector<double>  *fHitDeconvADC0_MaxUstrip;
-	vector<double>  *fHitDeconvADC1_MaxUstrip;
-	vector<double>  *fHitDeconvADC2_MaxUstrip;
-	vector<double>  *fHitDeconvADC3_MaxUstrip;
-	vector<double>  *fHitDeconvADC4_MaxUstrip;
-	vector<double>  *fHitDeconvADC5_MaxUstrip;
-	vector<double>  *fHitDeconvADC0_MaxVstrip;
-	vector<double>  *fHitDeconvADC1_MaxVstrip;
-	vector<double>  *fHitDeconvADC2_MaxVstrip;
-	vector<double>  *fHitDeconvADC3_MaxVstrip;
-	vector<double>  *fHitDeconvADC4_MaxVstrip;
-	vector<double>  *fHitDeconvADC5_MaxVstrip;
+	Int_t           GEM_apv_adc_ch[16];   //[GEM_nAPV]	
 	
 	fdec::Fadc250Data *CerA0;
 	fdec::Fadc250Data *CerA1;
@@ -204,9 +106,29 @@ public :
 	fdec::Fadc250Data *ShowerSum;
 	fdec::Fadc250Data *Trig;
 	Int_t           trigger_type;
+	ULong64_t       trigger_time;
 
 	// List of branches
 	TBranch        *b_event_number;   //!
+	TBranch        *b_fNtracks_found;   //!
+	TBranch        *b_fNhitsOnTrack;   //!
+	TBranch        *b_fXtrack;   //!
+	TBranch        *b_fYtrack;   //!
+	TBranch        *b_fXptrack;   //!
+	TBranch        *b_fYptrack;   //!
+	TBranch        *b_fChi2Track;   //!
+	TBranch        *b_fHitLayer;   //!
+	TBranch        *b_fHitXlocal;   //!
+	TBranch        *b_fHitYlocal;   //!
+	TBranch        *b_fHitXprojected;   //!
+	TBranch        *b_fHitYprojected;   //!
+	TBranch        *b_fHitResidU;   //!
+	TBranch        *b_fHitResidV;   //!
+	TBranch        *b_fHitUADC;   //!
+	TBranch        *b_fHitVADC;   //!
+	TBranch        *b_fHitIsampMaxUstrip;   //!
+	TBranch        *b_fHitIsampMaxVstrip;   //!
+	
 	TBranch        *b_GEM_nCluster;   //!
 	TBranch        *b_GEM_planeID;   //!
 	TBranch        *b_GEM_prodID;   //!
@@ -217,20 +139,17 @@ public :
 	TBranch        *b_GEM_pos;   //!
 	TBranch        *b_GEM_stripNo;   //!
 	TBranch        *b_GEM_stripAdc;   //!
-	/*
-	TBranch        *b_GEM_stripNo;   //!
-	TBranch        *b_GEM_stripAdc;   //!
 	TBranch        *b_GEM_stripTs0;   //!
 	TBranch        *b_GEM_stripTs1;   //!
 	TBranch        *b_GEM_stripTs2;   //!
 	TBranch        *b_GEM_stripTs3;   //!
 	TBranch        *b_GEM_stripTs4;   //!
 	TBranch        *b_GEM_stripTs5;   //!
-	*/
 	TBranch        *b_GEM_nAPV;   //!
 	TBranch        *b_GEM_apv_crate_id;   //!
 	TBranch        *b_GEM_apv_mpd_id;   //!
 	TBranch        *b_GEM_apv_adc_ch;   //!
+	
 	TBranch        *b_CerA0;   //!
 	TBranch        *b_CerA1;   //!
 	TBranch        *b_CerA2;   //!
@@ -264,118 +183,8 @@ public :
 	TBranch        *b_PreShSum;   //!
 	TBranch        *b_ShowerSum;   //!
 	TBranch        *b_Trig;   //!
-	TBranch        *b_fNtracks_found;   //!
-	TBranch        *b_fNhitsOnTrack;   //!
-	TBranch        *b_fXtrack;   //!
-	TBranch        *b_fYtrack;   //!
-	TBranch        *b_fXptrack;   //!
-	TBranch        *b_fYptrack;   //!
-	TBranch        *b_fChi2Track;   //!
-	TBranch        *b_fBestTrackIndex;   //!
-	TBranch        *b_fNgoodhits;   //!
-	TBranch        *b_fHitTrackIndex;   //!
-	TBranch        *b_fHitModule;   //!
-	TBranch        *b_fHitLayer;   //!
-	TBranch        *b_fHitNstripsU;   //!
-	TBranch        *b_fHitUstripMax;   //!
-	TBranch        *b_fHitUstripLo;   //!
-	TBranch        *b_fHitUstripHi;   //!
-	TBranch        *b_fHitNstripsV;   //!
-	TBranch        *b_fHitVstripMax;   //!
-	TBranch        *b_fHitVstripLo;   //!
-	TBranch        *b_fHitVstripHi;   //!
-	TBranch        *b_fHitUlocal;   //!
-	TBranch        *b_fHitVlocal;   //!
-	TBranch        *b_fHitXlocal;   //!
-	TBranch        *b_fHitYlocal;   //!
-	TBranch        *b_fHitXglobal;   //!
-	TBranch        *b_fHitYglobal;   //!
-	TBranch        *b_fHitZglobal;   //!
-	TBranch        *b_fHitUmoment;   //!
-	TBranch        *b_fHitVmoment;   //!
-	TBranch        *b_fHitUsigma;   //!
-	TBranch        *b_fHitVsigma;   //!
-	TBranch        *b_fHitResidU;   //!
-	TBranch        *b_fHitResidV;   //!
-	TBranch        *b_fHitEResidU;   //!
-	TBranch        *b_fHitEResidV;   //!
-	TBranch        *b_fHitUADC;   //!
-	TBranch        *b_fHitVADC;   //!
-	TBranch        *b_fHitUADCclust_deconv;   //!
-	TBranch        *b_fHitVADCclust_deconv;   //!
-	TBranch        *b_fHitUADCclust_maxsamp_deconv;   //!
-	TBranch        *b_fHitVADCclust_maxsamp_deconv;   //!
-	TBranch        *b_fHitUADCclust_maxcombo_deconv;   //!
-	TBranch        *b_fHitVADCclust_maxcombo_deconv;   //!
-	TBranch        *b_fHitUADCmaxstrip;   //!
-	TBranch        *b_fHitVADCmaxstrip;   //!
-	TBranch        *b_fHitUADCmaxstrip_deconv;   //!
-	TBranch        *b_fHitVADCmaxstrip_deconv;   //!
-	TBranch        *b_fHitUADCmaxsample;   //!
-	TBranch        *b_fHitVADCmaxsample;   //!
-	TBranch        *b_fHitUADCmaxsample_deconv;   //!
-	TBranch        *b_fHitVADCmaxsample_deconv;   //!
-	TBranch        *b_fHitUADCmaxcombo_deconv;   //!
-	TBranch        *b_fHitVADCmaxcombo_deconv;   //!
-	TBranch        *b_fHitUADCmaxclustsample;   //!
-	TBranch        *b_fHitVADCmaxclustsample;   //!
-	TBranch        *b_fHitADCasym;   //!
-	TBranch        *b_fHitADCavg;   //!
-	TBranch        *b_fHitADCasym_deconv;   //!
-	TBranch        *b_fHitADCavg_deconv;   //!
-	TBranch        *b_fHitUTime;   //!
-	TBranch        *b_fHitVTime;   //!
-	TBranch        *b_fHitUTimeDeconv;   //!
-	TBranch        *b_fHitVTimeDeconv;   //!
-	TBranch        *b_fHitUTimeMaxStrip;   //!
-	TBranch        *b_fHitVTimeMaxStrip;   //!
-	TBranch        *b_fHitUTimeMaxStripFit;   //!
-	TBranch        *b_fHitVTimeMaxStripFit;   //!
-	TBranch        *b_fHitUTimeMaxStripDeconv;   //!
-	TBranch        *b_fHitVTimeMaxStripDeconv;   //!
-	TBranch        *b_fHitDeltaTDeconv;   //!
-	TBranch        *b_fHitTavgDeconv;   //!
-	TBranch        *b_fHitIsampMaxUclust;   //!
-	TBranch        *b_fHitIsampMaxVclust;   //!
-	TBranch        *b_fHitIsampMaxUstrip;   //!
-	TBranch        *b_fHitIsampMaxVstrip;   //!
-	TBranch        *b_fHitIsampMaxUstripDeconv;   //!
-	TBranch        *b_fHitIsampMaxVstripDeconv;   //!
-	TBranch        *b_fHitIcomboMaxUstripDeconv;   //!
-	TBranch        *b_fHitIcomboMaxVstripDeconv;   //!
-	TBranch        *b_fHitIsampMaxUclustDeconv;   //!
-	TBranch        *b_fHitIsampMaxVclustDeconv;   //!
-	TBranch        *b_fHitIcomboMaxUclustDeconv;   //!
-	TBranch        *b_fHitIcomboMaxVclustDeconv;   //!
-	TBranch        *b_fHitCorrCoeffClust;   //!
-	TBranch        *b_fHitCorrCoeffMaxStrip;   //!
-	TBranch        *b_fHitCorrCoeffClustDeconv;   //!
-	TBranch        *b_fHitCorrCoeffMaxStripDeconv;   //!
-	TBranch        *b_fHitADCfrac0_MaxUstrip;   //!
-	TBranch        *b_fHitADCfrac1_MaxUstrip;   //!
-	TBranch        *b_fHitADCfrac2_MaxUstrip;   //!
-	TBranch        *b_fHitADCfrac3_MaxUstrip;   //!
-	TBranch        *b_fHitADCfrac4_MaxUstrip;   //!
-	TBranch        *b_fHitADCfrac5_MaxUstrip;   //!
-	TBranch        *b_fHitADCfrac0_MaxVstrip;   //!
-	TBranch        *b_fHitADCfrac1_MaxVstrip;   //!
-	TBranch        *b_fHitADCfrac2_MaxVstrip;   //!
-	TBranch        *b_fHitADCfrac3_MaxVstrip;   //!
-	TBranch        *b_fHitADCfrac4_MaxVstrip;   //!
-	TBranch        *b_fHitADCfrac5_MaxVstrip;   //!
-	TBranch        *b_fHitDeconvADC0_MaxUstrip;   //!
-	TBranch        *b_fHitDeconvADC1_MaxUstrip;   //!
-	TBranch        *b_fHitDeconvADC2_MaxUstrip;   //!
-	TBranch        *b_fHitDeconvADC3_MaxUstrip;   //!
-	TBranch        *b_fHitDeconvADC4_MaxUstrip;   //!
-	TBranch        *b_fHitDeconvADC5_MaxUstrip;   //!
-	TBranch        *b_fHitDeconvADC0_MaxVstrip;   //!
-	TBranch        *b_fHitDeconvADC1_MaxVstrip;   //!
-	TBranch        *b_fHitDeconvADC2_MaxVstrip;   //!
-	TBranch        *b_fHitDeconvADC3_MaxVstrip;   //!
-	TBranch        *b_fHitDeconvADC4_MaxVstrip;   //!
-	TBranch        *b_fHitDeconvADC5_MaxVstrip;   //!
 	TBranch        *b_trigger_type;   //!
+	TBranch        *b_trigger_time;   //!
 
 
 	const char *Slot7Name[16]= {
@@ -529,7 +338,17 @@ void ReadEvTree::Init(TTree *tree)
 	fRunNumber = 0;
 
 	// Set object pointer
-	/*
+	fHitLayer = 0;
+	fHitXlocal = 0;
+	fHitYlocal = 0;
+	fHitXprojected = 0;
+	fHitYprojected = 0;
+	fHitResidU = 0;
+	fHitResidV = 0;
+	fHitUADC = 0;
+	fHitVADC = 0;
+	fHitIsampMaxUstrip = 0;
+	fHitIsampMaxVstrip = 0;   
 	GEM_stripNo = 0;
 	GEM_stripAdc = 0;
 	GEM_stripTs0 = 0;
@@ -538,7 +357,7 @@ void ReadEvTree::Init(TTree *tree)
 	GEM_stripTs3 = 0;
 	GEM_stripTs4 = 0;
 	GEM_stripTs5 = 0;
-	*/
+	
 	CerA0 = 0;
 	CerA1 = 0;
 	CerA2 = 0;
@@ -572,122 +391,35 @@ void ReadEvTree::Init(TTree *tree)
 	PreShSum = 0;
 	ShowerSum = 0;
 	Trig = 0;
-	
-	fNhitsOnTrack = 0;
-	fXtrack = 0;
-	fYtrack = 0;
-	fXptrack = 0;
-	fYptrack = 0;
-	fChi2Track = 0;
-	fHitTrackIndex = 0;
-	fHitModule = 0;
-	fHitLayer = 0;
-	fHitNstripsU = 0;
-	fHitUstripMax = 0;
-	fHitUstripLo = 0;
-	fHitUstripHi = 0;
-	fHitNstripsV = 0;
-	fHitVstripMax = 0;
-	fHitVstripLo = 0;
-	fHitVstripHi = 0;
-	fHitUlocal = 0;
-	fHitVlocal = 0;
-	fHitXlocal = 0;
-	fHitYlocal = 0;
-	fHitXglobal = 0;
-	fHitYglobal = 0;
-	fHitZglobal = 0;
-	fHitUmoment = 0;
-	fHitVmoment = 0;
-	fHitUsigma = 0;
-	fHitVsigma = 0;
-	fHitResidU = 0;
-	fHitResidV = 0;
-	fHitEResidU = 0;
-	fHitEResidV = 0;
-	fHitUADC = 0;
-	fHitVADC = 0;
-	fHitUADCclust_deconv = 0;
-	fHitVADCclust_deconv = 0;
-	fHitUADCclust_maxsamp_deconv = 0;
-	fHitVADCclust_maxsamp_deconv = 0;
-	fHitUADCclust_maxcombo_deconv = 0;
-	fHitVADCclust_maxcombo_deconv = 0;
-	fHitUADCmaxstrip = 0;
-	fHitVADCmaxstrip = 0;
-	fHitUADCmaxstrip_deconv = 0;
-	fHitVADCmaxstrip_deconv = 0;
-	fHitUADCmaxsample = 0;
-	fHitVADCmaxsample = 0;
-	fHitUADCmaxsample_deconv = 0;
-	fHitVADCmaxsample_deconv = 0;
-	fHitUADCmaxcombo_deconv = 0;
-	fHitVADCmaxcombo_deconv = 0;
-	fHitUADCmaxclustsample = 0;
-	fHitVADCmaxclustsample = 0;
-	fHitADCasym = 0;
-	fHitADCavg = 0;
-	fHitADCasym_deconv = 0;
-	fHitADCavg_deconv = 0;
-	fHitUTime = 0;
-	fHitVTime = 0;
-	fHitUTimeDeconv = 0;
-	fHitVTimeDeconv = 0;
-	fHitUTimeMaxStrip = 0;
-	fHitVTimeMaxStrip = 0;
-	fHitUTimeMaxStripFit = 0;
-	fHitVTimeMaxStripFit = 0;
-	fHitUTimeMaxStripDeconv = 0;
-	fHitVTimeMaxStripDeconv = 0;
-	fHitDeltaTDeconv = 0;
-	fHitTavgDeconv = 0;
-	fHitIsampMaxUclust = 0;
-	fHitIsampMaxVclust = 0;
-	fHitIsampMaxUstrip = 0;
-	fHitIsampMaxVstrip = 0;
-	fHitIsampMaxUstripDeconv = 0;
-	fHitIsampMaxVstripDeconv = 0;
-	fHitIcomboMaxUstripDeconv = 0;
-	fHitIcomboMaxVstripDeconv = 0;
-	fHitIsampMaxUclustDeconv = 0;
-	fHitIsampMaxVclustDeconv = 0;
-	fHitIcomboMaxUclustDeconv = 0;
-	fHitIcomboMaxVclustDeconv = 0;
-	fHitCorrCoeffClust = 0;
-	fHitCorrCoeffMaxStrip = 0;
-	fHitCorrCoeffClustDeconv = 0;
-	fHitCorrCoeffMaxStripDeconv = 0;
-	fHitADCfrac0_MaxUstrip = 0;
-	fHitADCfrac1_MaxUstrip = 0;
-	fHitADCfrac2_MaxUstrip = 0;
-	fHitADCfrac3_MaxUstrip = 0;
-	fHitADCfrac4_MaxUstrip = 0;
-	fHitADCfrac5_MaxUstrip = 0;
-	fHitADCfrac0_MaxVstrip = 0;
-	fHitADCfrac1_MaxVstrip = 0;
-	fHitADCfrac2_MaxVstrip = 0;
-	fHitADCfrac3_MaxVstrip = 0;
-	fHitADCfrac4_MaxVstrip = 0;
-	fHitADCfrac5_MaxVstrip = 0;
-	fHitDeconvADC0_MaxUstrip = 0;
-	fHitDeconvADC1_MaxUstrip = 0;
-	fHitDeconvADC2_MaxUstrip = 0;
-	fHitDeconvADC3_MaxUstrip = 0;
-	fHitDeconvADC4_MaxUstrip = 0;
-	fHitDeconvADC5_MaxUstrip = 0;
-	fHitDeconvADC0_MaxVstrip = 0;
-	fHitDeconvADC1_MaxVstrip = 0;
-	fHitDeconvADC2_MaxVstrip = 0;
-	fHitDeconvADC3_MaxVstrip = 0;
-	fHitDeconvADC4_MaxVstrip = 0;
-	fHitDeconvADC5_MaxVstrip = 0;
+		
 	// Set branch addresses and branch pointers
 	if (!tree) return;
 	fChain = tree;
 	fCurrent = -1;
 	fChain->SetMakeClass(1);
+	
+	fChain->SetBranchAddress("event_number", &event_number, &b_event_number);
+	if (fChain->FindBranch("fNtracks_found")) {
+		fChain->SetBranchAddress("fNtracks_found", &fNtracks_found, &b_fNtracks_found);
+		fChain->SetBranchAddress("fNhitsOnTrack", &fNhitsOnTrack, &b_fNhitsOnTrack);
+		fChain->SetBranchAddress("fXtrack", &fXtrack, &b_fXtrack);
+		fChain->SetBranchAddress("fYtrack", &fYtrack, &b_fYtrack);
+		fChain->SetBranchAddress("fXptrack", &fXptrack, &b_fXptrack);
+		fChain->SetBranchAddress("fYptrack", &fYptrack, &b_fYptrack);
+		fChain->SetBranchAddress("fChi2Track", &fChi2Track, &b_fChi2Track);
+		fChain->SetBranchAddress("fHitLayer", &fHitLayer, &b_fHitLayer);
+		fChain->SetBranchAddress("fHitXlocal", &fHitXlocal, &b_fHitXlocal);
+		fChain->SetBranchAddress("fHitYlocal", &fHitYlocal, &b_fHitYlocal);
+		fChain->SetBranchAddress("fHitXprojected", &fHitXprojected, &b_fHitXprojected);
+		fChain->SetBranchAddress("fHitYprojected", &fHitYprojected, &b_fHitYprojected);
+		fChain->SetBranchAddress("fHitResidU", &fHitResidU, &b_fHitResidU);
+		fChain->SetBranchAddress("fHitResidV", &fHitResidV, &b_fHitResidV);
+		fChain->SetBranchAddress("fHitUADC", &fHitUADC, &b_fHitUADC);
+		fChain->SetBranchAddress("fHitVADC", &fHitVADC, &b_fHitVADC);
+		fChain->SetBranchAddress("fHitIsampMaxUstrip", &fHitIsampMaxUstrip, &b_fHitIsampMaxUstrip);
+		fChain->SetBranchAddress("fHitIsampMaxVstrip", &fHitIsampMaxVstrip, &b_fHitIsampMaxVstrip);
+	}
 	if (fChain->FindBranch("GEM_nCluster")) {
-		fChain->SetBranchAddress("event_number", &event_number, &b_event_number);
 		fChain->SetBranchAddress("GEM_nCluster", &GEM_nCluster, &b_GEM_nCluster);
 		fChain->SetBranchAddress("GEM_planeID", GEM_planeID, &b_GEM_planeID);
 		fChain->SetBranchAddress("GEM_prodID", GEM_prodID, &b_GEM_prodID);
@@ -696,18 +428,12 @@ void ReadEvTree::Init(TTree *tree)
 		fChain->SetBranchAddress("GEM_size", GEM_size, &b_GEM_size);
 		fChain->SetBranchAddress("GEM_adc", GEM_adc, &b_GEM_adc);
 		fChain->SetBranchAddress("GEM_pos", GEM_pos, &b_GEM_pos);
-		fChain->SetBranchAddress("GEM_stripNo", GEM_stripNo, &b_GEM_stripNo);
-		fChain->SetBranchAddress("GEM_stripAdc", GEM_stripAdc, &b_GEM_stripAdc);
-		/*
-		if (fChain->FindBranch("GEM_stripTs0")) {
-			fChain->SetBranchAddress("GEM_stripTs0", &GEM_stripTs0, &b_GEM_stripTs0);
-			fChain->SetBranchAddress("GEM_stripTs1", &GEM_stripTs1, &b_GEM_stripTs1);
-			fChain->SetBranchAddress("GEM_stripTs2", &GEM_stripTs2, &b_GEM_stripTs2);
-			fChain->SetBranchAddress("GEM_stripTs3", &GEM_stripTs3, &b_GEM_stripTs3);
-			fChain->SetBranchAddress("GEM_stripTs4", &GEM_stripTs4, &b_GEM_stripTs4);
-			fChain->SetBranchAddress("GEM_stripTs5", &GEM_stripTs5, &b_GEM_stripTs5);
-		}
-		*/
+		fChain->SetBranchAddress("GEM_stripTs0", &GEM_stripTs0, &b_GEM_stripTs0);
+		fChain->SetBranchAddress("GEM_stripTs1", &GEM_stripTs1, &b_GEM_stripTs1);
+		fChain->SetBranchAddress("GEM_stripTs2", &GEM_stripTs2, &b_GEM_stripTs2);
+		fChain->SetBranchAddress("GEM_stripTs3", &GEM_stripTs3, &b_GEM_stripTs3);
+		fChain->SetBranchAddress("GEM_stripTs4", &GEM_stripTs4, &b_GEM_stripTs4);
+		fChain->SetBranchAddress("GEM_stripTs5", &GEM_stripTs5, &b_GEM_stripTs5);
 		fChain->SetBranchAddress("GEM_nAPV", &GEM_nAPV, &b_GEM_nAPV);
 		fChain->SetBranchAddress("GEM_apv_crate_id", GEM_apv_crate_id, &b_GEM_apv_crate_id);
 		fChain->SetBranchAddress("GEM_apv_mpd_id", GEM_apv_mpd_id, &b_GEM_apv_mpd_id);
@@ -747,118 +473,8 @@ void ReadEvTree::Init(TTree *tree)
 	fChain->SetBranchAddress("PreShSum", &PreShSum, &b_PreShSum);
 	fChain->SetBranchAddress("ShowerSum", &ShowerSum, &b_ShowerSum);
 	fChain->SetBranchAddress("Trig", &Trig, &b_Trig);
-	fChain->SetBranchAddress("fNtracks_found", &fNtracks_found, &b_fNtracks_found);
-	fChain->SetBranchAddress("fNhitsOnTrack", &fNhitsOnTrack, &b_fNhitsOnTrack);
-	fChain->SetBranchAddress("fXtrack", &fXtrack, &b_fXtrack);
-	fChain->SetBranchAddress("fYtrack", &fYtrack, &b_fYtrack);
-	fChain->SetBranchAddress("fXptrack", &fXptrack, &b_fXptrack);
-	fChain->SetBranchAddress("fYptrack", &fYptrack, &b_fYptrack);
-	fChain->SetBranchAddress("fChi2Track", &fChi2Track, &b_fChi2Track);
-	fChain->SetBranchAddress("fBestTrackIndex", &fBestTrackIndex, &b_fBestTrackIndex);
-	fChain->SetBranchAddress("fNgoodhits", &fNgoodhits, &b_fNgoodhits);
-	fChain->SetBranchAddress("fHitTrackIndex", &fHitTrackIndex, &b_fHitTrackIndex);
-	fChain->SetBranchAddress("fHitModule", &fHitModule, &b_fHitModule);
-	fChain->SetBranchAddress("fHitLayer", &fHitLayer, &b_fHitLayer);
-	fChain->SetBranchAddress("fHitNstripsU", &fHitNstripsU, &b_fHitNstripsU);
-	fChain->SetBranchAddress("fHitUstripMax", &fHitUstripMax, &b_fHitUstripMax);
-	fChain->SetBranchAddress("fHitUstripLo", &fHitUstripLo, &b_fHitUstripLo);
-	fChain->SetBranchAddress("fHitUstripHi", &fHitUstripHi, &b_fHitUstripHi);
-	fChain->SetBranchAddress("fHitNstripsV", &fHitNstripsV, &b_fHitNstripsV);
-	fChain->SetBranchAddress("fHitVstripMax", &fHitVstripMax, &b_fHitVstripMax);
-	fChain->SetBranchAddress("fHitVstripLo", &fHitVstripLo, &b_fHitVstripLo);
-	fChain->SetBranchAddress("fHitVstripHi", &fHitVstripHi, &b_fHitVstripHi);
-	fChain->SetBranchAddress("fHitUlocal", &fHitUlocal, &b_fHitUlocal);
-	fChain->SetBranchAddress("fHitVlocal", &fHitVlocal, &b_fHitVlocal);
-	fChain->SetBranchAddress("fHitXlocal", &fHitXlocal, &b_fHitXlocal);
-	fChain->SetBranchAddress("fHitYlocal", &fHitYlocal, &b_fHitYlocal);
-	fChain->SetBranchAddress("fHitXglobal", &fHitXglobal, &b_fHitXglobal);
-	fChain->SetBranchAddress("fHitYglobal", &fHitYglobal, &b_fHitYglobal);
-	fChain->SetBranchAddress("fHitZglobal", &fHitZglobal, &b_fHitZglobal);
-	fChain->SetBranchAddress("fHitUmoment", &fHitUmoment, &b_fHitUmoment);
-	fChain->SetBranchAddress("fHitVmoment", &fHitVmoment, &b_fHitVmoment);
-	fChain->SetBranchAddress("fHitUsigma", &fHitUsigma, &b_fHitUsigma);
-	fChain->SetBranchAddress("fHitVsigma", &fHitVsigma, &b_fHitVsigma);
-	fChain->SetBranchAddress("fHitResidU", &fHitResidU, &b_fHitResidU);
-	fChain->SetBranchAddress("fHitResidV", &fHitResidV, &b_fHitResidV);
-	fChain->SetBranchAddress("fHitEResidU", &fHitEResidU, &b_fHitEResidU);
-	fChain->SetBranchAddress("fHitEResidV", &fHitEResidV, &b_fHitEResidV);
-	fChain->SetBranchAddress("fHitUADC", &fHitUADC, &b_fHitUADC);
-	fChain->SetBranchAddress("fHitVADC", &fHitVADC, &b_fHitVADC);
-	fChain->SetBranchAddress("fHitUADCclust_deconv", &fHitUADCclust_deconv, &b_fHitUADCclust_deconv);
-	fChain->SetBranchAddress("fHitVADCclust_deconv", &fHitVADCclust_deconv, &b_fHitVADCclust_deconv);
-	fChain->SetBranchAddress("fHitUADCclust_maxsamp_deconv", &fHitUADCclust_maxsamp_deconv, &b_fHitUADCclust_maxsamp_deconv);
-	fChain->SetBranchAddress("fHitVADCclust_maxsamp_deconv", &fHitVADCclust_maxsamp_deconv, &b_fHitVADCclust_maxsamp_deconv);
-	fChain->SetBranchAddress("fHitUADCclust_maxcombo_deconv", &fHitUADCclust_maxcombo_deconv, &b_fHitUADCclust_maxcombo_deconv);
-	fChain->SetBranchAddress("fHitVADCclust_maxcombo_deconv", &fHitVADCclust_maxcombo_deconv, &b_fHitVADCclust_maxcombo_deconv);
-	fChain->SetBranchAddress("fHitUADCmaxstrip", &fHitUADCmaxstrip, &b_fHitUADCmaxstrip);
-	fChain->SetBranchAddress("fHitVADCmaxstrip", &fHitVADCmaxstrip, &b_fHitVADCmaxstrip);
-	fChain->SetBranchAddress("fHitUADCmaxstrip_deconv", &fHitUADCmaxstrip_deconv, &b_fHitUADCmaxstrip_deconv);
-	fChain->SetBranchAddress("fHitVADCmaxstrip_deconv", &fHitVADCmaxstrip_deconv, &b_fHitVADCmaxstrip_deconv);
-	fChain->SetBranchAddress("fHitUADCmaxsample", &fHitUADCmaxsample, &b_fHitUADCmaxsample);
-	fChain->SetBranchAddress("fHitVADCmaxsample", &fHitVADCmaxsample, &b_fHitVADCmaxsample);
-	fChain->SetBranchAddress("fHitUADCmaxsample_deconv", &fHitUADCmaxsample_deconv, &b_fHitUADCmaxsample_deconv);
-	fChain->SetBranchAddress("fHitVADCmaxsample_deconv", &fHitVADCmaxsample_deconv, &b_fHitVADCmaxsample_deconv);
-	fChain->SetBranchAddress("fHitUADCmaxcombo_deconv", &fHitUADCmaxcombo_deconv, &b_fHitUADCmaxcombo_deconv);
-	fChain->SetBranchAddress("fHitVADCmaxcombo_deconv", &fHitVADCmaxcombo_deconv, &b_fHitVADCmaxcombo_deconv);
-	fChain->SetBranchAddress("fHitUADCmaxclustsample", &fHitUADCmaxclustsample, &b_fHitUADCmaxclustsample);
-	fChain->SetBranchAddress("fHitVADCmaxclustsample", &fHitVADCmaxclustsample, &b_fHitVADCmaxclustsample);
-	fChain->SetBranchAddress("fHitADCasym", &fHitADCasym, &b_fHitADCasym);
-	fChain->SetBranchAddress("fHitADCavg", &fHitADCavg, &b_fHitADCavg);
-	fChain->SetBranchAddress("fHitADCasym_deconv", &fHitADCasym_deconv, &b_fHitADCasym_deconv);
-	fChain->SetBranchAddress("fHitADCavg_deconv", &fHitADCavg_deconv, &b_fHitADCavg_deconv);
-	fChain->SetBranchAddress("fHitUTime", &fHitUTime, &b_fHitUTime);
-	fChain->SetBranchAddress("fHitVTime", &fHitVTime, &b_fHitVTime);
-	fChain->SetBranchAddress("fHitUTimeDeconv", &fHitUTimeDeconv, &b_fHitUTimeDeconv);
-	fChain->SetBranchAddress("fHitVTimeDeconv", &fHitVTimeDeconv, &b_fHitVTimeDeconv);
-	fChain->SetBranchAddress("fHitUTimeMaxStrip", &fHitUTimeMaxStrip, &b_fHitUTimeMaxStrip);
-	fChain->SetBranchAddress("fHitVTimeMaxStrip", &fHitVTimeMaxStrip, &b_fHitVTimeMaxStrip);
-	fChain->SetBranchAddress("fHitUTimeMaxStripFit", &fHitUTimeMaxStripFit, &b_fHitUTimeMaxStripFit);
-	fChain->SetBranchAddress("fHitVTimeMaxStripFit", &fHitVTimeMaxStripFit, &b_fHitVTimeMaxStripFit);
-	fChain->SetBranchAddress("fHitUTimeMaxStripDeconv", &fHitUTimeMaxStripDeconv, &b_fHitUTimeMaxStripDeconv);
-	fChain->SetBranchAddress("fHitVTimeMaxStripDeconv", &fHitVTimeMaxStripDeconv, &b_fHitVTimeMaxStripDeconv);
-	fChain->SetBranchAddress("fHitDeltaTDeconv", &fHitDeltaTDeconv, &b_fHitDeltaTDeconv);
-	fChain->SetBranchAddress("fHitTavgDeconv", &fHitTavgDeconv, &b_fHitTavgDeconv);
-	fChain->SetBranchAddress("fHitIsampMaxUclust", &fHitIsampMaxUclust, &b_fHitIsampMaxUclust);
-	fChain->SetBranchAddress("fHitIsampMaxVclust", &fHitIsampMaxVclust, &b_fHitIsampMaxVclust);
-	fChain->SetBranchAddress("fHitIsampMaxUstrip", &fHitIsampMaxUstrip, &b_fHitIsampMaxUstrip);
-	fChain->SetBranchAddress("fHitIsampMaxVstrip", &fHitIsampMaxVstrip, &b_fHitIsampMaxVstrip);
-	fChain->SetBranchAddress("fHitIsampMaxUstripDeconv", &fHitIsampMaxUstripDeconv, &b_fHitIsampMaxUstripDeconv);
-	fChain->SetBranchAddress("fHitIsampMaxVstripDeconv", &fHitIsampMaxVstripDeconv, &b_fHitIsampMaxVstripDeconv);
-	fChain->SetBranchAddress("fHitIcomboMaxUstripDeconv", &fHitIcomboMaxUstripDeconv, &b_fHitIcomboMaxUstripDeconv);
-	fChain->SetBranchAddress("fHitIcomboMaxVstripDeconv", &fHitIcomboMaxVstripDeconv, &b_fHitIcomboMaxVstripDeconv);
-	fChain->SetBranchAddress("fHitIsampMaxUclustDeconv", &fHitIsampMaxUclustDeconv, &b_fHitIsampMaxUclustDeconv);
-	fChain->SetBranchAddress("fHitIsampMaxVclustDeconv", &fHitIsampMaxVclustDeconv, &b_fHitIsampMaxVclustDeconv);
-	fChain->SetBranchAddress("fHitIcomboMaxUclustDeconv", &fHitIcomboMaxUclustDeconv, &b_fHitIcomboMaxUclustDeconv);
-	fChain->SetBranchAddress("fHitIcomboMaxVclustDeconv", &fHitIcomboMaxVclustDeconv, &b_fHitIcomboMaxVclustDeconv);
-	fChain->SetBranchAddress("fHitCorrCoeffClust", &fHitCorrCoeffClust, &b_fHitCorrCoeffClust);
-	fChain->SetBranchAddress("fHitCorrCoeffMaxStrip", &fHitCorrCoeffMaxStrip, &b_fHitCorrCoeffMaxStrip);
-	fChain->SetBranchAddress("fHitCorrCoeffClustDeconv", &fHitCorrCoeffClustDeconv, &b_fHitCorrCoeffClustDeconv);
-	fChain->SetBranchAddress("fHitCorrCoeffMaxStripDeconv", &fHitCorrCoeffMaxStripDeconv, &b_fHitCorrCoeffMaxStripDeconv);
-	fChain->SetBranchAddress("fHitADCfrac0_MaxUstrip", &fHitADCfrac0_MaxUstrip, &b_fHitADCfrac0_MaxUstrip);
-	fChain->SetBranchAddress("fHitADCfrac1_MaxUstrip", &fHitADCfrac1_MaxUstrip, &b_fHitADCfrac1_MaxUstrip);
-	fChain->SetBranchAddress("fHitADCfrac2_MaxUstrip", &fHitADCfrac2_MaxUstrip, &b_fHitADCfrac2_MaxUstrip);
-	fChain->SetBranchAddress("fHitADCfrac3_MaxUstrip", &fHitADCfrac3_MaxUstrip, &b_fHitADCfrac3_MaxUstrip);
-	fChain->SetBranchAddress("fHitADCfrac4_MaxUstrip", &fHitADCfrac4_MaxUstrip, &b_fHitADCfrac4_MaxUstrip);
-	fChain->SetBranchAddress("fHitADCfrac5_MaxUstrip", &fHitADCfrac5_MaxUstrip, &b_fHitADCfrac5_MaxUstrip);
-	fChain->SetBranchAddress("fHitADCfrac0_MaxVstrip", &fHitADCfrac0_MaxVstrip, &b_fHitADCfrac0_MaxVstrip);
-	fChain->SetBranchAddress("fHitADCfrac1_MaxVstrip", &fHitADCfrac1_MaxVstrip, &b_fHitADCfrac1_MaxVstrip);
-	fChain->SetBranchAddress("fHitADCfrac2_MaxVstrip", &fHitADCfrac2_MaxVstrip, &b_fHitADCfrac2_MaxVstrip);
-	fChain->SetBranchAddress("fHitADCfrac3_MaxVstrip", &fHitADCfrac3_MaxVstrip, &b_fHitADCfrac3_MaxVstrip);
-	fChain->SetBranchAddress("fHitADCfrac4_MaxVstrip", &fHitADCfrac4_MaxVstrip, &b_fHitADCfrac4_MaxVstrip);
-	fChain->SetBranchAddress("fHitADCfrac5_MaxVstrip", &fHitADCfrac5_MaxVstrip, &b_fHitADCfrac5_MaxVstrip);
-	fChain->SetBranchAddress("fHitDeconvADC0_MaxUstrip", &fHitDeconvADC0_MaxUstrip, &b_fHitDeconvADC0_MaxUstrip);
-	fChain->SetBranchAddress("fHitDeconvADC1_MaxUstrip", &fHitDeconvADC1_MaxUstrip, &b_fHitDeconvADC1_MaxUstrip);
-	fChain->SetBranchAddress("fHitDeconvADC2_MaxUstrip", &fHitDeconvADC2_MaxUstrip, &b_fHitDeconvADC2_MaxUstrip);
-	fChain->SetBranchAddress("fHitDeconvADC3_MaxUstrip", &fHitDeconvADC3_MaxUstrip, &b_fHitDeconvADC3_MaxUstrip);
-	fChain->SetBranchAddress("fHitDeconvADC4_MaxUstrip", &fHitDeconvADC4_MaxUstrip, &b_fHitDeconvADC4_MaxUstrip);
-	fChain->SetBranchAddress("fHitDeconvADC5_MaxUstrip", &fHitDeconvADC5_MaxUstrip, &b_fHitDeconvADC5_MaxUstrip);
-	fChain->SetBranchAddress("fHitDeconvADC0_MaxVstrip", &fHitDeconvADC0_MaxVstrip, &b_fHitDeconvADC0_MaxVstrip);
-	fChain->SetBranchAddress("fHitDeconvADC1_MaxVstrip", &fHitDeconvADC1_MaxVstrip, &b_fHitDeconvADC1_MaxVstrip);
-	fChain->SetBranchAddress("fHitDeconvADC2_MaxVstrip", &fHitDeconvADC2_MaxVstrip, &b_fHitDeconvADC2_MaxVstrip);
-	fChain->SetBranchAddress("fHitDeconvADC3_MaxVstrip", &fHitDeconvADC3_MaxVstrip, &b_fHitDeconvADC3_MaxVstrip);
-	fChain->SetBranchAddress("fHitDeconvADC4_MaxVstrip", &fHitDeconvADC4_MaxVstrip, &b_fHitDeconvADC4_MaxVstrip);
-	fChain->SetBranchAddress("fHitDeconvADC5_MaxVstrip", &fHitDeconvADC5_MaxVstrip, &b_fHitDeconvADC5_MaxVstrip);
 	fChain->SetBranchAddress("trigger_type", &trigger_type, &b_trigger_type);
+	fChain->SetBranchAddress("trigger_time", &trigger_time, &b_trigger_time);
 	Notify();
 
 	int idx=-1;

@@ -292,6 +292,7 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 
 	T->Branch("EntryNum", &EntryNum,"EntryNum/I");
 	T->Branch("TrigType", &trigger_type,"TrigType/I");
+	T->Branch("trigger_time", &trigger_time, "trigger_time/l");
 
 	////////////////////////////////////////////////////////////////////////
 	EcalEvent *pEcalEvent = new EcalEvent();

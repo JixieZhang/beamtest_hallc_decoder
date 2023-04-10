@@ -7,7 +7,7 @@
 
 #define ReadEvTree_cxx
 
-#include "ReadEvTree_cosmic1.h"
+#include "ReadEvTree_old_tracking.h"
 #include "GEM_Cluster_Matching.C"
 #include "GravityWeight.h"
 
@@ -30,63 +30,44 @@
 //#define LEVEL1_Tree_DEBUG 0
 #endif
 
-#define verbose 0
+static int verbose = 0;
 
 using namespace std;
 
-//   In a ROOT session, you can do:
-//      root> .L ReadEvTree.C
-//      root> ReadEvTree t
-//      root> t.GetEntry(12); // Fill t data members with entry number 12
-//      root> t.Show();       // Show values of entry 12
-//      root> t.Show(16);     // Read and show values of entry 16
-//      root> t.Loop();       // Loop on all entries
-//
-
-//     This is the loop skeleton where:
-//    jentry is the global entry number in the chain
-//    ientry is the entry number in the current Tree
-//  Note that the argument to GetEntry must be:
-//    jentry for TChain::GetEntry
-//    ientry for TTree::GetEntry and TBranch::GetEntry
-//
-//       To read only selected branches, Insert statements like:
-// METHOD1:
-//    fChain->SetBranchStatus("*",0);  // disable all branches
-//    fChain->SetBranchStatus("branchname",1);  // activate branchname
-// METHOD2: replace line
-//    fChain->GetEntry(jentry);       //read all branches
-//by  b_branchname->GetEntry(ientry); //read only this branch
-
 /*
- root cmd to plot spectrum in cmd line
-int i=0;
-EvTree->Draw("SC0_t.raw:Iteration$>>h(100,0,100,512,0,512)","SC0_t.raw>36","l*",10,i+=10)
-EvTree->Draw("Trig.raw/100+100:Iteration$","","lsame",10,i=0)
+root cmd to plot spectrum in cmd line
+int i=0,n=10;
+EvTree->Draw("SC0_t.raw:Iteration$>>h(100,0,100,512,0,512)","SC0_t.raw>36","l",n,i+=n);
+EvTree->Draw("Trig.raw/100+100:Iteration$","","lsame",n,i+=0);
 */
 
 //////////////////////////////////////////////////////////////////////////
 //global variables
+static double gPed7[16]={0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
+static double gPed8[16]={0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
 
-//double gPed7[16]={0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
-//double gPed8[16]={0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0};
-double gPed7[16]={104.4, 101.6, 100.7,  96.0,  94.7, 100.2, 104.2,  96.0,  97.0,  93.8, 101.7,  93.4,  99.7,  94.7,  95.2,  95.2};
-double gPed8[16]={ 99.2,  96.6, 101.2,  97.5, 104.2, 104.5,  95.5,  98.3,  97.2, 103.8, 103.1,  96.9,  96.4, 100.6,  96.0, 102.0};
+//#include "PedNPeak_highrate.h"
+#include "ReadDatabase.C"
+
 /*
-	const char *Slot7Name[16]= {
-		"CerA0", "CerA1", "CerA2", "CerA3", "CerB0", "CerB1", "CerB2", "CerB3",
-		"CerC0", "CerC1", "CerC2", "CerC3", "CerD0", "CerD1", "CerD2", "CerD3" };
-		*/
+//the following have been defined in the header file ReadEvTree_highrate.h
 const char *Slot7Name[16]= {
-"MaROCA_sum", "MaROCB_sum", "MaROCC_sum", "MaROCD_sum", "MaROCE_sum", "MaROCF_sum", "MaROC_ch12", "MaROC_ch08",
-"_not_use_", "PreSh_sum", "Shower_sum", "TS1", "TS2", "TS3", "MaROC_ch16", "_Trig_" };
+"CerA0", "CerA1", "CerA2", "CerA3", "CerB0", "CerB1", "CerB2", "CerB3",
+"CerC0", "CerC1", "CerC2", "CerC3", "CerD0", "CerD1", "CerD2", "CerD3" };
 
 const char *Slot8Name[16]= {
-"SC_bottom", "SC_A", "SC_top", "SC_B", "SC_D", "SC_C", "SC_E", "PreSh_r", "PreSh_l", "PreSh_t",
-"Shower_r", "Shower_l", "Shower_t", "notuse", "ShowerSum", "Trig" };
+"SC_D", "SC_A", "SC_B", "CerSum", "LASPD_t", "LASPD_b", "SC_C", "PreSh_l", "PreSh_r", "PreSh_t",
+"Shower_l", "Shower_r", "Shower_t", "PreShSum", "ShowerSum", "Trig" };
 
+fdec::Fadc250Data *Slot7Data[16]= {
+		CerA0, CerA1, CerA2, CerA3, CerB0, CerB1, CerB2, CerB3,
+		CerC0, CerC1, CerC2, CerC3, CerD0, CerD1, CerD2, CerD3 };
+
+fdec::Fadc250Data *Slot8Data[16]= {
+		SC_D, SC_A, SC_B, CerSum, LASPD_t, LASPD_b, SC_C, PreSh_r, PreSh_l, PreSh_t,
+		Shower_l, Shower_r, Shower_t, PreShSum, ShowerSum, Trig };
+*/
 //////////////////////////////////////////////////////////////////////////
-
 
 TF1* FitGaus(TH1* h1, double range_in_sigma=1.0)
 {
@@ -115,8 +96,8 @@ TF1* FitGaus(TH1* h1, double range_in_sigma=1.0)
 		char str[100];
 		TText *text=0;
 
-		double xx=gStyle->GetPadLeftMargin()+0.03;
-		TPaveText *pt = new TPaveText(xx,0.20,xx+0.45,0.45,"brNDC");
+		double xx=gStyle->GetPadLeftMargin()+0.06;
+		TPaveText *pt = new TPaveText(xx,0.25,xx+0.45,0.46,"brNDC");
 		pt->SetBorderSize(0);
 		pt->SetFillColor(0);
 		sprintf(str,"Mean = %.3G",mean);
@@ -175,16 +156,11 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 		return;
 	}
 
+	double gSlot7PeakPos[6][16],gSlot8PeakPos[6][16];
+	GetPedNPeakPos(fRunNumber, gSlot7PeakPos, gSlot8PeakPos);
+
 	Long64_t nev2loop = iend - istart + 1;
 	//////////////////////////////////////////////////////////////////////////
-	
-	fdec::Fadc250Data *Slot7Data[16]= {
-	MaROCA_sum, MaROCB_sum, MaROCC_sum, MaROCD_sum, MaROCE_sum, MaROCF_sum, MaROC_ch12, MaROC_ch08,
-	_not_use_, PreSh_sum, Shower_sum, TS1, TS2, TS3, MaROC_ch16, _Trig_ };
-
-	fdec::Fadc250Data *Slot8Data[16]= {
-		SC_bottom, SC_A, SC_top, SC_B, SC_D, SC_C, SC_E, PreSh_r, PreSh_l, PreSh_t,
-		Shower_r, Shower_l, Shower_t, notuse, ShowerSum, Trig };
 
 	//extract the file name
 	std::string strFullPath = gFile->GetName();  //"../ROOTFILE/beamtest_hallc_3032_1.root"
@@ -227,6 +203,7 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 		}
 	}
 
+		
 
 	TFile* fout = new TFile((strDir+strFile).Data(), "RECREATE");
 	TTree* T = new TTree("T", "solid hallc beamtest level1 tree");
@@ -235,7 +212,119 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 		newEpicsTree = oldEpicsTree->CloneTree(0);  //clone of old tree header
 	}
 
-	int EntryNum=0;
+	T->Branch("fNtracks_found", &fNtracks_found);
+	T->Branch("fNhitsOnTrack", &fNhitsOnTrack);
+	T->Branch("fXtrack", &fXtrack);
+	T->Branch("fYtrack", &fYtrack);
+	T->Branch("fXptrack", &fXptrack);
+	T->Branch("fYptrack", &fYptrack);
+	T->Branch("fChi2Track", &fChi2Track);
+	T->Branch("fBestTrackIndex", &fBestTrackIndex);
+	T->Branch("fNgoodhits", &fNgoodhits);
+	T->Branch("fHitTrackIndex", &fHitTrackIndex);
+	T->Branch("fHitModule", &fHitModule);
+	T->Branch("fHitLayer", &fHitLayer);
+	T->Branch("fHitNstripsU", &fHitNstripsU);
+	T->Branch("fHitUstripMax", &fHitUstripMax);
+	T->Branch("fHitUstripLo", &fHitUstripLo);
+	T->Branch("fHitUstripHi", &fHitUstripHi);
+	T->Branch("fHitNstripsV", &fHitNstripsV);
+	T->Branch("fHitVstripMax", &fHitVstripMax);
+	T->Branch("fHitVstripLo", &fHitVstripLo);
+	T->Branch("fHitVstripHi", &fHitVstripHi);
+	T->Branch("fHitUlocal", &fHitUlocal);
+	T->Branch("fHitVlocal", &fHitVlocal);
+	T->Branch("fHitXlocal", &fHitXlocal);
+	T->Branch("fHitYlocal", &fHitYlocal);
+	T->Branch("fHitXglobal", &fHitXglobal);
+	T->Branch("fHitYglobal", &fHitYglobal);
+	T->Branch("fHitZglobal", &fHitZglobal);
+	T->Branch("fHitUmoment", &fHitUmoment);
+	T->Branch("fHitVmoment", &fHitVmoment);
+	T->Branch("fHitUsigma", &fHitUsigma);
+	T->Branch("fHitVsigma", &fHitVsigma);
+	T->Branch("fHitResidU", &fHitResidU);
+	T->Branch("fHitResidV", &fHitResidV);
+	T->Branch("fHitEResidU", &fHitEResidU);
+	T->Branch("fHitEResidV", &fHitEResidV);
+	T->Branch("fHitUADC", &fHitUADC);
+	T->Branch("fHitVADC", &fHitVADC);
+	T->Branch("fHitUADCclust_deconv", &fHitUADCclust_deconv);
+	T->Branch("fHitVADCclust_deconv", &fHitVADCclust_deconv);
+	T->Branch("fHitUADCclust_maxsamp_deconv", &fHitUADCclust_maxsamp_deconv);
+	T->Branch("fHitVADCclust_maxsamp_deconv", &fHitVADCclust_maxsamp_deconv);
+	T->Branch("fHitUADCclust_maxcombo_deconv", &fHitUADCclust_maxcombo_deconv);
+	T->Branch("fHitVADCclust_maxcombo_deconv", &fHitVADCclust_maxcombo_deconv);
+	T->Branch("fHitUADCmaxstrip", &fHitUADCmaxstrip);
+	T->Branch("fHitVADCmaxstrip", &fHitVADCmaxstrip);
+	T->Branch("fHitUADCmaxstrip_deconv", &fHitUADCmaxstrip_deconv);
+	T->Branch("fHitVADCmaxstrip_deconv", &fHitVADCmaxstrip_deconv);
+	T->Branch("fHitUADCmaxsample", &fHitUADCmaxsample);
+	T->Branch("fHitVADCmaxsample", &fHitVADCmaxsample);
+	T->Branch("fHitUADCmaxsample_deconv", &fHitUADCmaxsample_deconv);
+	T->Branch("fHitVADCmaxsample_deconv", &fHitVADCmaxsample_deconv);
+	T->Branch("fHitUADCmaxcombo_deconv", &fHitUADCmaxcombo_deconv);
+	T->Branch("fHitVADCmaxcombo_deconv", &fHitVADCmaxcombo_deconv);
+	T->Branch("fHitUADCmaxclustsample", &fHitUADCmaxclustsample);
+	T->Branch("fHitVADCmaxclustsample", &fHitVADCmaxclustsample);
+	T->Branch("fHitADCasym", &fHitADCasym);
+	T->Branch("fHitADCavg", &fHitADCavg);
+	T->Branch("fHitADCasym_deconv", &fHitADCasym_deconv);
+	T->Branch("fHitADCavg_deconv", &fHitADCavg_deconv);
+	T->Branch("fHitUTime", &fHitUTime);
+	T->Branch("fHitVTime", &fHitVTime);
+	T->Branch("fHitUTimeDeconv", &fHitUTimeDeconv);
+	T->Branch("fHitVTimeDeconv", &fHitVTimeDeconv);
+	T->Branch("fHitUTimeMaxStrip", &fHitUTimeMaxStrip);
+	T->Branch("fHitVTimeMaxStrip", &fHitVTimeMaxStrip);
+	T->Branch("fHitUTimeMaxStripFit", &fHitUTimeMaxStripFit);
+	T->Branch("fHitVTimeMaxStripFit", &fHitVTimeMaxStripFit);
+	T->Branch("fHitUTimeMaxStripDeconv", &fHitUTimeMaxStripDeconv);
+	T->Branch("fHitVTimeMaxStripDeconv", &fHitVTimeMaxStripDeconv);
+	T->Branch("fHitDeltaTDeconv", &fHitDeltaTDeconv);
+	T->Branch("fHitTavgDeconv", &fHitTavgDeconv);
+	T->Branch("fHitIsampMaxUclust", &fHitIsampMaxUclust);
+	T->Branch("fHitIsampMaxVclust", &fHitIsampMaxVclust);
+	T->Branch("fHitIsampMaxUstrip", &fHitIsampMaxUstrip);
+	T->Branch("fHitIsampMaxVstrip", &fHitIsampMaxVstrip);
+	T->Branch("fHitIsampMaxUstripDeconv", &fHitIsampMaxUstripDeconv);
+	T->Branch("fHitIsampMaxVstripDeconv", &fHitIsampMaxVstripDeconv);
+	T->Branch("fHitIcomboMaxUstripDeconv", &fHitIcomboMaxUstripDeconv);
+	T->Branch("fHitIcomboMaxVstripDeconv", &fHitIcomboMaxVstripDeconv);
+	T->Branch("fHitIsampMaxUclustDeconv", &fHitIsampMaxUclustDeconv);
+	T->Branch("fHitIsampMaxVclustDeconv", &fHitIsampMaxVclustDeconv);
+	T->Branch("fHitIcomboMaxUclustDeconv", &fHitIcomboMaxUclustDeconv);
+	T->Branch("fHitIcomboMaxVclustDeconv", &fHitIcomboMaxVclustDeconv);
+	T->Branch("fHitCorrCoeffClust", &fHitCorrCoeffClust);
+	T->Branch("fHitCorrCoeffMaxStrip", &fHitCorrCoeffMaxStrip);
+	T->Branch("fHitCorrCoeffClustDeconv", &fHitCorrCoeffClustDeconv);
+	T->Branch("fHitCorrCoeffMaxStripDeconv", &fHitCorrCoeffMaxStripDeconv);
+	T->Branch("fHitADCfrac0_MaxUstrip", &fHitADCfrac0_MaxUstrip);
+	T->Branch("fHitADCfrac1_MaxUstrip", &fHitADCfrac1_MaxUstrip);
+	T->Branch("fHitADCfrac2_MaxUstrip", &fHitADCfrac2_MaxUstrip);
+	T->Branch("fHitADCfrac3_MaxUstrip", &fHitADCfrac3_MaxUstrip);
+	T->Branch("fHitADCfrac4_MaxUstrip", &fHitADCfrac4_MaxUstrip);
+	T->Branch("fHitADCfrac5_MaxUstrip", &fHitADCfrac5_MaxUstrip);
+	T->Branch("fHitADCfrac0_MaxVstrip", &fHitADCfrac0_MaxVstrip);
+	T->Branch("fHitADCfrac1_MaxVstrip", &fHitADCfrac1_MaxVstrip);
+	T->Branch("fHitADCfrac2_MaxVstrip", &fHitADCfrac2_MaxVstrip);
+	T->Branch("fHitADCfrac3_MaxVstrip", &fHitADCfrac3_MaxVstrip);
+	T->Branch("fHitADCfrac4_MaxVstrip", &fHitADCfrac4_MaxVstrip);
+	T->Branch("fHitADCfrac5_MaxVstrip", &fHitADCfrac5_MaxVstrip);
+	T->Branch("fHitDeconvADC0_MaxUstrip", &fHitDeconvADC0_MaxUstrip);
+	T->Branch("fHitDeconvADC1_MaxUstrip", &fHitDeconvADC1_MaxUstrip);
+	T->Branch("fHitDeconvADC2_MaxUstrip", &fHitDeconvADC2_MaxUstrip);
+	T->Branch("fHitDeconvADC3_MaxUstrip", &fHitDeconvADC3_MaxUstrip);
+	T->Branch("fHitDeconvADC4_MaxUstrip", &fHitDeconvADC4_MaxUstrip);
+	T->Branch("fHitDeconvADC5_MaxUstrip", &fHitDeconvADC5_MaxUstrip);
+	T->Branch("fHitDeconvADC0_MaxVstrip", &fHitDeconvADC0_MaxVstrip);
+	T->Branch("fHitDeconvADC1_MaxVstrip", &fHitDeconvADC1_MaxVstrip);
+	T->Branch("fHitDeconvADC2_MaxVstrip", &fHitDeconvADC2_MaxVstrip);
+	T->Branch("fHitDeconvADC3_MaxVstrip", &fHitDeconvADC3_MaxVstrip);
+	T->Branch("fHitDeconvADC4_MaxVstrip", &fHitDeconvADC4_MaxVstrip);
+	T->Branch("fHitDeconvADC5_MaxVstrip", &fHitDeconvADC5_MaxVstrip);
+
+	int EntryNum=0,Cer_NCh=0;
 	int Slot7Raw[16][100],Slot8Raw[16][100];
 	float Slot7ADC[16],Slot8ADC[16];
 	float CerASum,CerBSum,CerCSum,CerDSum,CerSum;
@@ -250,13 +339,14 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 	//Initial the tree leavies values
 	for (int i=0;i<16;i++) {
 		Slot7ADC[i]=Slot8ADC[i]=0.0;
+		Slot7Pos[i]=Slot8Pos[i]=0;
+		Slot7Height[i]=Slot8Height[i]=0;
 	}
-	CerASum=CerBSum=CerCSum=CerDSum=CerSum=0;
+	CerASum=CerBSum=CerCSum=CerDSum=CerSum=0.0;
 #ifdef  LEVEL1_Tree_DEBUG
 	for (int i=0;i<16;i++) {
-		Slot7Height[i]=Slot8Height[i]=0;
-		Slot7Left0[i]=Slot7Left[i]=Slot7Pos[i]=Slot7Right0[i]=Slot7Right[i]=0;
-		Slot8Left0[i]=Slot8Left[i]=Slot8Pos[i]=Slot8Right0[i]=Slot8Right[i]=0;
+		Slot7Left0[i]=Slot7Left[i]=Slot7Right0[i]=Slot7Right[i]=0;
+		Slot8Left0[i]=Slot8Left[i]=Slot8Right0[i]=Slot8Right[i]=0;
 		Slot7ADC[i]=Slot8ADC[i]=Slot7Integral0[i]=Slot8Integral0[i]=0.0;
 
 		if (LEVEL1_Tree_DEBUG >= 1) {
@@ -265,26 +355,29 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 	}
 #endif
 
+	T->Branch("Slot7Pos",&Slot7Pos,"Slot7Pos[16]/I");
+	T->Branch("Slot7Height",&Slot7Height,"Slot7Height[16]/I");
+	T->Branch("Slot8Height",&Slot8Height,"Slot8Height[16]/I");
+	T->Branch("Slot8Pos",&Slot8Pos,"Slot8Pos[16]/I");
 #ifdef  LEVEL1_Tree_DEBUG
-	T->Branch("Slot7Integral0",&Slot7Integral0,"Slot7Integral0[16]/F");
+ /*
 	T->Branch("Slot7Left0",&Slot7Left0,"Slot7Left0[16]/I");
 	T->Branch("Slot7Right0",&Slot7Right0,"Slot7Right0[16]/I");
 
-	T->Branch("Slot7Left",&Slot7Left,"Slot7Left[16]/I");
-	T->Branch("Slot7Pos",&Slot7Pos,"Slot7Pos[16]/I");
-	T->Branch("Slot7Right",&Slot7Right,"Slot7Right[16]/I");
-	T->Branch("Slot7ADC",&Slot7ADC,"Slot7ADC[16]/F");
-	T->Branch("Slot7Height",&Slot7Height,"Slot7Height[16]/I");
-
-	T->Branch("Slot8Integral0",&Slot8Integral0,"Slot8Integral0[16]/F");
 	T->Branch("Slot8Left0",&Slot8Left0,"Slot8Left0[16]/I");
 	T->Branch("Slot8Right0",&Slot8Right0,"Slot8Right0[16]/I");
+ */
+
+	T->Branch("Slot7Integral0",&Slot7Integral0,"Slot7Integral0[16]/F");
+	T->Branch("Slot8Integral0",&Slot8Integral0,"Slot8Integral0[16]/F");
+
+	T->Branch("Slot7Left",&Slot7Left,"Slot7Left[16]/I");
+	T->Branch("Slot7Right",&Slot7Right,"Slot7Right[16]/I");
+	T->Branch("Slot7ADC",&Slot7ADC,"Slot7ADC[16]/F");
 
 	T->Branch("Slot8Left",&Slot8Left,"Slot8Left[16]/I");
-	T->Branch("Slot8Pos",&Slot8Pos,"Slot8Pos[16]/I");
 	T->Branch("Slot8Right",&Slot8Right,"Slot8Right[16]/I");
 	T->Branch("Slot8ADC",&Slot8ADC,"Slot8ADC[16]/F");
-	T->Branch("Slot8Height",&Slot8Height,"Slot8Height[16]/I");
 
 	if (LEVEL1_Tree_DEBUG >= 1) {
 		T->Branch("Slot7Raw",&Slot7Raw,"Slot7Raw[16][100]/I");
@@ -295,21 +388,21 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 	//event_number branch
 	T->Branch("event_number",&event_number,"event_number/I");
 
-	T->Branch("Cer",&Slot7ADC,"Cer[16]/F");
+	T->Branch("Cer",&Slot7ADC[0],"Cer[16]/F");
 	//for (int i=0;i<16;i++) {
 	////T->Branch(Slot7Name[i],&Slot7ADC[i],Form("%s/D",Slot7Name[i]));
 	//}
 	for (int i=0;i<15;i++) {
-		if (i==13)  continue;
 		T->Branch(Slot8Name[i],&Slot8ADC[i],Form("%s/F",Slot8Name[i]));
 	}
-	/*
+
 	T->Branch("CerASum", &CerASum,"CerASum/F");
 	T->Branch("CerBSum", &CerBSum,"CerBSum/F");
 	T->Branch("CerCSum", &CerCSum,"CerCSum/F");
 	T->Branch("CerDSum", &CerDSum,"CerDSum/F");
 	T->Branch("CerSum", &CerSum,"CerSum/F");
-	*/
+	T->Branch("Cer_NCh", &Cer_NCh,"Cer_NCh/I");
+
 	T->Branch("EntryNum", &EntryNum,"EntryNum/I");
 	T->Branch("TrigType", &trigger_type,"TrigType/I");
 	T->Branch("trigger_time", &trigger_time, "trigger_time/l");
@@ -381,10 +474,6 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 	T->Branch("GEM11_y_adc", &GEM11_y_adc[0],"GEM11_y_adc[GEM11_n]/F");
 #endif
 
-	////////////////////////////////////////////////////////////////////////
-	// peak position for trig type 1
-	const float kSlot7PeakPos[16]={18,18,18,18, 18,18,18,18, 18,18,18,18, 18,18,18,18};
-	const float kSlot8PeakPos[16]={24,23,25,23, 24,24,17.5,29, 29,30,33,33, 33.5,25,33,70};
 
 	////////////////////////////////////////////////////////////////////////
 	//loop over events to fill tree
@@ -393,30 +482,42 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 	for (Long64_t jentry=istart; jentry<iend;jentry++) {
 		Long64_t ientry = LoadTree(jentry);
 		if (ientry < 0) break;
-		nb = fChain->GetEntry(jentry);   nbytes += nb;
-		
+		nb = this->GetEntry(jentry);   nbytes += nb;
 		// if (Cut(ientry) < 0) continue;
-		
+
 		if (jentry==istart) Epics_event_number_start = event_number;
 		if (jentry+1==iend) Epics_event_number_end = event_number;
 
 		if (((jentry-istart+1)%10000)==0) std::cout<<jentry-istart+1<<"/"<<iend-istart<<" events processed \r"<<std::flush;
 		EntryNum=jentry;
 
+		if(trigger_type>=127) continue;
+		int trigbit=0;    //will be 1,2,3,4,5,6, always take the maximum
+		for(int ib=5;ib>=0;ib--) {
+			if(trigger_type & int(pow(2.0,ib))) {
+				trigbit=ib+1;
+				break;
+			}
+		}
+		if(!trigbit) continue;
+		if(verbose>=1) cout<<"debug: Entry "<<jentry<<":  event_number"<<event_number<<", trigbit="<<trigbit<<endl;
+
 		////////////////reset the tree leavies values///////////////////////
-		//This block has to be excuted at the begining of each event
-		//otherwise the 'break' statement will jump over it 
+		//This block has to be executed at the begining of each event
+		//otherwise the 'break' statement will jump over it
 		for (int i=0;i<16;i++) {
 			Slot7ADC[i]=Slot8ADC[i]=0.0;
+			Slot7Pos[i]=Slot8Pos[i]=0;
+			Slot7Height[i]=Slot8Height[i]=0;
 		}
-		CerASum=CerBSum=CerCSum=CerDSum=CerSum=0;
+		CerASum=CerBSum=CerCSum=CerDSum=CerSum=0.0;
+		Cer_NCh=0;
 		pEcalEvent->Reset();
 
 #ifdef  LEVEL1_Tree_DEBUG
 		for (int i=0;i<16;i++) {
-			Slot7Height[i]=Slot8Height[i]=0;
-			Slot7Left0[i]=Slot7Left[i]=Slot7Pos[i]=Slot7Right0[i]=Slot7Right[i]=0;
-			Slot8Left0[i]=Slot8Left[i]=Slot8Pos[i]=Slot8Right0[i]=Slot8Right[i]=0;
+			Slot7Left0[i]=Slot7Left[i]=Slot7Right0[i]=Slot7Right[i]=0;
+			Slot8Left0[i]=Slot8Left[i]=Slot8Right0[i]=Slot8Right[i]=0;
 			Slot7Integral0[i]=Slot8Integral0[i]=0.0;
 
 			if (LEVEL1_Tree_DEBUG >= 1) {
@@ -444,15 +545,49 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 
 		//start to process slot 7 and 8
 		for (int ich=0; ich<16; ich++) {
-			int pos=(int)(Slot7Data[ich]->peaks[0].pos);
-			//the next line is to cut out-of-time pulse, however, it will not work if there are more than 1 trigger type
-			if (fabs(pos-kSlot7PeakPos[ich]-4)>46.0) continue;
+			int idx=-1;
+			int pos=0;
+			for(size_t ii=0;ii<Slot7Data[ich]->peaks.size();ii++) {
+				pos=(int)(Slot7Data[ich]->peaks[ii].pos);
+				//the next line is to cut out-of-time pulse, make this cut wide if the peak location is not known yet
+				if(trigbit>=1 || trigbit==2 || trigbit<=3 || trigbit==5) {
+					if (fabs(pos-gSlot7PeakPos[trigbit-1][ich])<=10.0) {idx=ii;break;}
+				}
+				else if(trigbit==4) {
+					if (fabs(pos-gSlot7PeakPos[trigbit-1][ich])<=5.0) {idx=ii;break;}
+				}
+				else {
+					if (fabs(pos-gSlot7PeakPos[trigbit-1][ich])<=10.0) {idx=ii;break;}
+				}
+			}
+			if(idx<0) continue;
+			if(verbose>=2) cout<<"debug: found trigger particle at slot7_"<<ich<<" idx="<<idx<<endl;
 
+			//Use the pos, left and right from the level0 tree
+			//my alglorithm to find "the 1% of the pulse height" will not work in high rate because the whole 100 time window
+			//might above 1%
+
+			float adcSum = 0;
+			int left=(int)(Slot7Data[ich]->peaks[idx].left);
+			int right=(int)(Slot7Data[ich]->peaks[idx].right);
+			for (int iw = left; iw <= right; iw++) {
+				if (Slot7Data[ich]->raw[iw]>=4095) {adcSum=-100;break;}  //skip saturated event
+				float adc = Slot7Data[ich]->raw[iw] - gPed7[ich];
+				if (adc<0) adc=0;
+				adcSum += adc;
+			}
+			Slot7ADC[ich] = adcSum;
+			if(adcSum>80) Cer_NCh++;
+			Slot7Pos[ich] = pos;
+			Slot7Height[ich] = (int)Slot7Data[ich]->raw[pos]-gPed7[ich];
+			if(verbose>=2) cout<<"debug: slot7_"<<ich<<" ped="<<gPed7[ich]<<" left="<<left<<" right="<<right<<" adcSum="<<adcSum<<endl;
+
+			/*
 			//find the start and end point of the pulse whenever it reach 1% of the pulse height or adc=2, which is earlier
 			float adcCut = (Slot7Data[ich]->raw[pos] - gPed7[ich])*0.01;
 			if (adcCut<2) adcCut = 2.0;
 
-			//determine left and right
+			//determine left and right, do integration
 			float adcSum = 0;
 			int iw=0;
 			int left=pos, right=pos;
@@ -473,16 +608,15 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 				right=iw;
 			}
 			Slot7ADC[ich] = adcSum;
+			*/
 
 #ifdef  LEVEL1_Tree_DEBUG
-			Slot7Left0[ich] = Slot7Data[ich]->peaks[0].left;
-			Slot7Right0[ich] = Slot7Data[ich]->peaks[0].right;
-			Slot7Integral0[ich] = Slot7Data[ich]->peaks[0].integral;
+			Slot7Left0[ich] = Slot7Data[ich]->peaks[idx].left;
+			Slot7Right0[ich] = Slot7Data[ich]->peaks[idx].right;
+			Slot7Integral0[ich] = Slot7Data[ich]->peaks[idx].integral;
 
 			Slot7Left[ich] = left;
-			Slot7Pos[ich] = pos;
 			Slot7Right[ich] = right;
-			Slot7Height[ich] = (int)Slot7Data[ich]->peaks[0].height;
 
 			//copy raw data
 			if (LEVEL1_Tree_DEBUG >= 1) {
@@ -498,13 +632,49 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 		CerDSum = Slot7ADC[12]+Slot7ADC[13]+Slot7ADC[14]+Slot7ADC[15];
 		CerSum = CerASum + CerBSum + CerCSum + CerDSum;
 
+		if(verbose>=1) {
+			cout<<"debug: Cer_NCh"<<Cer_NCh<<": CerASum="<<CerASum<<" CerBSum="<<CerBSum<<" CerCSum="
+					<<CerCSum<<" CerDSum="<<CerDSum<<" CerSum="<<CerSum<<endl;
+		}
 
 		for (int ich=0; ich<15; ich++) {
-			if (ich==13) continue;
-			int pos=(int)(Slot8Data[ich]->peaks[0].pos);
-			//the next line is to cut out-of-time pulse, however, it will not work if there are more than 1 trigger type
-			if (fabs(pos-kSlot8PeakPos[ich]-4)>46.0) continue;
+			int idx=-1;
+			int pos=0;
+			for(size_t ii=0;ii<Slot8Data[ich]->peaks.size();ii++) {
+				pos=(int)(Slot8Data[ich]->peaks[ii].pos);
+				//the next line is to cut out-of-time pulse, make this cut wide if the peak location is not known yet
+				if(trigbit==1 || trigbit==2 || trigbit==3 || trigbit==5) {
+					if (fabs(pos-gSlot8PeakPos[trigbit-1][ich])<=10.0) {idx=ii;break;}
+				}
+				else  if(trigbit==4) {
+					if (fabs(pos-gSlot8PeakPos[trigbit-1][ich])<=5.0) {idx=ii;break;}
+				}
+				else {
+					if (fabs(pos-gSlot8PeakPos[trigbit-1][ich])<=10.0) {idx=ii;break;}
+				}
+			}
+			if(idx<0) continue;
+			if(verbose>=2) cout<<"debug: found trigger particle at slot8_"<<ich<<" idx="<<idx<<endl;
 
+			//Use the pos, left and right from the level0 tree
+			//my alglorithm to find "the 1% of the pulse height" will not work in high rate because the whole 100 time window
+			//might above 1%
+
+			float adcSum = 0;
+			int left=(int)(Slot8Data[ich]->peaks[idx].left);
+			int right=(int)(Slot8Data[ich]->peaks[idx].right);
+			for (int iw = left; iw <= right; iw++) {
+				if (Slot8Data[ich]->raw[iw]>=4095) {adcSum=-100;break;}  //skip saturated event
+				float adc = Slot8Data[ich]->raw[iw] - gPed8[ich];
+				if (adc<0) adc=0;
+				adcSum += adc;
+			}
+			Slot8ADC[ich] = adcSum;
+			Slot8Pos[ich] = pos;
+			Slot8Height[ich] = (int)Slot8Data[ich]->raw[pos]-gPed8[ich];
+			if(verbose>=2) cout<<"debug: slot8_"<<ich<<" ped="<<gPed8[ich]<<" left="<<left<<" right="<<right<<" adcSum="<<adcSum<<endl;
+
+			/*
 			//find the start and end point of the pulse whenever it reach 1% of the pulse height or adc=2, which is earlier
 			float adcCut = (Slot8Data[ich]->raw[pos] - gPed8[ich])*0.01;
 			if (adcCut<2) adcCut = 2.0;
@@ -530,16 +700,15 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 				right=iw;
 			}
 			Slot8ADC[ich] = adcSum;
+			*/
 
 #ifdef  LEVEL1_Tree_DEBUG
-			Slot8Left0[ich] = Slot8Data[ich]->peaks[0].left;
-			Slot8Right0[ich] = Slot8Data[ich]->peaks[0].right;
-			Slot8Integral0[ich] = Slot8Data[ich]->peaks[0].integral;
+			Slot8Left0[ich] = Slot8Data[ich]->peaks[idx].left;
+			Slot8Right0[ich] = Slot8Data[ich]->peaks[idx].right;
+			Slot8Integral0[ich] = Slot8Data[ich]->peaks[idx].integral;
 
 			Slot8Left[ich] = left;
-			Slot8Pos[ich] = pos;
 			Slot8Right[ich] = right;
-			Slot8Height[ich] = (int)Slot8Data[ich]->peaks[0].height;
 
 			//copy raw data
 			if (LEVEL1_Tree_DEBUG >= 1) {
@@ -550,7 +719,7 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 #endif
 		}
 		///////////Ecal cluster weighting///////////////////////////////////
-		pEcalEvent->DoWeighting(Slot8ADC[8],Slot8ADC[7],Slot8ADC[9],Slot8ADC[11],Slot8ADC[10],Slot8ADC[12]);
+		pEcalEvent->DoWeighting(Slot8ADC[7],Slot8ADC[8],Slot8ADC[9],Slot8ADC[10],Slot8ADC[11],Slot8ADC[12]);
 
 		///////////GEM cluster matching/////////////////////////////////////
 		if (GEM_nCluster>=2) {
@@ -584,7 +753,7 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 					if (chamber.Hits2D.size()<=0) continue;
 					if (verbose>=3) cout<<"\t \t debug chamber "<<chamber.chamberPosIndex<<"\n";
 					for (auto &hit: chamber.Hits2D) {
-
+			//GEM_MAP defines only one GEM detector in each layer ...
 						int gem_id = hit.xc.layerID*10 + hit.xc.layerPosIndex;
 						if (verbose>=3) cout<<"\t \t \t debug hit, gem_id = "<<gem_id<<", x_adc="<<hit.xc.adc<<", y_adc="<<hit.yc.adc<<" \n";
 						switch(gem_id) {
@@ -598,7 +767,7 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 								GEM00_n++;
 							}
 							break;
-						case 1:
+						case 10:
 							{
 								if (GEM01_n>=MAX_CLUSTERS_PER_PLANE) break;
 								GEM01_x[GEM01_n] = hit.xc.pos;
@@ -608,7 +777,7 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 								GEM01_n++;
 							}
 							break;
-						case 10:
+						case 20:
 							{
 								if (GEM10_n>=MAX_CLUSTERS_PER_PLANE) break;
 								GEM10_x[GEM10_n] = hit.xc.pos;
@@ -618,7 +787,7 @@ void ReadEvTree::Loop(Long64_t istart, Long64_t iend)
 								GEM10_n++;
 							}
 							break;
-						case 11:
+						case 30:
 							{
 								if (GEM11_n>=MAX_CLUSTERS_PER_PLANE) break;
 								GEM11_x[GEM11_n] = hit.xc.pos;
@@ -678,16 +847,9 @@ void ReadEvTree::PlotSpectrum(Long64_t istart, Long64_t iend)
 	}
 
 	Long64_t nev2loop = iend - istart + 1;
+
+	GetPed(fRunNumber);
 	//////////////////////////////////////////////////////////////////////////
-	
-	fdec::Fadc250Data *Slot7Data[16]= {
-	MaROCA_sum, MaROCB_sum, MaROCC_sum, MaROCD_sum, MaROCE_sum, MaROCF_sum, MaROC_ch12, MaROC_ch08,
-	_not_use_, PreSh_sum, Shower_sum, TS1, TS2, TS3, MaROC_ch16, _Trig_ };
-
-	fdec::Fadc250Data *Slot8Data[16]= {
-		SC_bottom, SC_A, SC_top, SC_B, SC_D, SC_C, SC_E, PreSh_r, PreSh_l, PreSh_t,
-		Shower_r, Shower_l, Shower_t, notuse, ShowerSum, Trig };
-
 
 	TH2F *h2Spectrum7[16];
 	TH2F *h2Spectrum8[16];
@@ -709,7 +871,7 @@ void ReadEvTree::PlotSpectrum(Long64_t istart, Long64_t iend)
 	for (Long64_t jentry=istart; jentry<iend;jentry++) {
 		Long64_t ientry = LoadTree(jentry);
 		if (ientry < 0) break;
-		nb = fChain->GetEntry(jentry);   nbytes += nb;
+		nb = this->GetEntry(jentry);   nbytes += nb;
 		// if (Cut(ientry) < 0) continue;
 
 		for (int ich=0; ich<16; ich++) {
@@ -770,17 +932,11 @@ bool ReadEvTree::ExtractPedestal(Long64_t istart, Long64_t iend)
 
 	Long64_t nev2loop = iend - istart + 1;
 	if (nev2loop<1000) return false;
+
+	GetPed(fRunNumber,0);
 	//////////////////////////////////////////////////////////////////////////
 
 	gStyle->SetPadRightMargin(0.01);
-	
-	fdec::Fadc250Data *Slot7Data[16]= {
-	MaROCA_sum, MaROCB_sum, MaROCC_sum, MaROCD_sum, MaROCE_sum, MaROCF_sum, MaROC_ch12, MaROC_ch08,
-	_not_use_, PreSh_sum, Shower_sum, TS1, TS2, TS3, MaROC_ch16, _Trig_ };
-
-	fdec::Fadc250Data *Slot8Data[16]= {
-		SC_bottom, SC_A, SC_top, SC_B, SC_D, SC_C, SC_E, PreSh_r, PreSh_l, PreSh_t,
-		Shower_r, Shower_l, Shower_t, notuse, ShowerSum, Trig };
 
 	//extract pedestal
 	TH1F *h1Ped7[16],*h1Ped8[16];
@@ -802,7 +958,7 @@ bool ReadEvTree::ExtractPedestal(Long64_t istart, Long64_t iend)
 	for (Long64_t jentry=istart; jentry<iend;jentry++) {
 		Long64_t ientry = LoadTree(jentry);
 		if (ientry < 0) break;
-		nb = fChain->GetEntry(jentry);   nbytes += nb;
+		nb = this->GetEntry(jentry);   nbytes += nb;
 		// if (Cut(ientry) < 0) continue;
 
 		//std::cout<<"event = "<<jentry<<"\n";
@@ -890,16 +1046,8 @@ void ReadEvTree::PlotEvent(Long64_t entry)
 		return;
 	}
 
+	GetPed(fRunNumber);
 	//////////////////////////////////////////////////////////////////////////
-	
-	fdec::Fadc250Data *Slot7Data[16]= {
-	MaROCA_sum, MaROCB_sum, MaROCC_sum, MaROCD_sum, MaROCE_sum, MaROCF_sum, MaROC_ch12, MaROC_ch08,
-	_not_use_, PreSh_sum, Shower_sum, TS1, TS2, TS3, MaROC_ch16, _Trig_ };
-
-	fdec::Fadc250Data *Slot8Data[16]= {
-		SC_bottom, SC_A, SC_top, SC_B, SC_D, SC_C, SC_E, PreSh_r, PreSh_l, PreSh_t,
-		Shower_r, Shower_l, Shower_t, notuse, ShowerSum, Trig };
-
 
 	TH2F *h2Spectrum7[16];
 	TH2F *h2Spectrum8[16];
@@ -915,7 +1063,7 @@ void ReadEvTree::PlotEvent(Long64_t entry)
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	fChain->GetEntry(entry);
+	this->GetEntry(entry);
 
 	for (int ich=0; ich<16; ich++) {
 		for (size_t iw = 0; iw < Slot7Data[ich]->raw.size(); iw++) {
@@ -969,7 +1117,7 @@ void run(int istart=0, int iend=-1)
 	ReadEvTree t;
 	t.ExtractPedestal(0, 100000); WritePedFile(t.fRunNumber,0);
 
-	t.PlotSpectrum(100000,300000);
+	t.PlotSpectrum(100000,200000);
 
 	//create level 1 tree
 	t.Loop(0, -1);
@@ -978,23 +1126,37 @@ void run(int istart=0, int iend=-1)
 	//for (int i=0;i<10;i++) t.PlotEvent(i);
 }
 
-
-void run_cosmic1(int istart=0, int iend=-1)
+//extract pedestal for given runs
+void DoPedestal()
 {
-	run(istart,iend);
+	ReadEvTree t;
+	gStyle->SetPadRightMargin(0.01);
+	t.ExtractPedestal(0, 100000);  
 }
-
 
 //extract pedestal for given runs
 void DoPedestal(int run_start, int run_end)
 {
 	char filename[255];
 	for (int run=run_start;run<=run_end;run++) {
-		sprintf(filename,"../ROOTFILE/beamtest_hallc_%4d_0.root",run);
+		int subrun = 0;
+		if(run<=3683) {
+			sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/82deg/pass1/beamtest_hallc_%4d_%d.root",run,subrun); 
+		} else if(run<=3906) {
+			 sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/cosmic/pass0/beamtest_hallc_%04d_%d.root",run,subrun);
+		} else if (run<=4285) {
+			sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/7deg/pass1/beamtest_hallc_%04d_%d.root",run,subrun);
+		} else { 
+			sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/18deg/GEMROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
+		}
 
 		if (gSystem->AccessPathName(filename)) {
-			std::cout << "file \"" << filename << "\" does not exist" << std::endl;
-			continue;
+			//std::cout << "DoLevel1Tree(): file \"" << filename << "\" does not exist" << std::endl;
+			sprintf(filename,"/home/solid/replay/ROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
+			if (gSystem->AccessPathName(filename)) {
+				//std::cout << "DoLevel1Tree(): file \"" << filename << "\" does not exist" << std::endl;
+				continue;
+			}
 		}
 
 		std::cout<<"loading file "<<filename<<endl;
@@ -1008,7 +1170,7 @@ void DoPedestal(int run_start, int run_end)
 			else WritePedFile(run,0);
 
 			gStyle->SetPadRightMargin(0.15);
-			t.PlotSpectrum(0, -1);
+			t.PlotSpectrum(100000, 200000);
 		}
 	}
 }
@@ -1017,7 +1179,7 @@ void DoPedestal(int run_start, int run_end)
 void CreateLevel1Tree()
 {
 	ReadEvTree t;
-	t.ExtractPedestal(0, 100000); WritePedFile(t.fRunNumber,0);
+	//t.ExtractPedestal(0, 100000); WritePedFile(t.fRunNumber,0);
 
 	gStyle->SetPadRightMargin(0.1);
 #if defined LEVEL1_Tree_DEBUG && (LEVEL1_Tree_DEBUG >= 1)
@@ -1033,13 +1195,26 @@ void DoLevel1Tree(int run_start, int run_end)
 	char filename[255];
 	bool pedready = false;
 	for (int run=run_start;run<=run_end;run++) {
-		pedready = false;
+		pedready = true;
 		for (int subrun=0;subrun<500;subrun++) {
-			sprintf(filename,"../ROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
-
+			//sprintf(filename,"../ROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
+			if(run<=3683) {
+				sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/82deg/pass1/beamtest_hallc_%4d_%d.root",run,subrun); 
+			} else if(run<=3906) {
+				 sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/cosmic/pass0/beamtest_hallc_%04d_%d.root",run,subrun);
+			} else if (run<=4285) {
+				sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/7deg/pass1/beamtest_hallc_%04d_%d.root",run,subrun);
+			} else { 
+				sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/18deg/GEMROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
+			}
+			
 			if (gSystem->AccessPathName(filename)) {
-				//std::cout << "file \"" << filename << "\" does not exist" << std::endl;
-				continue;
+				//std::cout << "DoLevel1Tree(): file \"" << filename << "\" does not exist" << std::endl;
+				sprintf(filename,"/home/solid/replay/ROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
+				if (gSystem->AccessPathName(filename)) {
+					//std::cout << "DoLevel1Tree(): file \"" << filename << "\" does not exist" << std::endl;
+					continue;
+				}
 			}
 
 			std::cout<<"loading file "<<filename<<endl;
@@ -1060,7 +1235,12 @@ void DoLevel1Tree(int run_start, int run_end)
 	}
 }
 
-void DoLevel1Tree_cosmic1(int run_start, int run_end)
+void DoLevel1Tree_highrate(int run_start, int run_end)
 {
-	DoLevel1Tree(run_start, run_end);	
+	DoLevel1Tree(run_start, run_end);
+}
+
+void run_old_tracking()
+{
+	run();
 }

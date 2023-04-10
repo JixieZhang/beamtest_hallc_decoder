@@ -80,6 +80,7 @@ public :
 	fdec::Fadc250Data *ShowerSum;
 	fdec::Fadc250Data *Trig;
 	Int_t           trigger_type;
+	ULong64_t       trigger_time;
 
 	// List of branches
 	TBranch        *b_event_number;   //!
@@ -130,6 +131,8 @@ public :
 	TBranch        *b_ShowerSum;   //!
 	TBranch        *b_Trig;   //!
 	TBranch        *b_trigger_type;   //!
+	TBranch        *b_trigger_time;   //!
+
 
 	const char *Slot7Name[16]= {
 		"CerA0", "CerA1", "CerA2", "CerA3", "CerB0", "CerB1", "CerB2", "CerB3",
@@ -371,6 +374,7 @@ void ReadEvTree::Init(TTree *tree)
 	fChain->SetBranchAddress("ShowerSum", &ShowerSum, &b_ShowerSum);
 	fChain->SetBranchAddress("Trig", &Trig, &b_Trig);
 	fChain->SetBranchAddress("trigger_type", &trigger_type, &b_trigger_type);
+	fChain->SetBranchAddress("trigger_time", &trigger_time, &b_trigger_time);
 	Notify();
 
 	int idx=-1;
