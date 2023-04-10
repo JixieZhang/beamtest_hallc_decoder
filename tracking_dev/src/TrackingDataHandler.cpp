@@ -36,6 +36,11 @@ namespace tracking_dev
     void TrackingDataHandler::SetEvioFile(const char* p)
     {
         input_file = p;
+
+        if(!is_configured)
+            Configure();
+        else
+            data_handler -> OpenEvioFile(input_file);
     }
 
     void TrackingDataHandler::ClearPrevEvent()

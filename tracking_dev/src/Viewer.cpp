@@ -12,6 +12,7 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QLabel>
+#include <QLineEdit>
 #include <QFileDialog>
 #include <QSpinBox>
 #include <TRandom.h>
@@ -96,7 +97,7 @@ void Viewer::InitGui()
     btn_50K = new QPushButton("Replay 50K", this);
     btn_open_file = new QPushButton("Open File", this);
     label_counter = new QLabel("Event Number: 0", this);
-    label_file = new QLabel("../data/hallc_fadc_ssp_4762.evio.1", this);
+    label_file = new QLineEdit("../data/hallc_fadc_ssp_xxxx.evio.1", this);
 
     global_layout = new QVBoxLayout(this);
     global_layout -> addWidget(fDet2DView);
@@ -110,6 +111,7 @@ void Viewer::InitGui()
     global_layout -> addLayout(_tmplayout);
 
     connect(btn_open_file, SIGNAL(clicked()), this, SLOT(OpenFile()));
+    connect(label_file, SIGNAL(textChanged(const QString &)), this, SLOT(ProcessNewFile(const QString &)));
     connect(btn_next, SIGNAL(valueChanged(int)), this, SLOT(GenerateEvent()));
     connect(btn_50K, SIGNAL(clicked()), this, SLOT(Replay50K()));
 }
@@ -125,6 +127,13 @@ void Viewer::OpenFile()
 
     evio_file = filename.toStdString();
     label_file -> setText(evio_file.c_str());
+}
+
+void Viewer::ProcessNewFile(const QString &_s)
+{
+    std::string ss = _s.toStdString();
+    std::cout<<"Processing new file: "<<ss<<std::endl;
+    tracking_data_handler -> SetEvioFile(ss.c_str());
 }
 
 void Viewer::ClearPrevEvent()
