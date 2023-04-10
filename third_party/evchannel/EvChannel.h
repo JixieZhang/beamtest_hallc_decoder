@@ -106,9 +106,14 @@ public:
         throw std::runtime_error(error);
     }
 
-    const uint32_t GetEventType() const
+    uint32_t GetEventType() const
     {
-        return event_type;
+        return (uint32_t)event_type;
+    }
+
+    uint64_t GetTriggerTime() const
+    {
+        return trigger_time;
     }
 
 protected:
@@ -121,6 +126,7 @@ protected:
     std::unordered_map<BufferAddress, std::vector<BufferInfo>, BufferHash> buffer_info;
 
     uint16_t event_type;
+    uint64_t trigger_time;
 };
 
 } // namespace evc

@@ -24,6 +24,8 @@ set(srcs
     src/PreAnalysis.cpp
     src/GEMDetectorLayer.cpp
     src/GEMRootClusterTree.cpp
+    src/ValueType.cpp
+    src/Cuts.cpp
     )
 
 set(headers
@@ -43,6 +45,8 @@ set(headers
     include/GEMMPD.h
     include/GEMRootHitTree.h
     include/PreAnalysis.h
+    include/ValueType.h
+    include/Cuts.h
     )
 
 add_library(${LIBNAME} ${srcs})

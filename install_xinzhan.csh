@@ -1,6 +1,6 @@
 #!/bin/csh
 
-source setup.csh
+source setup_xinzhan.csh
 
 setenv HallCBeamtestDir ${PWD}
 

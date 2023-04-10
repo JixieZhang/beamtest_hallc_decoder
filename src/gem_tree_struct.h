@@ -37,6 +37,16 @@ struct GEMTreeStruct
     unordered_map<int, int> dp_table;
     vector<bool> position_check;
 
+    // tracking data
+    int fNtracks_found, fNhitsOnTrack;
+    float fXtrack, fYtrack, fXptrack, fYptrack, fChi2Track;
+    vector<int> fHitLayer;
+    vector<float> fHitXlocal, fHitYlocal;
+    vector<float> fHitXprojected, fHitYprojected;
+    vector<float> fHitResidU, fHitResidV;
+    vector<float> fHitUADC, fHitVADC;
+    vector<float> fHitIsampMaxUstrip, fHitIsampMaxVstrip;
+
     int nAPV;
     vector<int> apv_crate_id, apv_mpd_id, apv_adc_ch;
 
@@ -58,6 +68,14 @@ struct GEMTreeStruct
             StripTs2.clear(), StripTs3.clear(), StripTs4.clear(), StripTs5.clear();
 
         dp_table.clear(); position_check.resize(MAXCLUSTERS, false);
+
+        fNtracks_found = 0, fNhitsOnTrack = 0;
+        fXtrack = DEF_VAL, fYtrack = DEF_VAL, fXptrack = DEF_VAL, fYptrack = DEF_VAL, fChi2Track = DEF_VAL;
+        fHitLayer.clear(); fHitXlocal.clear(); fHitYlocal.clear();
+        fHitXprojected.clear(); fHitYprojected.clear();
+        fHitResidU.clear(); fHitResidV.clear();
+        fHitUADC.clear(); fHitVADC.clear();
+        fHitIsampMaxUstrip.clear(); fHitIsampMaxVstrip.clear();
 
         nAPV = 0;
         apv_crate_id.resize(MAXAPV, DEF_VAL), apv_mpd_id.resize(MAXAPV, DEF_VAL),

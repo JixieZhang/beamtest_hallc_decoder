@@ -9,6 +9,9 @@
 GEMRootClusterTree::GEMRootClusterTree(const char* path)
 {
     fPath = path;
+    if(fPath.size() <= 0)
+        fPath = "Rootfiles/cluster_replay.root";
+
     pFile = new TFile(path, "RECREATE");
     pTree = new TTree("GEMCluster", "cluster list");
 

@@ -20,6 +20,7 @@ LINK_PUBLIC
     gem_decoder
     gem_ana
     hctracking
+    hctracking_dev
 )
 target_link_libraries(${exe} PRIVATE  nlohmann_json::nlohmann_json)
 
@@ -48,6 +49,7 @@ LINK_PUBLIC
     gem_decoder
     gem_ana
     hctracking
+    hctracking_dev
 )
 target_link_libraries(${exe2} PRIVATE  nlohmann_json::nlohmann_json)
 
