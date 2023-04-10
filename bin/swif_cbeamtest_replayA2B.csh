@@ -114,11 +114,11 @@ while ($run < $endrun)
     echo "adding one job for file $infilename"
     if (! -f $datadir/$infilename) then
       #do job from /mss
-      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition osg -ram 2g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
-      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition osg -ram 2g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd  
+      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
+      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd  
     else
-      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition osg -ram 2g -phase 1 $cmd " >> $jobfile
-      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition osg -ram 2g -phase 1 $cmd  
+      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd " >> $jobfile
+      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd  
     endif
     @ njob = $njob + 1
     

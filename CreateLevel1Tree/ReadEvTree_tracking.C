@@ -1146,7 +1146,7 @@ void DoPedestal(int run_start, int run_end)
     } else if (run<=4285) {
       sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/7deg/pass1/beamtest_hallc_%04d_%d.root",run,subrun);
     } else { 
-      sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/18deg/ROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
+      sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/18deg/GEMROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
     }
 
     if (gSystem->AccessPathName(filename)) {
@@ -1204,7 +1204,7 @@ void DoLevel1Tree(int run_start, int run_end)
       } else if (run<=4285) {
         sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/7deg/pass1/beamtest_hallc_%04d_%d.root",run,subrun);
       } else { 
-        sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/18deg/ROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
+        sprintf(filename,"/volatile/halla/solid/jixie/ecal_beamtest_hallc/18deg/GEMROOTFILE/beamtest_hallc_%04d_%d.root",run,subrun);
       }
       
       if (gSystem->AccessPathName(filename)) {

@@ -177,6 +177,7 @@ public :
 	virtual bool     ExtractPedestal(Long64_t istart=0, Long64_t iend=100000);
 	virtual void     PlotSpectrum(Long64_t istart=0, Long64_t iend=-1);
 	virtual void     PlotEvent(Long64_t entry);
+	virtual int      GetRunNumber(const char* filename="");
 };
 
 #endif
@@ -216,6 +217,47 @@ ReadEvTree::~ReadEvTree()
 {
 	if (!fChain) return;
 	delete fChain->GetCurrentFile();
+}
+
+int ReadEvTree::GetRunNumber(const char* infile)
+{
+	//extract the run number
+	std::string str = infile;
+	if(strlen(infile)<5)  str = gFile->GetName();  //"../ROOTFILE/beamtest_hallc_3032_1.root"
+
+	std::string fileN="", file="";
+	std::size_t found = str.find_last_of("/\\");
+	std::string file0 = str.substr(found+1);     //take pure file name: "beamtest_hallc_3032_1.root"
+
+	found = file0.find_last_of(".");
+	std::string file1 = file0.substr(0,found);   //remove ".root": "beamtest_hallc_3032_1"
+	
+	found = file1.find("_debug");
+	if(found != std::string::npos) file1 = file1.substr(0,found);   //remove "_debug*" from "beamtest_hallc_3032_1_debug*"
+
+	//remove all characters from ato z and A to Z
+	for(size_t i = 0; i<file1.length(); i++) {
+		if (!(file1[i] >= 'a' && file1[i]<='z') && !(file1[i] >= 'A' && file1[i]<='Z')) {
+			file.append(1, file1[i]);
+		}
+	}
+
+	found = file.find_last_of("_");
+	std::string file2 = file.substr(0,found);   //remove whatever after the last underscore: "beamtest_hallc_3032"
+	fileN = file.substr(found+1);
+
+	if(file2.length()>=4) {
+		found = file2.find_last_of("_");
+		std::string file3 = file2.substr(0,found);   //"beamtest_hallc_3032"
+		fileN = file2.substr(found+1);    //"3032"
+	}
+
+	//std::cout<<" file0 = "<<file0<<"\n file1 = "<<file1<<"\n file = "<<file<<"\n file2 = "<<file2<<"\n fileN = "<<fileN<<std::endl;
+
+	int pRunNumber = 0;
+	if(fileN.length()>0) pRunNumber = atoi(fileN.c_str());
+	std::cout<<"file = \""<<file0<<"\"  --> RunNumber = "<<pRunNumber<<std::endl;
+	return pRunNumber;
 }
 
 Int_t ReadEvTree::GetEntry(Long64_t entry)
@@ -408,20 +450,7 @@ void ReadEvTree::Init(TTree *tree)
 
 	////////////////////////////////////////////////////////////////////////
 	//extract the run number
-	std::string str = gFile->GetName();  //"../ROOTFILE/beamtest_hallc_3032_1.root"
-
-	std::size_t found = str.find_last_of("/\\");
-	std::string file = str.substr(found+1);   //"beamtest_hallc_3032_1.root"
-
-	found = file.find_last_of("_");
-	std::string file1 = file.substr(0,found); //"beamtest_hallc_3032"
-
-	found = file1.find_last_of("_");
-	std::string file2= file1.substr(found+1); //"3032"
-
-	fRunNumber = 0;
-	if(file2.length()>0) fRunNumber = atoi(file2.c_str());
-	std::cout<<"file = \""<<file<<"\"  --> fRunNumber = "<<fRunNumber<<std::endl;
+	fRunNumber = GetRunNumber(gFile->GetName());
 }
 
 Bool_t ReadEvTree::Notify()

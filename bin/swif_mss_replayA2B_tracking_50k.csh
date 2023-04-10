@@ -135,15 +135,15 @@ while ($run < $endrun)
 			set cmd = ($HallCBeamtestDir/bin/replayFiles_18deg_50k.csh "'-x 1 -t 6 -k " $skip " -n " $NeventsPerJob " '" $part $datadir/$infilename)
 			 if (! -f $datadir/$infilename) then
 				#do job from /mss
-				echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition osg -ram 6g -phase 1 -time 96h -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
-				$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition osg -ram 6g -phase 1 -time 96h -input $datadir/$infilename mss:$mssdir/$infilename $cmd
+				echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition production -ram 6g -phase 1 -time 96h -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
+				$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition production -ram 6g -phase 1 -time 96h -input $datadir/$infilename mss:$mssdir/$infilename $cmd
 				#copy the file from /mss to /cache
 				#echo "jcache get $infile"
 				#$DEBUG jcache get $infile
 			else
 				#do job from /cache,
-				echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition osg -ram 6g -phase 1 -time 96h $cmd " >> $jobfile
-				$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition osg -ram 6g -phase 1 -time 96h $cmd
+				echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition production -ram 6g -phase 1 -time 96h $cmd " >> $jobfile
+				$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition production -ram 6g -phase 1 -time 96h $cmd
 			endif
 			@ skip = $skip + $NeventsPerJob
 			@ njob = $njob + 1
