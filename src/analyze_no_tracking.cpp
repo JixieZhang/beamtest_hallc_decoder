@@ -18,9 +18,11 @@
 #include <chrono>
 #include "ReadDatabase.h"
 
-//#define USE_OLD_GEM_TRACKING
 
-#ifdef USE_OLD_GEM_TRACKING
+//In this file, disable the debug version of tracking, it is too slow
+#undef USE_GEM_TRACKING
+
+#ifdef USE_GEM_TRACKING
 #include "GEMModule.h"
 #include "HCTracking.h"
 #include "EventWrapper.h"
@@ -30,11 +32,6 @@
 #include "gem_tree_struct.h"
 #include "APVStripMapping.h"
 #include "MPDSSPRawEventDecoder.h"
-#include "TrackingDataHandler.h"
-#include "Tracking.h"
-#include "tracking_struct.h"
-#include "AbstractDetector.h"
-#include "TrackingUtility.h"
 #define PROGRESS_COUNT 1000
 #endif
 
@@ -110,33 +107,11 @@ TTree *create_tree(std::vector<Module> &modules, const std::string tname = "EvTr
             break;
         case kSSP:
             {
-#ifdef USE_OLD_GEM_TRACKING
+#ifdef USE_GEM_TRACKING
 #else
                 auto event = new GEMTreeStruct();
                 m.event = static_cast<void*>(event);
                 tree->Branch("event_number",                    &event->event_number,    "event_number/I");
-
-                // new tracking result
-                tree->Branch("fNtracks_found", &event->fNtracks_found, "fNtracks_found/I");
-                tree->Branch("fNhitsOnTrack", &event->fNhitsOnTrack, "fNhitsOnTrack/I");
-                tree->Branch("fXtrack", &event->fXtrack, "fXtrack/F");
-                tree->Branch("fYtrack", &event->fYtrack, "fYtrack/F");
-                tree->Branch("fXptrack", &event->fXptrack, "fXptrack/F");
-                tree->Branch("fYptrack", &event->fYptrack, "fYptrack/F");
-                tree->Branch("fChi2Track", &event->fChi2Track, "fChi2Track/F");
-                tree->Branch("fHitLayer", &event->fHitLayer);
-                tree->Branch("fHitXlocal", &event->fHitXlocal);
-                tree->Branch("fHitYlocal", &event->fHitYlocal);
-                tree->Branch("fHitXprojected", &event->fHitXprojected);
-                tree->Branch("fHitYprojected", &event->fHitYprojected);
-                tree->Branch("fHitResidU", &event->fHitResidU);
-                tree->Branch("fHitResidV", &event->fHitResidV);
-                tree->Branch("fHitUADC", &event->fHitUADC);
-                tree->Branch("fHitVADC", &event->fHitVADC);
-                tree->Branch("fHitIsampMaxUstrip", &event->fHitIsampMaxUstrip);
-                tree->Branch("fHitIsampMaxVstrip", &event->fHitIsampMaxVstrip);
-
-                // result before tracking
                 std::string sname = "GEM";
                 tree->Branch((sname + "_nCluster").c_str(),     &event->nCluster,        "GEM_nCluster/I");
                 tree->Branch((sname + "_planeID").c_str(),      &event->Plane[0],        "GEM_planeID[GEM_nCluster]/I");
@@ -176,51 +151,9 @@ TTree *create_tree(std::vector<Module> &modules, const std::string tname = "EvTr
     return tree;
 }
 
-#ifndef USE_OLD_GEM_TRACKING
-
-void extract_new_gem_tracking_result(tracking_dev::TrackingDataHandler *tracking_data_handler,
-        tracking_dev::Tracking *tracking, GEMTreeStruct &gem_data)
-{
-    double xt, yt, xp, yp, chi2ndf;
-    bool found_track = tracking -> GetBestTrack(xt, yt, xp, yp, chi2ndf);
-    if(!found_track) return;
-
-    gem_data.fNtracks_found = 1; // only save best track
-    gem_data.fNhitsOnTrack = tracking -> GetNHitsonBestTrack();
-    gem_data.fXtrack = xt; gem_data.fYtrack = yt;
-    gem_data.fXptrack = xp; gem_data.fYptrack = yp;
-    gem_data.fChi2Track = chi2ndf;
-
-    gem_data.fHitLayer = tracking -> GetBestTrackLayerIndex();
-
-    tracking_dev::point_t pt(xt, yt, 0);
-    tracking_dev::point_t dir(xp, yp, 1.);
-    const std::vector<int> &hit_index = tracking -> GetBestTrackHitIndex();
-    for(unsigned int i=0; i<gem_data.fHitLayer.size(); i++)
-    {
-        int layer = gem_data.fHitLayer[i];
-        int hit_id = hit_index[i];
-
-        tracking_dev::point_t p_local = (tracking_data_handler -> GetDetector(layer)) -> Get2DHit(hit_id);
-        double z = (tracking_data_handler -> GetDetector(layer)) -> GetZPosition();
-        tracking_dev::point_t p_projected = (tracking -> GetTrackingUtility()) -> projected_point(pt, dir, z);
-
-        gem_data.fHitXlocal.push_back(p_local.x);
-        gem_data.fHitYlocal.push_back(p_local.y);
-        gem_data.fHitXprojected.push_back(p_projected.x);
-        gem_data.fHitYprojected.push_back(p_projected.y);
-        gem_data.fHitResidU.push_back(p_projected.x - p_local.x);
-        gem_data.fHitResidV.push_back(p_projected.y - p_local.y);
-        gem_data.fHitUADC.push_back(p_local.x_peak);
-        gem_data.fHitVADC.push_back(p_local.y_peak);
-        gem_data.fHitIsampMaxUstrip.push_back(p_local.x_max_timebin);
-        gem_data.fHitIsampMaxVstrip.push_back(p_local.y_max_timebin);
-    }
-}
-
+#ifndef USE_GEM_TRACKING
 // do gem clustering
-void extract_gem_cluster(GEMSystem *gem_sys, MPDSSPRawEventDecoder *gem_decoder, tracking_dev::TrackingDataHandler *tracking_data_handler,
-        tracking_dev::Tracking *new_tracking, GEMTreeStruct &gem_data, int evtNum)
+void extract_gem_cluster(GEMSystem *gem_sys, MPDSSPRawEventDecoder *gem_decoder, GEMTreeStruct &gem_data, int evtNum)
 {
     auto &decoded_data = gem_decoder -> GetAPV();
     auto &decoded_data_flags = gem_decoder -> GetAPVDataFlags();
@@ -311,12 +244,6 @@ void extract_gem_cluster(GEMSystem *gem_sys, MPDSSPRawEventDecoder *gem_decoder,
     }
     gem_data.nCluster = icluster;
     gem_data.event_number = evtNum;
-
-    // do tracking
-    tracking_data_handler -> ClearPrevEvent();
-    tracking_data_handler -> PackageEventData();
-    new_tracking -> FindTracks();
-    extract_new_gem_tracking_result(tracking_data_handler, new_tracking, gem_data);
 }
 #endif
 
@@ -422,24 +349,20 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
     // waveform analyzer
     fdec::Analyzer analyzer(res, thres, npeds, flat);
 
-#ifdef USE_OLD_GEM_TRACKING
+#ifdef USE_GEM_TRACKING
     EventWrapper evio_event_wrapper;
 #else
     // gem analyzer
     GEMSystem gem_system;
     gem_system.Configure("config/gem.conf");
     gem_system.ReadPedestalFile();
-    tracking_dev::TrackingDataHandler *tracking_data_handler = new tracking_dev::TrackingDataHandler();
-    tracking_data_handler -> SetGEMSystem(&gem_system);
-    tracking_data_handler -> SetupDetector();
-    tracking_dev::Tracking *new_tracking = tracking_data_handler -> GetTrackingHandle();
 #endif
 
     // decoders
     fdec::Fadc250Decoder fdecoder;
     ssp::SSPDecoder sdecoder;
 
-#ifdef USE_OLD_GEM_TRACKING
+#ifdef USE_GEM_TRACKING
     HCTracking *tracking = new HCTracking();
     tracking->LoadConfig(TDatime("2022-11-03 16:35:00"));
     tracking->CompleteInitialization();
@@ -450,11 +373,11 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
 
     // epics system
     EPICSystem epic_sys("config/epics_map.txt");
-
+    
     // output
-    auto *hfile = new TFile(opath.c_str(), "RECREATE", "MAPMT test results");
+    auto *hfile = new TFile(opath.c_str(), "RECREATE", "SoLID HallC Beamtest");
     auto tree = create_tree(modules);
-#ifdef USE_OLD_GEM_TRACKING
+#ifdef USE_GEM_TRACKING
     tracking -> InitTrackingResultTree(tree);
 #endif
 
@@ -462,10 +385,9 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
     uint64_t TriggerTime = 0;
     tree -> Branch("trigger_type", &TriggerType, "trigger_type/I");
     tree -> Branch("trigger_time", &TriggerTime, "trigger_time/l");
+    
 
     auto epics_tree = create_epics_tree(&epic_sys);
-    auto time_1 = std::chrono::steady_clock::now();
-    auto time_2 = std::chrono::steady_clock::now();
 
     int count = 0;
     if(nskip>0) nev += nskip;
@@ -476,10 +398,7 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
             std::cout << "First " << nskip <<" events were skipped." << std::endl;
         }
         if((count % PROGRESS_COUNT) == 0) {
-            time_2 = std::chrono::steady_clock::now();
-            auto time_elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(time_2 - time_1).count();
-            std::cout << "Processed events - " << count << " - " << time_elapsed <<" milliseconds per " << PROGRESS_COUNT << " events." << "\r" << std::flush;
-            time_1 = time_2;
+            std::cout << "Processed events - " << count << "\r" << std::flush;
         }
 
         switch(evchan.GetEvHeader().tag) {
@@ -504,7 +423,6 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
         int blvl = evchan.GetEvBuffer(ref.crate, ref.bank, ref.slot).size();
         uint16_t event_type = evchan.GetEventType();
         TriggerType = (int)(event_type);
-        TriggerTime = evchan.GetTriggerTime();
 
         const uint32_t *dbuf;
         size_t buflen;
@@ -546,7 +464,7 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
                     break;
                 case kSSP:
                     {
-#ifdef USE_OLD_GEM_TRACKING
+#ifdef USE_GEM_TRACKING
                         auto raw_vec = evchan.GetRawBufferVec();
                         evio_event_wrapper.LoadEvent(raw_vec.data(), raw_vec.size());
                         tracking->Decode(evio_event_wrapper);
@@ -555,7 +473,7 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
                         std::vector<int> ivec{mod.bank, mod.crate};
                         gem_decoder.Decode(dbuf, buflen, ivec);
                         auto event = static_cast<GEMTreeStruct*>(mod.event);
-                        extract_gem_cluster(&gem_system, &gem_decoder, tracking_data_handler, new_tracking, *event, count);
+                        extract_gem_cluster(&gem_system, &gem_decoder, *event, count);
 #endif
                     }
                     break;
@@ -572,7 +490,7 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
     std::cout << "Processed events - " << count << std::endl;
 
     evchan.Close();
-#ifdef USE_OLD_GEM_TRACKING
+#ifdef USE_GEM_TRACKING
     tracking -> End(9999);
     //tracking -> CalcEfficiency();
 #endif
