@@ -8,6 +8,9 @@
 GEMRootHitTree::GEMRootHitTree(const char* path)
 {
     fPath = path;
+    if(fPath.size() <= 0)
+        fPath = "Rootfiles/hit_replay.root";
+
     pFile = new TFile(path,"RECREATE");
     pTree = new TTree("GEMHit","Hit list");
 

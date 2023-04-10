@@ -840,6 +840,7 @@ void GEMAPV::CollectZeroSupHits()
 
         plane->AddStripHit(strip_map[i].plane,
                 GetMaxCharge(i),
+                GetMaxTimeBin(i),
                 IsCrossTalkStrip(i),
                 crate_id,
                 mpd_id,
@@ -1250,6 +1251,27 @@ float GEMAPV::GetMaxCharge(const uint32_t &ch)
     }
 
     return val;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// get max time bin in the specified adc channel
+
+short GEMAPV::GetMaxTimeBin(const uint32_t &ch)
+    const
+{
+    if(ch >= APV_STRIP_SIZE || !hit_pos[ch])
+        return -1;
+
+    float val = 0; short res = -1;
+    for(uint32_t j = 0; j < time_samples; ++j)
+    {
+        float this_val = raw_data[DATA_INDEX(ch, j)];
+        if(val < this_val) {
+            val = this_val; res = j;
+        }
+    }
+
+    return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

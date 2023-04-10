@@ -36,9 +36,10 @@ public:
     // set systems
     void SetGEMSystem(GEMSystem *gem){gem_sys = gem;}
     GEMSystem *GetGEMSystem() const {return gem_sys;}
+    bool OpenEvioFile(const std::string &path);
+    void RegisterRawDecoders();
+    int DecodeEvent(int &count);
 
-    // file reading and writing
-    void Decode(const void *buffer);
     // read from multiple evio splits
     int ReadFromSplitEvio(const std::string &path, int split_start = 0,
             int split_end = -1, bool verbose = false);
@@ -84,6 +85,8 @@ public:
     void SetOnlineMode(bool m){onlineMode = m; pedestalMode = !m; onlineMode = !m;}
     void TurnOffClustering(){bReplayCluster = false;}
     void TurnOnClustering(){bReplayCluster = true;}
+    void EnableOutputRootTree() {root_tree_enabled = true;}
+    void DisableOutputRootTree(){root_tree_enabled = false;}
 
     // helpers
     std::string ParseOutputFileName(const std::string &input_file_name, const char* prefix="Rootfiles/hit");
@@ -117,11 +120,14 @@ private:
     GEMRootHitTree *root_hit_tree = nullptr;
     std::string replay_hit_output_file = "";
     int fEventNumber = 0;
+    int fMaxPedestalEvents = 5000;
 
     // replay data to root cluster tree
     GEMRootClusterTree *root_cluster_tree = nullptr;
     std::string replay_cluster_output_file = "";
     bool bReplayCluster = false;
+
+    bool root_tree_enabled = true;
 };
 
 #endif

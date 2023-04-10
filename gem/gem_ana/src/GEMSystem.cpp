@@ -949,6 +949,9 @@ void GEMSystem::SetUnivTimeSample(const uint32_t &ts)
 void GEMSystem::SaveHistograms(const std::string &path)
     const
 {
+    if(path.size() <= 0)
+        return;
+
     TFile *f = new TFile(path.c_str(), "recreate");
 
     for(auto &mpd : mpd_slots)

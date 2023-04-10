@@ -105,6 +105,7 @@ public:
     std::vector<TH1I *> GetHistList() const;
     std::vector<Pedestal> GetPedestalList() const;
     float GetMaxCharge(const uint32_t &ch) const;
+    short GetMaxTimeBin(const uint32_t &ch) const;
     std::vector<float> GetRawTSADC(const uint32_t &ch) const;
     float GetAveragedCharge(const uint32_t &ch) const;
     float GetIntegratedCharge(const uint32_t &ch) const;

@@ -94,9 +94,23 @@ GEMDataHandler &GEMDataHandler::operator=(GEMDataHandler &&rhs)
 ////////////////////////////////////////////////////////////////////////////////
 // decode
 
-void GEMDataHandler::Decode([[maybe_unused]]const void *buffer)
+int GEMDataHandler::DecodeEvent(int &count)
 {
-    // place holder
+    const uint32_t *pBuf;
+    uint32_t fBufLen;
+
+    int status = evio_reader -> ReadNoCopy(&pBuf, &fBufLen);
+
+    if(status != S_SUCCESS)
+        return status;
+
+    count++; // event number in current split evio file
+
+    fEventNumber++; // event number in current run
+
+    ReplayEvent_test(pBuf, fBufLen, fEventNumber);
+
+    return status;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -161,8 +175,8 @@ void GEMDataHandler::ReplayEvent_test(const uint32_t *pBuf, const uint32_t &fBuf
     {
         if(gem_sys->GetAPV(i.first) == nullptr) {
             std::cout<<"Warning:: apv: "<<i.first<<" not initialized."<<std::endl
-                     <<"          make sure the correct mapping file was loaded."<<std::endl
-                     <<"          skipped the current APV data."<<std::endl;
+                <<"          make sure the correct mapping file was loaded."<<std::endl
+                <<"          skipped the current APV data."<<std::endl;
             continue;
         }
 
@@ -177,10 +191,9 @@ void GEMDataHandler::ReplayEvent_test(const uint32_t *pBuf, const uint32_t &fBuf
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// read from single evio file
+// open evio file
 
-int GEMDataHandler::ReadFromEvio(const std::string &path, [[maybe_unused]]int split, 
-        [[maybe_unused]]bool verbose)
+bool GEMDataHandler::OpenEvioFile(const std::string &path)
 {
     // open evio file
     if(evio_reader != nullptr) {
@@ -188,60 +201,81 @@ int GEMDataHandler::ReadFromEvio(const std::string &path, [[maybe_unused]]int sp
     } else {
         evio_reader = new EvioFileReader();
     }
+
     evio_reader -> SetFile(path.c_str());
 
     // open evio file
     bool status = evio_reader -> OpenFile();
+
+    return status;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// setup event parser and register raw decoders for it
+
+void GEMDataHandler::RegisterRawDecoders()
+{
+    // setup event parser
+    if(event_parser != nullptr)
+        event_parser -> Reset();
+    else
+        event_parser = new EventParser();
+
+#ifdef USE_VME
+    std::cout<<__PRETTY_FUNCTION__<<" INFO: VME mode."<<std::endl;
+    if(mpd_vme_decoder == nullptr) {
+        mpd_vme_decoder = new MPDVMERawEventDecoder();
+
+        event_parser -> RegisterRawDecoder(static_cast<int>(Bank_TagID::MPD_VME), mpd_vme_decoder);
+    }
+#elif defined(USE_SRS)
+    std::cout<<__PRETTY_FUNCTION__<<" INFO: SRS mode."<<std::endl;
+    if(srs_decoder == nullptr)
+    {
+        srs_decoder = new SRSRawEventDecoder();
+
+        // in srs, each fec has a different tag, they all use the same decoder
+        for(auto &i: Fec_Bank_Tag)
+            event_parser -> RegisterRawDecoder(static_cast<int>(i), srs_decoder);
+    }
+#else
+    std::cout<<__PRETTY_FUNCTION__<<" INFO: SSP/VTP mode."<<std::endl;
+    if(mpd_ssp_decoder == nullptr) {
+        mpd_ssp_decoder = new MPDSSPRawEventDecoder();
+
+        event_parser -> RegisterRawDecoder(static_cast<int>(Bank_TagID::MPD_SSP), mpd_ssp_decoder);
+    }
+#endif
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// read from single evio file
+
+int GEMDataHandler::ReadFromEvio(const std::string &path, [[maybe_unused]]int split, 
+        [[maybe_unused]]bool verbose)
+{
+    // open evio file
+    bool status = OpenEvioFile(path);
+
     // failed openning file
     if(!status) {
         std::cout<<"Skipped file: "<<path<<std::endl;
         return 0;
     }
 
-    // setup event parser
-    if(event_parser != nullptr)
-        event_parser -> Reset();
-    else
-        event_parser = new EventParser();
-#ifdef USE_VME
-    // setup raw event decoder
-    if(mpd_vme_decoder == nullptr) {
-        mpd_vme_decoder = new MPDVMERawEventDecoder();
-
-        // register all raw decoders
-        event_parser -> RegisterRawDecoder(static_cast<int>(Bank_TagID::MPD_VME), mpd_vme_decoder);
-    }
-#else
-    // setup raw event decoder
-    if(mpd_ssp_decoder == nullptr) {
-        mpd_ssp_decoder = new MPDSSPRawEventDecoder();
-
-        // register all raw decoders
-        event_parser -> RegisterRawDecoder(static_cast<int>(Bank_TagID::MPD_SSP), mpd_ssp_decoder);
-    }
-#endif
+    RegisterRawDecoders();
 
     // parse event
     int count = 0;
-    const uint32_t *pBuf;
-    uint32_t fBufLen;
-    while(evio_reader -> ReadNoCopy(&pBuf, &fBufLen) == S_SUCCESS)
+    while(DecodeEvent(count) == S_SUCCESS)
     {
-        count++; // event number in current split evio file
-
-        fEventNumber++; // event number in current run
-
-        ReplayEvent_test(pBuf, fBufLen, fEventNumber);
-
         if(pedestalMode)
         {
-            if(fEventNumber > 5000) // pedestal mode only need 5000 events
+            if(fEventNumber > fMaxPedestalEvents && fMaxPedestalEvents > 0)
                 break;
         }
     }
-
-    // wait for end process
-    waitEventProcess();
 
     return count;
 } 
@@ -269,7 +303,7 @@ int GEMDataHandler::ReadFromSplitEvio(const std::string &path, int split_start,
             else 
             {
                 std::cout<<__func__<<" Error: only evio/dat files are accepted."
-                         <<path << std::endl;
+                    <<path << std::endl;
                 return count;
             }
             std::string split_path = path.substr(0, pos);
@@ -405,24 +439,29 @@ void GEMDataHandler::EndProcess(EventData *ev)
     FillHistograms(*ev);
 
     // online mode only saves the last event, to reduce usage of memory
-    if(onlineMode && event_data.size())
-        event_data.pop_front();
+    //if(onlineMode && event_data.size())
+    //    event_data.pop_front();
 
-    if(replayMode) {
-        if(root_hit_tree == nullptr && !bReplayCluster) {
-            root_hit_tree = new GEMRootHitTree(replay_hit_output_file.c_str());
-        }
-        if(root_cluster_tree == nullptr && bReplayCluster) {
-            root_cluster_tree = new GEMRootClusterTree(replay_cluster_output_file.c_str());
+    if(replayMode)
+    {
+        if(root_tree_enabled) {
+            if(root_hit_tree == nullptr && !bReplayCluster) {
+                root_hit_tree = new GEMRootHitTree(replay_hit_output_file.c_str());
+            }
+            if(root_cluster_tree == nullptr && bReplayCluster) {
+                root_cluster_tree = new GEMRootClusterTree(replay_cluster_output_file.c_str());
+            }
         }
 
-        if(!bReplayCluster)
+        if(!bReplayCluster && root_tree_enabled)
             root_hit_tree -> Fill(gem_sys, *ev);
         else {
             // reconstruct clusters
             gem_sys -> Reconstruct(*ev);
+
             // cluster tree will use gem_sys to extract cluster information
-            root_cluster_tree -> Fill(gem_sys, (*ev).event_number);
+            if(root_tree_enabled)
+                root_cluster_tree -> Fill(gem_sys, (*ev).event_number);
         }
     }
     else {
@@ -566,7 +605,7 @@ std::string GEMDataHandler::ParseOutputFileName(const std::string &input, const 
     }
     else {
         std::cout<<__func__<<" Warning: only evio/dat files are accepted: "<<input
-                 <<std::endl;
+            <<std::endl;
         return std::string("gem_replay.root");
     }
 
