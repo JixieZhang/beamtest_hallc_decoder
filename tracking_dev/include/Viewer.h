@@ -45,6 +45,7 @@ public slots:
         void FillEventHistos();
         void Replay50K();
         void OpenFile();
+        void ProcessNewFile(const QString &);
 
 private:
         AbstractDetector *fDet[NDET];
@@ -55,7 +56,7 @@ private:
         QPushButton *btn_50K;
         QPushButton *btn_open_file;
         QLabel *label_counter;
-        QLabel *label_file;
+        QLineEdit *label_file;
         QVBoxLayout *global_layout;
 
         TRandom *gen;

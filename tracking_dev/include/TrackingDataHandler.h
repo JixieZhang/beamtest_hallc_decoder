@@ -47,7 +47,8 @@ namespace tracking_dev {
         GEMDataHandler *data_handler;
         GEMSystem *gem_sys;
 
-        std::string input_file = "../data/hallc_fadc_ssp_4680.evio.0";
+        //std::string input_file = "../data/hallc_fadc_ssp_4680.evio.0";
+        std::string input_file = "../data/hallc_fadc_ssp_4818.evio.1";
         //std::string input_file = "../data/hallc_fadc_ssp_4762.evio.1";
         std::string pedestal_file;
         std::string common_mode_file;
