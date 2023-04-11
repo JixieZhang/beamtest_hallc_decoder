@@ -1,13 +1,11 @@
 #!// instructions.txt
 
-To use the program, do the following steps in the top directory:
+To use this program, do the following steps in the top directory:
 
 First of all, you need to define HallCBeamtestDir, which is the dir you are going to 
 build and install this package.
 
-   #this is Jixie's install dir, you need to change it to yours
-   setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/decoder
-   
+   setenv HallCBeamtestDir /work/halla/solid/$USER/ecal_beamtest_hallc/decoder   
    mkdir -p $HallCBeamtestDir
 
 1) Use cmake to generate the Makefiles:
@@ -32,48 +30,48 @@ build and install this package.
    ./cook_data.sh
    (You need to set it up properly in order to run it ...)
    
-    iF you are not use the above python script, you can use these shell scripts:
+    Other than the above python script, you can also use these shell scripts to replay raw data:
     bin/replayA2B.csh
     bin/replayFiles.csh
     bin/replayonerun.csh
 
-    Please note that ${HallCBeamtestDir}/bin/analyze  require configuration files in ./database and ./config.
-    Make sure to copy these 2 dirs into where you run these csh scripts
-    The following is what I will do:
+    Please note that ${HallCBeamtestDir}/bin/analyze_tracking  requires configuration files in ./database, ./config and ./tracking.
+    Make sure to copy these dirs into where you run the replay scripts.
+    The following are what I will do:
     cp -f ./bin/*csh ${HallCBeamtestDir}/bin/
     cp -fr ./database and ./config ${HallCBeamtestDir}/
-
+    cp -fr tracking/gemped tracking/tracking_config  ${HallCBeamtestDir}/tracking/
 
 
 Note 1):
-   Since FADC does not need pedestal files during the replay, but 
-   GEM does.
+   FADC does not need pedestal files during the replay, but GEM does.
 
-   one can generate GEM pedestal files using the program
+   One can generate GEM pedestal files using the program
    ./bin/gem_gui
    (this program will be copied to that location after step 3)
 
 Note 2):
    One need ./rootlogon.C 
    to view FADC data structures in ROOT enviroment. 
-   Make sure you copy rootlogon.C to the same directory with your
-   ROOT data files, otherwise it pops out a lot warning messages
+   Make sure you copy rootlogon.C to the same directory where you do the replay,
+   otherwise it pops out a lot warning messages
    
    
-TO make things simple, here is all we need to do:
+To make things simple, here is all we need to do:
 
 #setenv HallCBeamtestDir /work/halla/solid/jixie/ecal_beamtest_hallc/beamtest_hallc_decoder
 #setenv PATH ${HallCBeamtestDir}/bin:${PATH}
 #setenv LD_LIBRARY_PATH ${HallCBeamtestDir}/lib64:${LD_LIBRARY_PATH}
 
 source setup.csh
-mkdir -p $HallCBeamtestDir
+mkdir -p $HallCBeamtestDir/tracking
 cmake -S. -B$HallCBeamtestDir/build
 cmake --build $HallCBeamtestDir/build
 cmake --install $HallCBeamtestDir/build --prefix $HallCBeamtestDir
 cp -f ./bin/*csh ${HallCBeamtestDir}/bin/
 cp -fr ./database ./config ${HallCBeamtestDir}/
 cp -f rootlogon.C ${HallCBeamtestDir}/
+cp -fr tracking/gemped tracking/tracking_config  ${HallCBeamtestDir}/tracking/
 
    
    
