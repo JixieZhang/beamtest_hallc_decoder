@@ -23,16 +23,16 @@ set decoderdir = ${HallCBeamtestDir}
 
 set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
 #set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/replay/pass0
-set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/GEM50k
+set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/GEMROOTFILE
 #set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/thre3
 
 if ($#argv < 1) then
-		echo "Submit jobs to replaying hallc beamtest files in mss"
-		echo "Usage: $0:t <startrun> [endrun=0] [overwrite=0] [outputdir=$replaydir]"
-		echo "example 1: '$0 1000'  will replay for run number 1000"
-		echo "example 2: '$0 1000 1005'  will replay for run number from 1000 to 1005(included)"
-		echo "example 3: '$0 1000 1005 ./outdir'  will replay for run number from 1000 to 1005(included) and output file is at ./outdir"
-		$DEBUG exit 0
+	echo "Submit jobs to replaying hallc beamtest files in mss"
+	echo "Usage: $0:t <startrun> [endrun=0] [overwrite=0] [outputdir=$replaydir]"
+	echo "example 1: '$0 1000'  will replay for run number 1000"
+	echo "example 2: '$0 1000 1005'  will replay for run number from 1000 to 1005(included)"
+	echo "example 3: '$0 1000 1005 ./outdir'  will replay for run number from 1000 to 1005(included) and output file is at ./outdir"
+	$DEBUG exit 0
 endif
 
 ########################################################################
@@ -82,7 +82,7 @@ while ($run < $endrun)
 	@ run = $run + 1
 
 	set nfile = (0)
-	(ls -1 $mssdir/hallc_fadc_ssp_${run}.evio.0 $datadir/hallc_fadc_ssp_${run}.evio.0| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null
+	(ls -1 $mssdir/hallc_fadc_ssp_${run}.evio.* $datadir/hallc_fadc_ssp_${run}.evio.*| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null
 	set nfile = (`cat  ~/.tmp_$$`)
 	rm -fr ~/.tmp_$$  >&! /dev/null
 	if ($nfile < 1) continue
