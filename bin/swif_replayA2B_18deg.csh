@@ -1,7 +1,7 @@
 #!/bin/csh -fb
 # csh script to submit batch farm jobs for replaying hallc beamtest files in /mss
 # one job for each file, about 15 minutes per file
-# this script will cook all files in /cache with given run number
+# this script will cook all files in /mss and /cache with given run number
 ########################################################################
 set DEBUG = ( echo );
 set DEBUG = ("");
@@ -24,6 +24,7 @@ set decoderdir = ${HallCBeamtestDir}
 set datadir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/raw
 #set replaydir = /cache/halla/solid/subsystem/ec/ecal_beamtest_hallc_18deg/replay/pass0
 set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/GEMROOTFILE
+#set replaydir = /volatile/halla/solid/$user/ecal_beamtest_hallc/18deg/thre3
 
 if ($#argv < 1) then
 	echo "Submit jobs to replaying hallc beamtest files in mss"
@@ -64,7 +65,7 @@ mkdir -pv $jobfiledir;
 #create the $jobfile
 set jobfile = ($jobfiledir/swif_${startrun}_to_${endrun})
 
-set workflow = replay_tracking_50k
+set workflow = replay_tracking
 #echo "create workflow $workflow"
 echo "swif2 create -workflow $workflow" >&! $jobfile
 $DEBUG swif2 create -workflow $workflow
@@ -81,12 +82,12 @@ while ($run < $endrun)
 	@ run = $run + 1
 
 	set nfile = (0)
-	(ls -1 $datadir/hallc_fadc_ssp_${run}.evio.*| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null
+	(ls -1 $datadir/hallc_fadc*_${run}.evio.*| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null
 	set nfile = (`cat  ~/.tmp_$$`)
 	rm -fr ~/.tmp_$$  >&! /dev/null
 	if ($nfile < 1) continue
 
-	foreach infile ($datadir/hallc_fadc_ssp_${run}.evio.*)
+	foreach infile ($datadir/hallc_fadc*_${run}.evio.*)
 
 		set infilename = (`basename $infile`)
 		set subrun = (${infile:e})
@@ -102,34 +103,12 @@ while ($run < $endrun)
 			continue
 		endif
 
-		echo "adding one job for file $infilename"
 		#add '"' to escape the command string
-		set skip = (0)
-		set part = (-1)
-		#get the file size in byte for 50k events,  1k event is about 33Mb, 33*50=1650Mb
-		set NeventsPerJob = (50000)
-		@ size50k = 33 * $NeventsPerJob
-		set FileSize = (`du -s $infile | awk '{print $1}'`)
-		#get NJobs according to the file size,  50k events per job
-		set NJobsThisFile = (`du -s $infile | awk -v s="$size50k" 'function ceil(v) { return (v == int(v)) ? v : int(v)+1; } { print ceil($1/s)}'`)
-
-		while ($part < $NJobsThisFile)
-			@ part = $part + 1
-			set partN = part$part
-			if ($part < 10) set partN = part0$part
-			set outfilename = beamtest_hallc_${run}_${subrun}.root_$partN
-			set outfile = $replaydir/$outfilename
-			if ($overwrite == 0 && -f $outfile) then
-				echo "$outfile exist, skip replaying this part ......"
-				continue
-			endif
-			
-			set cmd = ($HallCBeamtestDir/bin/replayFiles_18deg_50k.csh "'-x 1 -t 6 -k " $skip " -n " $NeventsPerJob " '" $part $datadir/$infilename)
-			echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition production -ram 6g -phase 1 -time 96h $cmd " >> $jobfile
-			$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition production -ram 6g -phase 1 -time 96h $cmd
-			@ skip = $skip + $NeventsPerJob
-			@ njob = $njob + 1
-		end
+		set cmd = ($HallCBeamtestDir/bin/replayFiles_18deg.csh "'-x 1 -t 6'" $datadir/$infilename)
+		echo "adding one job for file $infilename"
+		echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -time 96h $cmd " >> $jobfile
+		$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -time 96h $cmd
+		@ njob = $njob + 1
 
 	end #end foreach loop
 

@@ -65,7 +65,7 @@ mkdir -pv $jobfiledir;
 #create the $jobfile
 set jobfile = ($jobfiledir/swif_${startrun}_to_${endrun})
 
-set workflow = replay_tracking
+set workflow = replay_tracking_50k
 #echo "create workflow $workflow"
 echo "swif2 create -workflow $workflow" >&! $jobfile
 $DEBUG swif2 create -workflow $workflow
@@ -87,7 +87,7 @@ while ($run < $endrun)
 	rm -fr ~/.tmp_$$  >&! /dev/null
 	if ($nfile < 1) continue
 
-	foreach infile ($mssdir/hallc_fadc_ssp_${run}.evio.0 $datadir/hallc_fadc_ssp_${run}.evio.0)
+	foreach infile ($mssdir/hallc_fadc_ssp_${run}.evio.* $datadir/hallc_fadc_ssp_${run}.evio.*)
 
 		set infilename = (`basename $infile`)
 
@@ -115,7 +115,7 @@ while ($run < $endrun)
 		set skip = (0)
 		set part = (-1)
 		#get the file size in byte for 50k events,  1k event is about 33Mb, 33*50=1650Mb
-		set NeventsPerJob = (50000)
+		set NeventsPerJob = (100000)
 		@ size50k = 33 * $NeventsPerJob
 		set FileSize = (`du -s $infile | awk '{print $1}'`)
 		#get NJobs according to the file size,  50k events per job
@@ -135,15 +135,15 @@ while ($run < $endrun)
 			set cmd = ($HallCBeamtestDir/bin/replayFiles_18deg_50k.csh "'-x 1 -t 6 -k " $skip " -n " $NeventsPerJob " '" $part $datadir/$infilename)
 			 if (! -f $datadir/$infilename) then
 				#do job from /mss
-				echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition production -ram 6g -phase 1 -time 96h -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
-				$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition production -ram 6g -phase 1 -time 96h -input $datadir/$infilename mss:$mssdir/$infilename $cmd
+				echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_${partN}_replay -partition production -ram 4g -phase 1 -time 96h -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
+				$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_${partN}_replay -partition production -ram 4g -phase 1 -time 96h -input $datadir/$infilename mss:$mssdir/$infilename $cmd
 				#copy the file from /mss to /cache
 				#echo "jcache get $infile"
 				#$DEBUG jcache get $infile
 			else
 				#do job from /cache,
-				echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition production -ram 6g -phase 1 -time 96h $cmd " >> $jobfile
-				$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition production -ram 6g -phase 1 -time 96h $cmd
+				echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_${partN}_replay -partition production -ram 4g -phase 1 -time 96h $cmd " >> $jobfile
+				$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_${partN}_replay -partition production -ram 4g -phase 1 -time 96h $cmd
 			endif
 			@ skip = $skip + $NeventsPerJob
 			@ njob = $njob + 1

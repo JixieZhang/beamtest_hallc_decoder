@@ -81,12 +81,12 @@ while ($run < $endrun)
 	@ run = $run + 1
 
 	set nfile = (0)
-	(ls -1 $datadir/hallc_fadc_ssp_${run}.evio.0| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null
+	(ls -1 $datadir/hallc_fadc_ssp_${run}.evio.*| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null
 	set nfile = (`cat  ~/.tmp_$$`)
 	rm -fr ~/.tmp_$$  >&! /dev/null
 	if ($nfile < 1) continue
 
-	foreach infile ($datadir/hallc_fadc_ssp_${run}.evio.0)
+	foreach infile ($datadir/hallc_fadc_ssp_${run}.evio.*)
 
 		set infilename = (`basename $infile`)
 		set subrun = (${infile:e})
@@ -107,7 +107,7 @@ while ($run < $endrun)
 		set skip = (0)
 		set part = (-1)
 		#get the file size in byte for 50k events,  1k event is about 33Mb, 33*50=1650Mb
-		set NeventsPerJob = (50000)
+		set NeventsPerJob = (100000)
 		@ size50k = 33 * $NeventsPerJob
 		set FileSize = (`du -s $infile | awk '{print $1}'`)
 		#get NJobs according to the file size,  50k events per job
@@ -125,8 +125,8 @@ while ($run < $endrun)
 			endif
 			
 			set cmd = ($HallCBeamtestDir/bin/replayFiles_18deg_50k.csh "'-x 1 -t 6 -k " $skip " -n " $NeventsPerJob " '" $part $datadir/$infilename)
-			echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition production -ram 6g -phase 1 -time 96h $cmd " >> $jobfile
-			$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_${part}_replay -partition production -ram 6g -phase 1 -time 96h $cmd
+			echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_${partN}_replay -partition production -ram 4g -phase 1 -time 96h $cmd " >> $jobfile
+			$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_${partN}_replay -partition production -ram 4g -phase 1 -time 96h $cmd
 			@ skip = $skip + $NeventsPerJob
 			@ njob = $njob + 1
 		end

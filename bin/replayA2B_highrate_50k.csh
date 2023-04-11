@@ -105,12 +105,12 @@ while ($run < $endrun)
 
 	set nfile = (0)
 
-	(ls -1 $datadir/hallc_fadc*_${run}.evio.0| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null
+	(ls -1 $datadir/hallc_fadc*_${run}.evio.*| wc | awk '{print " " $1}' >! ~/.tmp_$$) >&! /dev/null
 	set nfile = (`cat  ~/.tmp_$$`)
 	rm -fr ~/.tmp_$$  >&! /dev/null
 	if ($nfile < 1) continue
 
-	foreach infile ($datadir/hallc_fadc*_${run}.evio.0)
+	foreach infile ($datadir/hallc_fadc*_${run}.evio.*)
 
 		set subrun = (${infile:e})
 		set outfilename = beamtest_hallc_${run}_${subrun}.root
