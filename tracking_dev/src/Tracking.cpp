@@ -2,8 +2,11 @@
 #include "TrackingUtility.h"
 #include "AbstractDetector.h"
 #include <iostream>
+#include <algorithm>
 
 namespace tracking_dev {
+
+#define USE_GRID
 
 Tracking::Tracking()
 {
@@ -43,7 +46,7 @@ void Tracking::FindTracks()
 {
     ClearPreviousEvent();
 
-    initHitStatus();
+    //initHitStatus(); // no use anymore
     //PrintHitStatus();
 
     loopAllLayerGroups();
@@ -118,7 +121,11 @@ void Tracking::loopAllLayerGroups()
     {
         for(auto &i: group_nlayer[nlayers])
         {
+#ifdef USE_GRID
+            nextLayerGroup_gridway(i);
+#else
             nextLayerGroup(i);
+#endif  
         }
 
         // if we found a track with higher number of layers,
@@ -186,6 +193,120 @@ void Tracking::scanCandidate(const std::vector<int>& nhit_by_layer,
             scanCandidate(nhit_by_layer, layer_id, hit_comb);
             hit_comb.pop_back();
         }
+    }
+}
+
+// using grid method to search hits combnations
+void Tracking::nextLayerGroup_gridway(const std::vector<int> &group)
+{
+    // outter layers
+    int start_layer = group[0];
+    int end_layer = group.back();
+
+    // middle layers
+    std::vector<int> middle_layers;
+    for(int i=1; i<(int)group.size() - 1; i++)
+    {
+        middle_layers.push_back(group[i]);
+    }
+
+    // optics cut for outer layers - to be implemented in here
+    int S = (int)detector.at(start_layer) -> Get2DHitCounts();
+    int E = (int)detector.at(end_layer) -> Get2DHitCounts();
+
+    for(int start_layer_hit_index=0; start_layer_hit_index<S; start_layer_hit_index++)
+    {
+        for(int end_layer_hit_index=0; end_layer_hit_index<E; end_layer_hit_index++)
+        {
+            scanCandidate_gridway(start_layer, start_layer_hit_index,
+                    end_layer, end_layer_hit_index, middle_layers);
+        }
+    }
+}
+
+// a helper
+void Tracking::scanCandidate_gridway(const int &start_layer, const int &start_layer_hit_index,
+        const int &end_layer, const int& end_layer_hit_index,
+        const std::vector<int> &middle_layers)
+{
+    std::unordered_map<int, std::vector<int>> hit_index_by_layer; // for middle layers
+
+    getMiddleLayerGridHitIndex(start_layer, start_layer_hit_index,
+            end_layer, end_layer_hit_index, middle_layers, hit_index_by_layer);
+
+
+    std::vector<int> layer_combo{start_layer, end_layer};
+    std::vector<int> hit_combo{start_layer_hit_index, end_layer_hit_index};
+
+    int remaining_layers = middle_layers.size();
+    scanCandidate_gridway(hit_index_by_layer, layer_combo, hit_combo, 
+            middle_layers, remaining_layers);
+}
+
+// a recursive helper
+void Tracking::scanCandidate_gridway(const std::unordered_map<int, std::vector<int>> &vhitid_by_layer,
+        std::vector<int> layer_combo, std::vector<int> hit_combo,
+        const std::vector<int> &middle_layers,
+        int remainning_layer)
+{
+    if(remainning_layer < 0)
+        return;
+
+    if(remainning_layer == 0)
+    {
+        // found candidates
+        current_hit_comb.clear();
+        current_hit_comb = hit_combo;
+        current_layer_comb.clear();
+        current_layer_comb = layer_combo; // cache current layer group
+ 
+        nextTrackCandidate(layer_combo, hit_combo);
+        return;
+    }
+
+    int layer = middle_layers.at(remainning_layer-1);
+    remainning_layer--;
+    layer_combo.push_back(layer);
+
+    for(auto &i: vhitid_by_layer.at(layer))
+    {
+        hit_combo.push_back(i);
+
+        scanCandidate_gridway(vhitid_by_layer, layer_combo, hit_combo,
+                middle_layers, remainning_layer);
+
+        hit_combo.pop_back();
+    }
+}
+
+// a helper
+void Tracking::getMiddleLayerGridHitIndex(const int &start_layer, 
+        const int &start_layer_hitindex, const int &end_layer, const int &end_layer_hitindex,
+        const std::vector<int> &middle_layers,
+        std::unordered_map<int, std::vector<int>> &hit_index_by_layer)
+{
+    point_t p_start = detector[start_layer] -> Get2DHit(start_layer_hitindex);
+    point_t p_end = detector[end_layer] -> Get2DHit(end_layer_hitindex);
+
+    for(auto &i: middle_layers)
+    {
+        double z = detector[i] ->GetZPosition();
+        point_t p = tracking_utility -> intersection_point(p_start, p_end, z);
+        std::vector<grid_addr_t> home_grids = detector[i] -> GetPointHomeGrids(p);
+
+        const auto &vhits_by_grid = detector[i] -> GetGridVHits();
+
+        std::vector<int> tmp_vhits;
+
+        for(auto &addr: home_grids) {
+            if(vhits_by_grid.find(addr) == vhits_by_grid.end())
+                continue;
+
+            tmp_vhits.insert(tmp_vhits.end(), vhits_by_grid.at(addr).begin(),
+                    vhits_by_grid.at(addr).end());
+        }
+
+        hit_index_by_layer[i] = tmp_vhits;
     }
 }
 

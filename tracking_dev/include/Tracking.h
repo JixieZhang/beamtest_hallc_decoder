@@ -42,13 +42,28 @@ private:
     void initHitStatus();
     void initLayerGroups();
     void loopAllLayerGroups();
+
     void nextLayerGroup(const std::vector<int> &group);
-    void nextTrackCandidate(const std::vector<std::pair<int, int>> &combination);
-    void nextTrackCandidate(const std::vector<point_t> &combination);
-    void nextTrackCandidate(const std::vector<int> &layer_index, const std::vector<int> &hit_index);
     void scanCandidate(const std::vector<int> &nhit_by_layer,
             const std::vector<int> &layer_index,
             std::vector<int> &hit_comb);
+
+    void nextLayerGroup_gridway(const std::vector<int> &group);
+    void scanCandidate_gridway(const int &p_start, const int &p_start_index,
+            const int &p_end, const int &p_end_index,
+            const std::vector<int> &middle_layers);
+    void scanCandidate_gridway(const std::unordered_map<int, std::vector<int>> &vhitid_by_layer,
+            std::vector<int> layer_combo, std::vector<int> hit_combo,
+            const std::vector<int> &middle_layer, int remaining_layer);
+    void getMiddleLayerGridHitIndex(const int &start, const int &start_index,
+            const int &end, const int &end_index,
+            const std::vector<int> &middle_layers,
+            std::unordered_map<int, std::vector<int>> &hit_index_by_layer);
+
+    // track fitting
+    void nextTrackCandidate(const std::vector<std::pair<int, int>> &combination);
+    void nextTrackCandidate(const std::vector<point_t> &combination);
+    void nextTrackCandidate(const std::vector<int> &layer_index, const std::vector<int> &hit_index);
     bool found_tracks_with_nlayer(int nlayer);
 
 private:

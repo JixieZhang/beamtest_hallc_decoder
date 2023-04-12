@@ -38,6 +38,9 @@ void Detector2DItem::paint(QPainter *painter,
 {
     UpdateDrawingRange();
 
+    // draw grids
+    DrawGrids(painter);
+
     // draw a frame
     DrawAxis(painter);
 
@@ -106,6 +109,30 @@ void Detector2DItem::DrawAxis(QPainter *painter)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// draw detector grids
+
+void Detector2DItem::DrawGrids(QPainter *painter)
+{
+    QPen pen(Qt::lightGray, 1);
+    //painter -> setPen(pen);
+
+    const auto &grids = detector->GetGrids();
+    const auto &grid_chosen = detector->GetGridChosen();
+
+    for(auto &i: grids)
+    {
+        QPointF p1 = Coord(i.second.x1, i.second.y1);
+        QPointF p2 = Coord(i.second.x2, i.second.y2);
+        QRectF rect(p1, p2);
+
+        if(grid_chosen.at(i.first)) pen.setColor(Qt::darkMagenta);
+        painter->setPen(pen);
+        painter -> drawRect(rect);
+        if(grid_chosen.at(i.first)) pen.setColor(Qt::lightGray);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // draw contents
 
 void Detector2DItem::DrawContent(QPainter *painter)
@@ -117,11 +144,11 @@ void Detector2DItem::DrawContent(QPainter *painter)
     painter->setPen(linepen);
 
     // helper
-    auto get_string = [](double x, double y) -> QString
-    {
-        QString res((std::string("(") + std::to_string((int)x) + std::string(",") + std::to_string((int)y) + std::string(")")).c_str());
-        return res;
-    };
+    //auto get_string = [](double x, double y) -> QString
+    //{
+    //    QString res((std::string("(") + std::to_string((int)x) + std::string(",") + std::to_string((int)y) + std::string(")")).c_str());
+    //    return res;
+    //};
 
     // draw all hits
     auto hits = detector -> GetGlobalHits();

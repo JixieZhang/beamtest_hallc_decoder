@@ -13,6 +13,7 @@ namespace tracking_dev
         ~CoordSystem();
 
         void Init();
+        void PassCutsHandle(Cuts *c){gem_cuts = c;}
 
         void Rotate(point_t &p, const point_t &rot);
         void Translate(point_t &p, const point_t &t);
@@ -24,6 +25,7 @@ namespace tracking_dev
         point_t GetLayerTiltAngle(int i){return angle_gem.at(i);}
         point_t GetLayerPosition(int i){return position_gem.at(i);}
         point_t GetLayerDimension(int i){return dimension_gem.at(i);}
+        Cuts* GetCutsHandle(){return gem_cuts;}
 
     private:
         Cuts *gem_cuts;

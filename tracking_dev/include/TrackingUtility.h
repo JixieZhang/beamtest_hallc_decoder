@@ -24,6 +24,9 @@ public:
 
     point_t projected_point(const point_t &pt_track, const point_t &dir_track,
             const double &z);
+
+    point_t intersection_point(const point_t &p1, const point_t &p2, const double &z);
+
 private:
 
 };

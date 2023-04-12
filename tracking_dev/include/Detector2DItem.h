@@ -43,6 +43,7 @@ protected:
     void UpdateDrawingRange();
     void DrawAxis(QPainter *painter);
     void DrawContent(QPainter *painter);
+    void DrawGrids(QPainter *painter);
     void Clear();
 
     // convert logical coord (data) to QGraphicsItem coord (drawing)

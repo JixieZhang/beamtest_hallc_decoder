@@ -31,6 +31,8 @@ namespace tracking_dev
         common_mode_file = txt_parser.Value<std::string>("GEM Common Mode");
 
         coord_system = new CoordSystem();
+
+        gem_cuts = new Cuts();
     }
 
     void TrackingDataHandler::SetEvioFile(const char* p)
@@ -69,6 +71,12 @@ namespace tracking_dev
 
             fDet[i] = new AbstractDetector();
             fDet[i] -> SetOrigin(origin);
+
+            auto v = gem_cuts -> __get("grid width").arr<double>();
+            double s = gem_cuts -> __get("grid shift").val<double>();
+            fDet[i] -> SetGridWidth(v[0], v[1]);
+            fDet[i] -> SetGridShift(s);
+ 
             fDet[i] -> SetDimension(dimension);
 
             tracking -> AddDetector(i, fDet[i]);
