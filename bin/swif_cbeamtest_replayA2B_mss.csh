@@ -104,23 +104,19 @@ while ($run < $endrun)
       echo "$outfile exist, skip replaying this file ......"
       continue
     endif
-    
-    #TODO: 
-    #1) when "-input localfile remotefile" option is used, what if the localfile exists, does the process still 
-    #   copy the remotefile to overwrite the localfile?
-    #2) When a file in /cache is updated, does the tape will update that file already in tape?
+
     
     #add '"' to escape the command string
-    set cmd = ($HallCBeamtestDir/bin/replayFiles.csh "'-n -1'" $datadir/$infilename)
+    set cmd = ($HallCBeamtestDir/bin/replayFiles.csh "'-n -1 -t 6'" $datadir/$infilename)
     echo "adding one job for file $infilename"
     if (! -f $datadir/$infilename) then
       #do job from /mss
-      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
-      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd  
+      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
+      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -input $datadir/$infilename mss:$mssdir/$infilename $cmd  
     else
       #do job from /cache, 
-      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 $cmd " >> $jobfile
-      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 $cmd  
+      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd " >> $jobfile
+      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 $cmd  
     endif
     @ njob = $njob + 1
     

@@ -106,8 +106,8 @@ while ($run < $endrun)
 		#add '"' to escape the command string
 		set cmd = ($HallCBeamtestDir/bin/replayFiles_18deg.csh "'-x 1 -t 6'" $datadir/$infilename)
 		echo "adding one job for file $infilename"
-		echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -time 96h $cmd " >> $jobfile
-		$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -time 96h $cmd
+		echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -time 96h $cmd " >> $jobfile
+		$DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -time 96h $cmd
 		@ njob = $njob + 1
 
 	end #end foreach loop

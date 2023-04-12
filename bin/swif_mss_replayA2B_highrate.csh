@@ -110,25 +110,20 @@ while ($run < $endrun)
       continue
     endif
     
-    #TODO: 
-    #1) when "-input localfile remotefile" option is used, what if the localfile exists, does the process still 
-    #   copy the remotefile to overwrite the localfile?
-    #2) When a file in /cache is updated, does the tape will update that file already in tape?
-    
     #add '"' to escape the command string
     set cmd = ($HallCBeamtestDir/bin/replayFiles_highrate.csh "'-x 1 -t 6'" $datadir/$infilename)
     echo "adding one job for file $infilename"
     if (! -f $datadir/$infilename) then
       #do job from /mss
-      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -time 96h -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
-      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -time 96h -input $datadir/$infilename mss:$mssdir/$infilename $cmd  
+      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -time 96h -input $datadir/$infilename mss:$mssdir/$infilename $cmd " >> $jobfile
+      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -time 96h -input $datadir/$infilename mss:$mssdir/$infilename $cmd  
       #copy the file from /mss to /cache
       echo "jcache get $infile"
       $DEBUG jcache get $infile
     else
       #do job from /cache, 
-      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -time 96h $cmd " >> $jobfile
-      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 4g -phase 1 -time 96h $cmd  
+      echo  "swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -time 96h $cmd " >> $jobfile
+      $DEBUG swif2 add-job $workflow -account halla -name ${run}_${subrun}_replay -partition production -ram 2g -phase 1 -time 96h $cmd  
     endif
     @ njob = $njob + 1
     
