@@ -145,7 +145,7 @@ namespace std {
     {
         std::size_t operator()(const tracking_dev::grid_addr_t &t) const
         {
-            return ((t.y & 0xf) | (t.x & 0xf) << 4);
+            return ((t.y & 0xff) | (t.x & 0xff) << 8);
         }
     };
 }
