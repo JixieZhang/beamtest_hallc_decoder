@@ -49,6 +49,17 @@ point_t TrackingUtility::projected_point(const point_t &pt_track, const point_t 
     return pt_track + dir_track * r;
 }
 
+// calculate track intersection point at z plane
+// the connected two points are p1 and p2
+point_t TrackingUtility::intersection_point(const point_t &p1, const point_t &p2,
+        const double &z)
+{
+    point_t dir = p2 - p1;
+    dir = dir.unit();
+
+    return projected_point(p1, dir, z);
+}
+
 // get all tracking parameters
 void TrackingUtility::FitLine(const std::vector<point_t> &points, double &xtrack, double &ytrack,
         double &xptrack, double &yptrack, double &chi2ndf, std::vector<double> &xresid,

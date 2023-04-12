@@ -97,7 +97,7 @@ void Viewer::InitGui()
     btn_50K = new QPushButton("Replay 50K", this);
     btn_open_file = new QPushButton("Open File", this);
     label_counter = new QLabel("Event Number: 0", this);
-    label_file = new QLineEdit("../data/hallc_fadc_ssp_xxxx.evio.1", this);
+    label_file = new QLineEdit("../data/hallc_fadc_ssp_4818.evio.1", this);
 
     global_layout = new QVBoxLayout(this);
     global_layout -> addWidget(fDet2DView);
@@ -158,8 +158,10 @@ void Viewer::GenerateTrackEvent()
     dir = dir.unit();
 
     // 0, 2, -1, 3
-    static double x_correct[4] = {-0.1, 1.3, -2.3, 1.1};
-    static double y_correct[4] = {-0.1, 1.3, -2.3, 1.1};
+    static double x_correct[4] = {0, 0, 0, 0};
+    static double y_correct[4] = {0, 0, 0, 0};
+    //static double x_correct[4] = {-0.1, 1.3, -2.3, 1.1};
+    //static double y_correct[4] = {-0.1, 1.3, -2.3, 1.1};
 
     for(int i=0; i<NDET; i++)
     {
@@ -214,10 +216,12 @@ void Viewer::GenerateEvent()
     ClearPrevEvent();
     GenerateTrackEvent();
     AddEventBackground();
+    //ShowGridHitStat();
 #else
     tracking_data_handler -> SetOnlineMode(true);
     tracking_data_handler -> ClearPrevEvent();
     tracking_data_handler -> GetCurrentEvent();
+    //ShowGridHitStat();
 #endif
 
     tracking -> FindTracks();
@@ -353,6 +357,14 @@ void Viewer::FillEventHistos()
         for(auto &h: fitted_hits) {
             hist_m.histo_2d<float>(Form("h_shouldhit_xy_gem%d", i)) -> Fill(h.x, h.y);
         }
+    }
+}
+
+void Viewer::ShowGridHitStat()
+{
+    for(int i=0; i<NDET; i++) {
+        std::cout<<"detector : "<<i<<std::endl;
+        fDet[i] -> ShowGridHitStat();
     }
 }
 

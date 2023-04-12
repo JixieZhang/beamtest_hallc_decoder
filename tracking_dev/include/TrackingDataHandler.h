@@ -6,6 +6,7 @@
 #include "GEMDataHandler.h"
 #include "ConfigObject.h"
 #include "CoordSystem.h"
+#include "Cuts.h"
 
 namespace tracking_dev {
 
@@ -54,6 +55,7 @@ namespace tracking_dev {
         std::string common_mode_file;
 
         ConfigObject txt_parser;
+        Cuts *gem_cuts;
 
         bool is_configured = false;
         bool is_online_mode = true;

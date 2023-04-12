@@ -83,6 +83,71 @@ struct point_t
 
 std::ostream & operator<<(std::ostream &os, const point_t &p);
 
+struct grid_t {
+    double x1, y1, x2, y2;
+    grid_t() :x1(0), y1(0), x2(0), y2(0)
+    {}
+
+    grid_t(double a, double b, double c, double d)
+        : x1(a), y1(b), x2(c), y2(d)
+    {}
 };
+
+std::ostream & operator<<(std::ostream &os, const grid_t &p);
+
+struct grid_addr_t
+{
+    int x, y;
+    grid_addr_t():x(0), y(0)
+    {}
+
+    grid_addr_t(int i, int j) : x(i), y(j)
+    {}
+
+    grid_addr_t(const grid_addr_t &t):
+        x(t.x), y(t.y)
+    {}
+
+    grid_addr_t & operator=(const grid_addr_t &t)
+    {
+        x = t.x; y = t.y;
+        return *this;
+    }
+
+    bool operator==(const grid_addr_t &t) const
+    {
+        if( x == t.x && y == t.y)
+            return true;
+        return false;
+    }
+
+    bool operator<(const grid_addr_t &t) const
+    {
+        if(x > t.x) return false;
+        if(y > t.y) return false;
+    }
+
+    bool operator>(const grid_addr_t &t) const
+    {
+        if(y < t.y) return false;
+        if(x < t.x) return false;
+    }
+};
+
+std::ostream & operator<<(std::ostream &os, const grid_addr_t &p);
+
+};
+
+
+// hash grid address structure to make map look up faster
+namespace std {
+    template<> struct hash<tracking_dev::grid_addr_t>
+    {
+        std::size_t operator()(const tracking_dev::grid_addr_t &t) const
+        {
+            return ((t.y & 0xff) | (t.x & 0xff) << 8);
+        }
+    };
+}
 
 #endif

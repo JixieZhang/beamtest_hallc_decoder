@@ -47,6 +47,10 @@ public slots:
         void OpenFile();
         void ProcessNewFile(const QString &);
 
+public:
+        // a helper
+        void ShowGridHitStat();
+
 private:
         AbstractDetector *fDet[NDET];
 
@@ -70,8 +74,11 @@ private:
         int fEventNumber = 0;
         std::string evio_file;
 
-        double fXOffset[4] = {0, 2., -1., 3.};
-        double fYOffset[4] = {0, 2., -1., 3.};
+        double fXOffset[4] = {0, 0., 0., 0.};
+        double fYOffset[4] = {0, 0., 0., 0.};
+
+        //double fXOffset[4] = {0, 2., -1., 3.};
+        //double fYOffset[4] = {0, 2., -1., 3.};
 };
 
 };
