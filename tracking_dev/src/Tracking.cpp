@@ -36,9 +36,14 @@ void Tracking::CompleteSetup()
     minimum_hits_on_track = (tracking_cuts -> __get("minimum hits on track")).val<int>();
     chi2_cut = (tracking_cuts -> __get("track max chi2")).val<float>();
 
+    k_min_xz = (tracking_cuts -> __get("track x-z slope range")).arr<double>()[0];
+    k_max_xz = (tracking_cuts -> __get("track x-z slope range")).arr<double>()[1];
+    k_min_yz = (tracking_cuts -> __get("track y-z slope range")).arr<double>()[0];
+    k_max_yz = (tracking_cuts -> __get("track y-z slope range")).arr<double>()[1];
+
     initLayerGroups();
     //PrintLayerGroups();
-    
+   
     std::cout<<"INFO:: Tracking setup completed."<<std::endl;
 }
 
@@ -398,6 +403,10 @@ void Tracking::nextTrackCandidate(const std::vector<point_t> &hits)
 
     tracking_utility -> FitLine(hits, xtrack, ytrack, xptrack, yptrack,
             chi2ndf, xresid, yresid);
+
+    // slope cut
+    if(xptrack < k_min_xz || xptrack > k_max_xz) return;
+    if(yptrack < k_min_yz || yptrack > k_max_yz) return;
 
     // save best track
     if(chi2ndf < best_track_chi2ndf)

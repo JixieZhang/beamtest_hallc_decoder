@@ -227,6 +227,10 @@ void Viewer::GenerateEvent()
     tracking -> FindTracks();
     ProcessTrackingResult();
 
+    for(int i=0; i<NDET; i++)
+        std::cout<<" : det "<<i<<" counts = "<<fDet[i] -> Get2DHitCounts();
+    std::cout<<std::endl;
+
     fEventNumber++;
     label_counter -> setText((std::string("Event Number: ")+std::to_string(fEventNumber)).c_str());
 
@@ -274,6 +278,8 @@ void Viewer::ProcessTrackingResult()
         hist_m.histo_1d<float>(Form("h_max_timebin_y_plane_gem%d", layer)) -> Fill(p.y_max_timebin);
         hist_m.histo_1d<float>(Form("h_cluster_size_x_plane_gem%d", layer)) -> Fill(p.x_size);
         hist_m.histo_1d<float>(Form("h_cluster_size_y_plane_gem%d", layer)) -> Fill(p.y_size);
+        hist_m.histo_1d<float>(Form("h_cluster_adc_x_plane_gem%d", layer)) -> Fill(p.x_peak);
+        hist_m.histo_1d<float>(Form("h_cluster_adc_y_plane_gem%d", layer)) -> Fill(p.y_peak);
 
         fDet[layer] -> AddRealHits(p);
     }

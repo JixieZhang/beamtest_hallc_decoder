@@ -82,6 +82,10 @@ private:
     int minimum_hits_on_track = 3;
     double chi2_cut = 10;
 
+    // optics cut
+    double k_min_yz = -9999, k_max_yz = 9999;
+    double k_min_xz = -9999, k_max_xz = 9999;
+
     int nhits_on_best_track;
 
     // all possible groups
