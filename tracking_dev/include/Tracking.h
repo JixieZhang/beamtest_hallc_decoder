@@ -33,6 +33,7 @@ public:
 
     // getters
     bool GetBestTrack(double &xt, double &yt, double &xp, double &yp, double &chi);
+    int GetNGoodTrackCandidates(){return n_good_track_candidates;}
     int GetNHitsonBestTrack(){return nhits_on_best_track;}
     const std::vector<int> &GetBestTrackLayerIndex(){return best_track_layer_index;}
     const std::vector<int> &GetBestTrackHitIndex(){return best_track_hit_index;}
@@ -106,6 +107,12 @@ private:
 
     // debug
     //std::vector<point_t> best_hits_on_track;
+
+    // possible track candidates, this is not exclusive.
+    // for example, if hit_1 is used by track_candidate_1, it can also be used by track_candidate_2
+    // this number estimate all possible combinations, b/c each combination have the same weight (we don't
+    // know how to assign weight to a track).
+    int n_good_track_candidates = 0;
 };
 
 };

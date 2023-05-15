@@ -39,6 +39,7 @@ public:
         void ClearPrevEvent();
 
         void ProcessTrackingResult();
+        bool ProcessRawGEMResult();
 
 public slots:
         void GenerateEvent();

@@ -91,6 +91,7 @@ void Tracking::ClearPreviousEvent()
 
     // debug
     //best_hits_on_track.clear();
+    n_good_track_candidates =  0;
 }
 
 bool Tracking::GetBestTrack(double &xt, double &yt, double &xp, double &yp, double &chi)
@@ -429,6 +430,9 @@ void Tracking::nextTrackCandidate(const std::vector<point_t> &hits)
         // debug
         //best_hits_on_track.clear();
         //best_hits_on_track = hits;
+
+        if(chi2ndf < chi2_cut)
+            n_good_track_candidates += 1.0;
     }
 }
 

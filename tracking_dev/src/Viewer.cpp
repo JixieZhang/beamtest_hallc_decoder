@@ -86,7 +86,8 @@ void Viewer::InitGui()
         fDet2DItem[i] -> PassDetectorHandle(fDet[i]);
 #endif
 
-        fDet2DItem[i] -> SetTitle("xb_det");
+        std::string title = std::string("layer ") + std::to_string(i);
+        fDet2DItem[i] -> SetTitle(title.c_str());
 
         fDet2DView -> AddDetector(fDet2DItem[i]);
     }
@@ -290,7 +291,49 @@ void Viewer::ProcessTrackingResult()
         fDet[i] -> AddFittedHits(p);
     }
 
+    int n_good_track_candidates = tracking -> GetNGoodTrackCandidates();
+
+    if(n_good_track_candidates > 0)
+        hist_m.histo_1d<float>("h_ntrack_candidates") -> Fill(n_good_track_candidates);
+
     FillEventHistos();
+}
+
+bool Viewer::ProcessRawGEMResult()
+{
+    bool res = true;
+
+    GEMSystem *gem_sys = tracking_data_handler -> GetGEMSystem();
+    std::vector<GEMDetector*> detectors = gem_sys -> GetDetectorList();
+    for(auto &det: detectors)
+    {
+        int layer = det -> GetLayerID();
+        GEMPlane *pln_x = det -> GetPlane(GEMPlane::Plane_X);
+        GEMPlane *pln_y = det -> GetPlane(GEMPlane::Plane_Y);
+
+        std::vector<StripHit> &x_hits = pln_x -> GetStripHits();
+        std::vector<StripHit> &y_hits = pln_y -> GetStripHits();
+        int xs = (int)x_hits.size(), ys = (int)y_hits.size();
+
+        hist_m.histo_2d<float>(Form("h_fired_strip_plane%d", 0)) -> Fill(layer, xs);
+        hist_m.histo_2d<float>(Form("h_fired_strip_plane%d", 1)) -> Fill(layer, ys);
+
+        hist_m.histo_2d<float>(Form("h_occupancy_plane%d", 0)) -> Fill(layer, xs/256.);
+        hist_m.histo_2d<float>(Form("h_occupancy_plane%d", 1)) -> Fill(layer, ys/256.);
+    }
+
+    std::vector<int> v_nhits;
+    for(auto &i: detectors)
+    {
+        size_t s = (i -> GetHits()).size();
+        v_nhits.push_back(s);
+    }
+    for(auto &i: v_nhits) {
+        if(res)
+            res = (i==1);
+    }
+
+    return res;
 }
 
 void Viewer::Replay50K()
@@ -321,6 +364,8 @@ void Viewer::Replay50K()
 
         tracking -> FindTracks();
         ProcessTrackingResult();
+        bool t = ProcessRawGEMResult();
+        //if(t) break;
     }
 
     std::cout<<std::endl<<"50K finished. Total time used: ";
@@ -338,7 +383,7 @@ void Viewer::Replay50K()
             float should = hist_m.histo_2d<float>((Form("h_shouldhit_xy_gem%d", i))) -> GetBinContent(xbins, ybins);
 
             float eff = 0;
-            if(should >0 && should >= did ) eff = did / should;
+            if(should >0) eff = (did / should < 1) ? did / should : 1.;
             hist_m.histo_2d<float>(Form("h_2defficiency_xy_gem%d", i)) -> SetBinContent(xbins, ybins, eff);
         }
     }
