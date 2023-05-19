@@ -349,7 +349,7 @@ void Viewer::Replay50K()
     tracking_data_handler -> SetReplayMode(true);
 #endif
 
-    while(event_counter++ < 1000000)
+    while(event_counter++ < 50000)
     {
         if(event_counter % 1000 == 0)
             std::cout<<"\r"<<event_counter<<std::flush;
@@ -364,7 +364,7 @@ void Viewer::Replay50K()
 
         tracking -> FindTracks();
         ProcessTrackingResult();
-        bool t = ProcessRawGEMResult();
+        [[maybe_unused]]bool t = ProcessRawGEMResult();
         //if(t) break;
     }
 

@@ -141,6 +141,12 @@ namespace tracking_dev
             point_t p(i.x, i.y, z_det, i.x_charge, i.y_charge, i.x_peak, i.y_peak, 
                     i.x_max_timebin, i.y_max_timebin, i.x_size, i.y_size);
 
+            // currently use layer id as module id, works for now since one layer
+            // has only one module; for the future, this module_id should be read
+            // from mapping file, which is easy to implement, since we already have
+            // gem_det pointer here
+            p.module_id = layer;
+
             coord_system -> Transform(p, layer);
             det -> AddHit(p);
         }
