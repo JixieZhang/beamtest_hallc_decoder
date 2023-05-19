@@ -126,7 +126,8 @@ namespace tracking_dev
         unsigned int N = detector_list.size();
         for(unsigned int i=0; i<N; i++)
         {
-            TransferDetector(detector_list[i], fDet[i]);
+            int layer_id_ = detector_list[i] -> GetLayerID();
+            TransferDetector(detector_list[i], fDet[layer_id_]);
         }
     }
 
