@@ -87,8 +87,7 @@ void Tracking::ClearPreviousEvent()
     best_track_hit_index.clear();
 
     //
-    for(auto &i: best_track_chi2ndf_by_nlayer)
-        i.second = LARGE_VALUE;
+    best_track_chi2ndf_by_nlayer.clear();
 
     // debug
     //best_hits_on_track.clear();
@@ -472,7 +471,7 @@ void Tracking::initLayerGroups()
 
         group_nlayer[i] = res;
 
-        best_track_chi2ndf_by_nlayer[i] = LARGE_VALUE;
+        best_track_chi2ndf_by_nlayer.clear();
     }
 }
 
