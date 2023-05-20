@@ -42,7 +42,7 @@ void Tracking::CompleteSetup()
     k_max_yz = (tracking_cuts -> __get("track y-z slope range")).arr<double>()[1];
 
     initLayerGroups();
-    //PrintLayerGroups();
+    // PrintLayerGroups();
    
     std::cout<<"INFO:: Tracking setup completed."<<std::endl;
 }
@@ -87,6 +87,8 @@ void Tracking::ClearPreviousEvent()
     best_track_hit_index.clear();
 
     //
+    //for(auto &i: best_track_chi2ndf_by_nlayer)
+    //    i.second = LARGE_VALUE;
     best_track_chi2ndf_by_nlayer.clear();
 
     // debug
@@ -471,6 +473,7 @@ void Tracking::initLayerGroups()
 
         group_nlayer[i] = res;
 
+        //best_track_chi2ndf_by_nlayer[i] = LARGE_VALUE;
         best_track_chi2ndf_by_nlayer.clear();
     }
 }
