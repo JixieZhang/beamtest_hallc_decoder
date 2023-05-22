@@ -36,7 +36,7 @@ void Tracking::CompleteSetup()
     minimum_hits_on_track = (tracking_cuts -> __get("minimum hits on track")).val<int>();
     chi2_cut = (tracking_cuts -> __get("track max chi2")).val<float>();
     abort_quantity = (tracking_cuts -> __get("abort tracking quantity")).val<int>();
-    max_track_save_quanity = (tracking_cuts -> __get("save max track quantity")).val<int>();
+    max_track_save_quantity = (tracking_cuts -> __get("save max track quantity")).val<int>();
 
     k_min_xz = (tracking_cuts -> __get("track x-z slope range")).arr<double>()[0];
     k_max_xz = (tracking_cuts -> __get("track x-z slope range")).arr<double>()[1];
@@ -239,7 +239,7 @@ void Tracking::nextLayerGroup_gridway(const std::vector<int> &group)
     int S = (int)detector.at(start_layer) -> Get2DHitCounts();
     int E = (int)detector.at(end_layer) -> Get2DHitCounts();
 
-    // if possible combinations in outter layers already passed max quanity, abort tracking
+    // if possible combinations in outter layers already passed max quantity, abort tracking
     if(S * E > abort_quantity) return;
 
     for(int start_layer_hit_index=0; start_layer_hit_index<S; start_layer_hit_index++)
@@ -443,7 +443,7 @@ void Tracking::nextTrackCandidate(const std::vector<point_t> &hits)
     if(chi2ndf > chi2_cut) return;
 
     // using map here is only for sorting purpose, keep the 20 lowest chi2 tracks
-    if(m_xtrack.size() <= 0 || chi2ndf < (std::prev(m_xtrack.end()) -> first))
+    if((int)m_xtrack.size() <= max_track_save_quantity || chi2ndf < (std::prev(m_xtrack.end()) -> first))
     {
         n_good_track_candidates++;
         m_xtrack[chi2ndf] = xtrack, m_ytrack[chi2ndf] = ytrack;
@@ -463,7 +463,7 @@ void Tracking::nextTrackCandidate(const std::vector<point_t> &hits)
     }
 
     // erase the current biggest chi2 track
-    if((int)m_xtrack.size() > max_track_save_quanity)
+    if((int)m_xtrack.size() > max_track_save_quantity)
     {
         n_good_track_candidates--;
         m_xtrack.erase(std::prev(m_xtrack.end())), m_ytrack.erase(std::prev(m_ytrack.end()));
