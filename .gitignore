@@ -21,3 +21,5 @@
 
 #do not store build dir
 build
+
+src/.vscode/

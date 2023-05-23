@@ -70,7 +70,7 @@ private:
 
     // local hits is only used for detector raw signal check
     std::vector<point_t> local_hits;
-    // for 2D hits, all hits should be global coordinates
+    // for 2D hits, all hits, in global coordinates
     std::vector<point_t> global_hits;
 
     // test - in global coordinates
@@ -83,8 +83,8 @@ private:
     double grid_shift = 0.4;
     //double grid_xwidth = 102.4, grid_ywidth = 102.4; // units in mm
     //double grid_shift = 0.;
-    double neighbor_grid_marginx = 0; // default is 1/8 grid width
-    double neighbor_grid_marginy = 0;
+    double neighbor_grid_marginx = 0.3; // default is 1/4 grid width
+    double neighbor_grid_marginy = 0.3;
  
     std::unordered_map<grid_addr_t, grid_t> grids;
     std::unordered_map<grid_addr_t, bool> grid_chosen;

@@ -18,6 +18,8 @@
 #include "Cuts.h"
 #include <algorithm>
 
+#define USE_GEM_CUT
+
 ////////////////////////////////////////////////////////////////////////////////
 // ctor
 
@@ -59,7 +61,10 @@ void GEMCluster::Configure([[maybe_unused]]const std::string &path)
     charac_dists = ConfigParser::stofs(dist_str, ",", " \t");
 
     gem_cuts = new Cuts();
-    gem_cuts -> Print();
+    //gem_cuts -> Print();
+
+    min_cluster_hits = gem_cuts -> __get("min cluster size").val<int>();
+    max_cluster_hits = gem_cuts -> __get("max cluster size").val<int>();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -93,6 +98,7 @@ const
 
 bool GEMCluster::IsGoodStrip(const StripHit &hit) const
 {
+#ifdef USE_GEM_CUT
     // time bin cut
     if(!gem_cuts -> max_time_bin(hit))
         return false;
@@ -100,7 +106,7 @@ bool GEMCluster::IsGoodStrip(const StripHit &hit) const
     // strip avg time cut
     if(!gem_cuts -> strip_mean_time(hit))
         return false;
-
+#endif
     return true;
 }
 
@@ -115,10 +121,6 @@ void GEMCluster::split_cluster(std::vector<StripHit>::iterator beg, std::vector<
     auto size = end - beg;
     if(size <= 0)
         return;
-
-    // for now disable cluster split
-    clusters.emplace_back(std::vector<StripHit>(beg, end));
-    return;
 
     // disable cluster split when cluster size < 3
     if(size < 3) {
@@ -313,12 +315,10 @@ const
 
 bool GEMCluster::IsGoodCluster([[maybe_unused]]const StripCluster &cluster) const
 {
+#ifdef USE_GEM_CUT
     // bad size
     if((cluster.hits.size() < min_cluster_hits) ||
        (cluster.hits.size() > max_cluster_hits))
-        return false;
-
-    if(!(gem_cuts -> cluster_strip_time_agreement(cluster)))
         return false;
 
     if(!(gem_cuts -> seed_strip_min_peak_adc(cluster)))
@@ -327,6 +327,9 @@ bool GEMCluster::IsGoodCluster([[maybe_unused]]const StripCluster &cluster) cons
     if(!(gem_cuts -> seed_strip_min_sum_adc(cluster)))
         return false;
 
+    if(!(gem_cuts -> cluster_strip_time_agreement(cluster)))
+        return false;
+#endif
     // not a cross talk cluster
     return !cluster.cross_talk;
 }
@@ -385,12 +388,13 @@ const
     {
         for(auto &yc : y_cluster)
         {
+#ifdef USE_GEM_CUT
             if(!(gem_cuts -> cluster_adc_assymetry(xc, yc)))
                 continue;
 
             if(!(gem_cuts -> cluster_time_assymetry(xc, yc)))
                 continue;
-
+#endif
             container.emplace_back(xc.position, yc.position, 0.,        // by default z = 0
                                    det_id,                              // detector id
                                    xc.total_charge, yc.total_charge,    // fill in total charge

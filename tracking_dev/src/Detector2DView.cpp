@@ -15,6 +15,7 @@ Detector2DView::Detector2DView(QWidget* parent) : QWidget(parent),
 
 void Detector2DView::InitView()
 {
+    //view->setStyleSheet("background:transparent");
     for(auto &l: det)
     {
         scene -> addItem(l.second);
@@ -68,6 +69,12 @@ void Detector2DView::Refresh()
 {
     for(auto &i: det)
         i.second -> update();
+}
+
+void Detector2DView::BringUpPreviousEvent(int prev_event_number)
+{
+    for(auto &i: det)
+        i.second -> SetCounter(prev_event_number);
 }
 
 };

@@ -44,7 +44,7 @@ point_t TrackingUtility::projected_point(const point_t &pt_track, const point_t 
         const double &z)
 {
     point_t zaxis(0, 0, 1);
-    double r = z/zaxis.dot(dir_track);
+    double r = (z - pt_track.z)/zaxis.dot(dir_track);
 
     return pt_track + dir_track * r;
 }
@@ -63,7 +63,7 @@ point_t TrackingUtility::intersection_point(const point_t &p1, const point_t &p2
 // get all tracking parameters
 void TrackingUtility::FitLine(const std::vector<point_t> &points, double &xtrack, double &ytrack,
         double &xptrack, double &yptrack, double &chi2ndf, std::vector<double> &xresid,
-        std::vector<double> &yresid)
+        std::vector<double> &yresid, double xreso, double yreso)
 {
     line_of_best_fit(points, xtrack, ytrack, xptrack, yptrack);
 
@@ -71,8 +71,8 @@ void TrackingUtility::FitLine(const std::vector<point_t> &points, double &xtrack
     xresid.clear();
     yresid.clear();
 
-    static double x_resolution = 1.0;
-    static double y_resolution = 1.0;
+    double x_resolution = xreso;
+    double y_resolution = yreso;
 
     point_t pt_track(xtrack, ytrack, 0);
     point_t _slope_track(xptrack, yptrack, 1.);
@@ -90,6 +90,7 @@ void TrackingUtility::FitLine(const std::vector<point_t> &points, double &xtrack
     }
 
     double ndf = 2. * (double)points.size() - 4;
+    if(ndf <= 0) ndf = 1.;
 
     chi2ndf = chi2 / ndf;
 }

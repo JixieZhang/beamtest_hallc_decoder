@@ -17,7 +17,7 @@ public:
 
     void FitLine(const std::vector<point_t> &points, double &xtrack, double &ytrack,
             double &xptrack, double &yptrack, double &chi2ndf, std::vector<double> &xresid,
-            std::vector<double> &yresid);
+            std::vector<double> &yresid, double xresolution = 1.0, double yresolution = 1.0);
 
     void line_of_best_fit(const std::vector<point_t> &points, double &xtrack, double &ytrack,
             double &xptrack, double &yptrack);

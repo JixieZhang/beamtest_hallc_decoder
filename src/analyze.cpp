@@ -39,7 +39,7 @@
 #endif
 
 void write_raw_data(const std::string &dpath, const std::string &opath, const std::string &mpath, int nev,
-                    int nskip=0, int res=3, double thres=10, int npeds=5, double flat=1.0, int usefixedped=0);
+        int nskip=0, int res=3, double thres=10, int npeds=5, double flat=1.0, int usefixedped=0);
 
 int GetRunNumber(std::string str);
 
@@ -63,7 +63,7 @@ int main(int argc, char*argv[])
     arg_parser.AddArg<int>("-n", "nev", "number of events to process (< 0 means all)", -1);
     arg_parser.AddArg<int>("-k", "nskip", "number of events to skip", 0);
     arg_parser.AddArgs<std::string>({"-m", "--module"}, "module", "json file for module configuration",
-                                    "database/modules/mapmt_module.json");
+            "database/modules/mapmt_module.json");
     arg_parser.AddArg<int>("-r", "res", "resolution for waveform analysis", 3);
     arg_parser.AddArg<double>("-t", "thres", "peak threshold for waveform analysis", 10.0);
     arg_parser.AddArg<int>("-p", "npeds", "sample window width for pedestal searching", 8);
@@ -78,99 +78,107 @@ int main(int argc, char*argv[])
     }
 
     write_raw_data(args["raw_data"].String(),
-                   args["root_file"].String(),
-                   args["module"].String(),
-                   args["nev"].Int(),
-                   args["nskip"].Int(),
-                   args["res"].Int(),
-                   args["thres"].Double(),
-                   args["npeds"].Int(),
-                   args["flat"].Double(),
-                   args["usefixedped"].Int());
+            args["root_file"].String(),
+            args["module"].String(),
+            args["nev"].Int(),
+            args["nskip"].Int(),
+            args["res"].Int(),
+            args["thres"].Double(),
+            args["npeds"].Int(),
+            args["flat"].Double(),
+            args["usefixedped"].Int());
     return 0;
 }
 
 // create an event tree according to modules
 TTree *create_tree(std::vector<Module> &modules, const std::string tname = "EvTree",
-                   const std::string &ttitle = "SoLID Ecal HallC BeamTest Events")
+        const std::string &ttitle = "SoLID Ecal HallC BeamTest Events")
 {
     auto tree = new TTree(tname.c_str(), ttitle.c_str());
     for (auto &m : modules) {
         switch (m.type) {
-        case kFADC250:
-            {
-                // 16 channels
-                auto event = new fdec::Fadc250Event(0, 16);
-                m.event = static_cast<void*>(event);
-                for (auto &ch : m.channels) {
-                    auto n = ch.name;
-                    tree->Branch(n.c_str(), &event->channels[ch.id], 32000, 0);
+            case kFADC250:
+                {
+                    // 16 channels
+                    auto event = new fdec::Fadc250Event(0, 16);
+                    m.event = static_cast<void*>(event);
+                    for (auto &ch : m.channels) {
+                        auto n = ch.name;
+                        tree->Branch(n.c_str(), &event->channels[ch.id], 32000, 0);
+                    }
                 }
-            }
-            break;
-        case kSSP:
-            {
+                break;
+            case kSSP:
+                {
 #ifdef USE_OLD_GEM_TRACKING
 #else
-                auto event = new GEMTreeStruct();
-                m.event = static_cast<void*>(event);
-                tree->Branch("event_number",                    &event->event_number,    "event_number/I");
+                    auto event = new GEMTreeStruct();
+                    m.event = static_cast<void*>(event);
+                    tree->Branch("event_number",                    &event->event_number,    "event_number/I");
 
-                // new tracking result
-                tree->Branch("fNtracks_found", &event->fNtracks_found, "fNtracks_found/I");
-                tree->Branch("fNhitsOnTrack", &event->fNhitsOnTrack, "fNhitsOnTrack/I");
-                tree->Branch("fXtrack", &event->fXtrack, "fXtrack/F");
-                tree->Branch("fYtrack", &event->fYtrack, "fYtrack/F");
-                tree->Branch("fXptrack", &event->fXptrack, "fXptrack/F");
-                tree->Branch("fYptrack", &event->fYptrack, "fYptrack/F");
-                tree->Branch("fChi2Track", &event->fChi2Track, "fChi2Track/F");
-                tree->Branch("fHitLayer", &event->fHitLayer);
-                tree->Branch("fHitXlocal", &event->fHitXlocal);
-                tree->Branch("fHitYlocal", &event->fHitYlocal);
-                tree->Branch("fHitXprojected", &event->fHitXprojected);
-                tree->Branch("fHitYprojected", &event->fHitYprojected);
-                tree->Branch("fHitResidU", &event->fHitResidU);
-                tree->Branch("fHitResidV", &event->fHitResidV);
-                tree->Branch("fHitUADC", &event->fHitUADC);
-                tree->Branch("fHitVADC", &event->fHitVADC);
-                tree->Branch("fHitIsampMaxUstrip", &event->fHitIsampMaxUstrip);
-                tree->Branch("fHitIsampMaxVstrip", &event->fHitIsampMaxVstrip);
+                    // new tracking result
+                    // for all possible tracks that pass chi2 cut
+                    tree->Branch("fNtracks_found", &event->fNtracks_found, "fNtracks_found/I");
+                    tree->Branch("besttrack", &event->besttrack, "besttrack/I");
+                    tree->Branch("fNhitsOnTrack", &event->fNhitsOnTrack);
+                    tree->Branch("fXtrack", &event->fXtrack);
+                    tree->Branch("fYtrack", &event->fYtrack);
+                    tree->Branch("fXptrack", &event->fXptrack);
+                    tree->Branch("fYptrack", &event->fYptrack);
+                    tree->Branch("fChi2Track", &event->fChi2Track);
+                    tree->Branch("fNgoodhits", &event->ngoodhits, "ngoodhits/I");
+                    tree->Branch("fHitXlocal", &event->fHitXlocal);
+                    tree->Branch("fHitYlocal", &event->fHitYlocal);
+                    tree->Branch("fHitZlocal", &event->fHitZlocal);
+                    tree->Branch("fHitTrackIndex", &event->hit_track_index);
+                    tree->Branch("fHitModule", &event->fHitModule);
 
-                // result before tracking
-                std::string sname = "GEM";
-                tree->Branch((sname + "_nCluster").c_str(),     &event->nCluster,        "GEM_nCluster/I");
-                tree->Branch((sname + "_planeID").c_str(),      &event->Plane[0],        "GEM_planeID[GEM_nCluster]/I");
-                tree->Branch((sname + "_prodID").c_str(),       &event->Prod[0],         "GEM_prodID[GEM_nCluster]/I");
-                tree->Branch((sname + "_moduleID").c_str(),     &event->Module[0],       "GEM_moduleID[GEM_nCluster]/I");
-                tree->Branch((sname + "_axis").c_str(),         &event->Axis[0],         "GEM_axis[GEM_nCluster]/I");
-                tree->Branch((sname + "_size").c_str(),         &event->Size[0],         "GEM_size[GEM_nCluster]/I");
-                tree->Branch((sname + "_adc").c_str(),          &event->Adc[0],          "GEM_adc[GEM_nCluster]/F");
-                tree->Branch((sname + "_pos").c_str(),          &event->Pos[0],          "GEM_pos[GEM_nCluster]/F");
+                    // following only for best tarck
+                    tree->Branch("fHitLayer", &event->fHitLayer);
+                    tree->Branch("fHitXprojected", &event->fHitXprojected);
+                    tree->Branch("fHitYprojected", &event->fHitYprojected);
+                    tree->Branch("fHitResidU", &event->fHitResidU);
+                    tree->Branch("fHitResidV", &event->fHitResidV);
+                    tree->Branch("fHitUADC", &event->fHitUADC);
+                    tree->Branch("fHitVADC", &event->fHitVADC);
+                    tree->Branch("fHitIsampMaxUstrip", &event->fHitIsampMaxUstrip);
+                    tree->Branch("fHitIsampMaxVstrip", &event->fHitIsampMaxVstrip);
 
-                tree->Branch((sname + "_stripNo").c_str(),      &event->StripNo);
-                tree->Branch((sname + "_stripAdc").c_str(),     &event->StripAdc);
-                tree->Branch((sname + "_stripTs0").c_str(),     &event->StripTs0);
-                tree->Branch((sname + "_stripTs1").c_str(),     &event->StripTs1);
-                tree->Branch((sname + "_stripTs2").c_str(),     &event->StripTs2);
-                tree->Branch((sname + "_stripTs3").c_str(),     &event->StripTs3);
-                tree->Branch((sname + "_stripTs4").c_str(),     &event->StripTs4);
-                tree->Branch((sname + "_stripTs5").c_str(),     &event->StripTs5);
+                    // result before tracking
+                    std::string sname = "GEM";
+                    tree->Branch((sname + "_nCluster").c_str(),     &event->nCluster,        "GEM_nCluster/I");
+                    tree->Branch((sname + "_planeID").c_str(),      &event->Plane[0],        "GEM_planeID[GEM_nCluster]/I");
+                    tree->Branch((sname + "_prodID").c_str(),       &event->Prod[0],         "GEM_prodID[GEM_nCluster]/I");
+                    tree->Branch((sname + "_moduleID").c_str(),     &event->Module[0],       "GEM_moduleID[GEM_nCluster]/I");
+                    tree->Branch((sname + "_axis").c_str(),         &event->Axis[0],         "GEM_axis[GEM_nCluster]/I");
+                    tree->Branch((sname + "_size").c_str(),         &event->Size[0],         "GEM_size[GEM_nCluster]/I");
+                    tree->Branch((sname + "_adc").c_str(),          &event->Adc[0],          "GEM_adc[GEM_nCluster]/F");
+                    tree->Branch((sname + "_pos").c_str(),          &event->Pos[0],          "GEM_pos[GEM_nCluster]/F");
 
-                tree->Branch((sname + "_nAPV").c_str(),         &event->nAPV,            "GEM_nAPV/I");
-                tree->Branch((sname + "_apv_crate_id").c_str(), &event->apv_crate_id[0], "GEM_apv_crate_id[GEM_nAPV]/I");
-                tree->Branch((sname + "_apv_mpd_id").c_str(),   &event->apv_mpd_id[0],   "GEM_apv_mpd_id[GEM_nAPV]/I");
-                tree->Branch((sname + "_apv_adc_ch").c_str(),   &event->apv_adc_ch[0],   "GEM_apv_adc_ch[GEM_nAPV]/I");
+                    tree->Branch((sname + "_stripNo").c_str(),      &event->StripNo);
+                    tree->Branch((sname + "_stripAdc").c_str(),     &event->StripAdc);
+                    tree->Branch((sname + "_stripTs0").c_str(),     &event->StripTs0);
+                    tree->Branch((sname + "_stripTs1").c_str(),     &event->StripTs1);
+                    tree->Branch((sname + "_stripTs2").c_str(),     &event->StripTs2);
+                    tree->Branch((sname + "_stripTs3").c_str(),     &event->StripTs3);
+                    tree->Branch((sname + "_stripTs4").c_str(),     &event->StripTs4);
+                    tree->Branch((sname + "_stripTs5").c_str(),     &event->StripTs5);
+
+                    tree->Branch((sname + "_nAPV").c_str(),         &event->nAPV,            "GEM_nAPV/I");
+                    tree->Branch((sname + "_apv_crate_id").c_str(), &event->apv_crate_id[0], "GEM_apv_crate_id[GEM_nAPV]/I");
+                    tree->Branch((sname + "_apv_mpd_id").c_str(),   &event->apv_mpd_id[0],   "GEM_apv_mpd_id[GEM_nAPV]/I");
+                    tree->Branch((sname + "_apv_adc_ch").c_str(),   &event->apv_adc_ch[0],   "GEM_apv_adc_ch[GEM_nAPV]/I");
 #endif
-            }
-            break;
-        case kTI:
-            {
-                std::cout<<" TI bank encountered..."<<m.type<<std::endl;
-            }
-            break;
-        default:
-            std::cout << "Unsupported module type " << m.type << std::endl;
-            break;
+                }
+                break;
+            case kTI:
+                {
+                    std::cout<<" TI bank encountered..."<<m.type<<std::endl;
+                }
+                break;
+            default:
+                std::cout << "Unsupported module type " << m.type << std::endl;
+                break;
         }
     }
     return tree;
@@ -185,14 +193,32 @@ void extract_new_gem_tracking_result(tracking_dev::TrackingDataHandler *tracking
     bool found_track = tracking -> GetBestTrack(xt, yt, xp, yp, chi2ndf);
     if(!found_track) return;
 
-    gem_data.fNtracks_found = 1; // only save best track
-    gem_data.fNhitsOnTrack = tracking -> GetNHitsonBestTrack();
-    gem_data.fXtrack = xt; gem_data.fYtrack = yt;
-    gem_data.fXptrack = xp; gem_data.fYptrack = yp;
-    gem_data.fChi2Track = chi2ndf;
+    auto convert_vector = [](const std::vector<double> &v) -> std::vector<float>
+    {
+        std::vector<float> res;
+        for(auto &i: v) res.push_back((float)i);
+        return res;
+    };
 
+    gem_data.besttrack = tracking -> GetBestTrackIndex();
+    gem_data.fNtracks_found = tracking -> GetNGoodTrackCandidates();
+    gem_data.fNhitsOnTrack = tracking -> GetAllTrackNhits();
+    gem_data.fXtrack = convert_vector(tracking -> GetAllXtrack());
+    gem_data.fYtrack = convert_vector(tracking -> GetAllYtrack());
+    gem_data.fXptrack = convert_vector(tracking -> GetAllXptrack());
+    gem_data.fYptrack = convert_vector(tracking -> GetAllYptrack());
+    gem_data.fChi2Track = convert_vector(tracking -> GetAllChi2ndf());
+
+    gem_data.ngoodhits = tracking -> GetTotalNgoodHits();
+    gem_data.fHitXlocal = convert_vector(tracking -> GetAllXlocal());
+    gem_data.fHitYlocal = convert_vector(tracking -> GetAllYlocal());
+    gem_data.fHitZlocal = convert_vector(tracking -> GetAllZlocal());
+    gem_data.hit_track_index = tracking -> GetAllHitTrackIndex();
+    gem_data.fHitModule = tracking -> GetAllHitModule();
+
+    // below is for best track - the one with minimum chi2
+    // for now, we only save layer index for best track
     gem_data.fHitLayer = tracking -> GetBestTrackLayerIndex();
-
     tracking_dev::point_t pt(xt, yt, 0);
     tracking_dev::point_t dir(xp, yp, 1.);
     const std::vector<int> &hit_index = tracking -> GetBestTrackHitIndex();
@@ -205,8 +231,6 @@ void extract_new_gem_tracking_result(tracking_dev::TrackingDataHandler *tracking
         double z = (tracking_data_handler -> GetDetector(layer)) -> GetZPosition();
         tracking_dev::point_t p_projected = (tracking -> GetTrackingUtility()) -> projected_point(pt, dir, z);
 
-        gem_data.fHitXlocal.push_back(p_local.x);
-        gem_data.fHitYlocal.push_back(p_local.y);
         gem_data.fHitXprojected.push_back(p_projected.x);
         gem_data.fHitYprojected.push_back(p_projected.y);
         gem_data.fHitResidU.push_back(p_projected.x - p_local.x);
@@ -237,21 +261,21 @@ void extract_gem_cluster(GEMSystem *gem_sys, MPDSSPRawEventDecoder *gem_decoder,
 
     auto getChamberBasedStripNo = [](int strip, int type, int N_APVS_PER_PLANE, int detLayerPositionIndex)
         -> int
-    {
-        // no conversion for Y plane
-        if(type == 1)
-            return strip;
-
-        // conversion for X plane
-        int c_strip = strip - N_APVS_PER_PLANE * 128 * detLayerPositionIndex;
-        if(strip < 0)
         {
-            std::cout<<"Error: strip conversion failed, returned without conversion."
-                <<std::endl;
-            return strip;
-        }
-        return c_strip;
-    };
+            // no conversion for Y plane
+            if(type == 1)
+                return strip;
+
+            // conversion for X plane
+            int c_strip = strip - N_APVS_PER_PLANE * 128 * detLayerPositionIndex;
+            if(strip < 0)
+            {
+                std::cout<<"Error: strip conversion failed, returned without conversion."
+                    <<std::endl;
+                return strip;
+            }
+            return c_strip;
+        };
 
     gem_data.nAPV = apv_strip_mapping::Mapping::Instance() -> GetTotalNumberOfAPVs();
     std::vector<GEMDetector*> detectors = gem_sys -> GetDetectorList();
@@ -384,7 +408,7 @@ void fill_epics_event(const uint32_t *buf, EPICSystem* epic_sys, const int event
 
 // read raw data in evio format, and extract information
 void write_raw_data(const std::string &dpath, const std::string &opath, const std::string &mpath, int nev,
-                    int nskip, int res, double thres, int npeds, double flat, int usefixedped)
+        int nskip, int res, double thres, int npeds, double flat, int usefixedped)
 {
     // read modules
     auto modules = read_modules(mpath);
@@ -483,20 +507,20 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
         }
 
         switch(evchan.GetEvHeader().tag) {
-        // only want physics events
-        case CODA_PHY1:
-        case CODA_PHY2:
-            break;
-        case CODA_EPICS:
-            {
-                fill_epics_event(evchan.GetRawBuffer(), &epic_sys, count, epics_tree);
-            }
-            continue;
-        case CODA_PRST:
-        case CODA_GO:
-        case CODA_END:
-        default:
-            continue;
+            // only want physics events
+            case CODA_PHY1:
+            case CODA_PHY2:
+                break;
+            case CODA_EPICS:
+                {
+                    fill_epics_event(evchan.GetRawBuffer(), &epic_sys, count, epics_tree);
+                }
+                continue;
+            case CODA_PRST:
+            case CODA_GO:
+            case CODA_END:
+            default:
+                continue;
         }
 
         evchan.ScanBanks(dbanks);
@@ -521,47 +545,47 @@ void write_raw_data(const std::string &dpath, const std::string &opath, const st
                 }
                 // decode by module type
                 switch (mod.type) {
-                case kFADC250:
-                    {
-                        auto event = static_cast<fdec::Fadc250Event*>(mod.event);
-                        fdecoder.DecodeEvent(*event, dbuf, buflen);
-                        imod++;
-                        size_t idx=16*imod;
-                        for (auto &ch : event->channels) {
-                            double fixedPed = 0.0, fixedPedErr = 0.0;
-                            if(usefixedped) {
-                                if(idx >= dbFADCPed->Data.size()) {
-                                    std::cout<<"Error! Number of channels in FADC Pedestal file is less than that in the raw data, I quit ... \n";
-                                    exit(-1);
+                    case kFADC250:
+                        {
+                            auto event = static_cast<fdec::Fadc250Event*>(mod.event);
+                            fdecoder.DecodeEvent(*event, dbuf, buflen);
+                            imod++;
+                            size_t idx=16*imod;
+                            for (auto &ch : event->channels) {
+                                double fixedPed = 0.0, fixedPedErr = 0.0;
+                                if(usefixedped) {
+                                    if(idx >= dbFADCPed->Data.size()) {
+                                        std::cout<<"Error! Number of channels in FADC Pedestal file is less than that in the raw data, I quit ... \n";
+                                        exit(-1);
+                                    }
+                                    fixedPed = dbFADCPed->Data[idx];
+                                    fixedPedErr=1.5; //dbFADCPed->Data[idx+32];
                                 }
-                                fixedPed = dbFADCPed->Data[idx];
-                                fixedPedErr=1.5; //dbFADCPed->Data[idx+32];
-                            }
 
-                            //std::cout<<"event = "<<count<<",  imod = "<<imod<<",  FADCPed["<<idx<<"] = "<<fixedPed<<", fixedPedErr="<<fixedPedErr<<std::endl;
-                            idx++;
-                            analyzer.Analyze(ch,fixedPed,fixedPedErr);
+                                //std::cout<<"event = "<<count<<",  imod = "<<imod<<",  FADCPed["<<idx<<"] = "<<fixedPed<<", fixedPedErr="<<fixedPedErr<<std::endl;
+                                idx++;
+                                analyzer.Analyze(ch,fixedPed,fixedPedErr);
+                            }
                         }
-                    }
-                    break;
-                case kSSP:
-                    {
+                        break;
+                    case kSSP:
+                        {
 #ifdef USE_OLD_GEM_TRACKING
-                        auto raw_vec = evchan.GetRawBufferVec();
-                        evio_event_wrapper.LoadEvent(raw_vec.data(), raw_vec.size());
-                        tracking->Decode(evio_event_wrapper);
-                        tracking -> find_tracks();
+                            auto raw_vec = evchan.GetRawBufferVec();
+                            evio_event_wrapper.LoadEvent(raw_vec.data(), raw_vec.size());
+                            tracking->Decode(evio_event_wrapper);
+                            tracking -> find_tracks();
 #else
-                        std::vector<int> ivec{mod.bank, mod.crate};
-                        gem_decoder.Decode(dbuf, buflen, ivec);
-                        auto event = static_cast<GEMTreeStruct*>(mod.event);
-                        extract_gem_cluster(&gem_system, &gem_decoder, tracking_data_handler, new_tracking, *event, count);
+                            std::vector<int> ivec{mod.bank, mod.crate};
+                            gem_decoder.Decode(dbuf, buflen, ivec);
+                            auto event = static_cast<GEMTreeStruct*>(mod.event);
+                            extract_gem_cluster(&gem_system, &gem_decoder, tracking_data_handler, new_tracking, *event, count);
 #endif
-                    }
-                    break;
-                default:
-                    std::cout << "Unsupported module type " << mod.type << std::endl;
-                    break;
+                        }
+                        break;
+                    default:
+                        std::cout << "Unsupported module type " << mod.type << std::endl;
+                        break;
                 }
             }
             tree->Fill();

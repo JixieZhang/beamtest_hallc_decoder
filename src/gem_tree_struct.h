@@ -38,10 +38,36 @@ struct GEMTreeStruct
     vector<bool> position_check;
 
     // tracking data
-    int fNtracks_found, fNhitsOnTrack;
-    float fXtrack, fYtrack, fXptrack, fYptrack, fChi2Track;
+    // tracking data saves all possible tracks that pass chi2 cut
+    //   besttrack - variable that keeps the track index with minimum chi2
+    //   fNtracks_found - saves the total number of tracks found
+    //   fNhitsOntrack - saves how many hits on each track, similar for fXtrack ...
+    //
+    //   ngoodhits - saves the total number of hits that lies on tracks
+    //       this is not exclusive, for example: one hit can lie on two possible tracks
+    //       in this case, the hit will be duplicated/copied, one for each track, and this
+    //       number will reflect that
+    //   fHitXlocal - , fHitYlocal - , ... etc - saves all hits that lies on tracks, similar
+    //       to ngoodhits, they are not exclusive, if a hit lies on two possible
+    //       tracks, it will be copied twice, if three tracks, then copied three times
+    //       this is to be compatible with SBS tree organization
+    //   hit_track_index - saves the track index for this hit
+    //   fHitModule - saves the module id for this hit
+    //
+    //   fHitLayer - only applies for best track, the hit layer id for hits on the best track
+    //       similar for fHitXprojected, ..., and the rest
+    int besttrack;
+    int fNtracks_found;
+    vector<int> fNhitsOnTrack;
+    vector<float> fXtrack, fYtrack, fXptrack, fYptrack, fChi2Track;
+
+    int ngoodhits; // total number of hits lies on tracks
+    vector<float> fHitXlocal, fHitYlocal, fHitZlocal;
+    vector<int> hit_track_index;
+    vector<int> fHitModule;
+
+    // this is only for best track -- to make it compatible with old code
     vector<int> fHitLayer;
-    vector<float> fHitXlocal, fHitYlocal;
     vector<float> fHitXprojected, fHitYprojected;
     vector<float> fHitResidU, fHitResidV;
     vector<float> fHitUADC, fHitVADC;
@@ -69,9 +95,12 @@ struct GEMTreeStruct
 
         dp_table.clear(); position_check.resize(MAXCLUSTERS, false);
 
-        fNtracks_found = 0, fNhitsOnTrack = 0;
-        fXtrack = DEF_VAL, fYtrack = DEF_VAL, fXptrack = DEF_VAL, fYptrack = DEF_VAL, fChi2Track = DEF_VAL;
+        besttrack = 0, fNtracks_found = 0, fNhitsOnTrack.clear();
+        fXtrack.clear(), fYtrack.clear();
+        fXptrack.clear(), fYptrack.clear(), fChi2Track.clear();
+        ngoodhits = 0;
         fHitLayer.clear(); fHitXlocal.clear(); fHitYlocal.clear();
+        fHitZlocal.clear(); hit_track_index.clear(); fHitModule.clear();
         fHitXprojected.clear(); fHitYprojected.clear();
         fHitResidU.clear(); fHitResidV.clear();
         fHitUADC.clear(); fHitVADC.clear();
